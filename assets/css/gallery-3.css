@@ -1,0 +1,17 @@
+.ju-3g{padding-block:clamp(56px,9vw,120px)}
+.ju-3g .wrap{width:min(1200px,92vw);margin-inline:auto;display:grid;gap:28px}
+@media(min-width:900px){.ju-3g .wrap{gap:40px}}
+.ju-rail{position:relative;overflow:hidden;height:clamp(220px,48vh,520px)}
+.ju-track{display:flex;align-items:center;gap:16px;height:100%;will-change:transform}
+.ju-track img{height:100%;width:auto;display:block;object-fit:contain} /* 比率そのまま */
+.ju-rail:hover .ju-track{animation-play-state:paused}
+.ju-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 10%,transparent 90%,rgba(0,0,0,.18))}
+.ju-track.a{animation:scrollA 42s linear infinite}
+.ju-track.b{animation:scrollB 55s linear infinite}
+.ju-track.c{animation:scrollC 68s linear infinite}
+@keyframes scrollA{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes scrollB{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes scrollC{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){
+  .ju-track{animation:none}
+}

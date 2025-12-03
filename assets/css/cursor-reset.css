@@ -1,0 +1,22 @@
+/* ── Desktop(マウス)ではOSカーソルを完全に非表示 ─────────────── */
+@media (pointer: fine) and (hover: hover) {
+  html, body, * { cursor: none !important; }
+  /* 入力欄だけはIビームを残したい場合：下3行のコメントを外す
+  input, textarea, [contenteditable="true"] { cursor: text !important; }
+  */
+}
+
+/* ── Touch(スマホ/タブ)では“マウス系UI”を出さない ───────────── */
+@media (pointer: coarse), (hover: none) {
+  /* 代表的なカスタムカーソル要素を一括で無効化 */
+  .cursor, .custom-cursor, .cursor-3d, .cursor3d,
+  #cursor, #custom-cursor,
+  canvas.cursor, canvas.custom-cursor,
+  [data-cursor], [data-role="cursor"] {
+    display: none !important;
+  }
+}
+/* MOBILE cursor sanity */
+@media (hover: none), (pointer: coarse) {
+  html, body, * { cursor: auto !important; }
+}

@@ -1,0 +1,517 @@
+/* ===== Design section (1 row: left texts / right image) ===== */
+.ju-design{ padding-block:clamp(56px,9vw,120px); background:transparent; }
+.ju-container{ width:min(1200px,92vw); margin-inline:auto; }
+.ju-design__row{
+  display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(24px,4vw,40px);
+  align-items:start;
+}
+.ju-design__col{ min-width:0; }
+.ju-design__stack{ display:grid; gap: clamp(18px,2.2vw,28px); } /* テキスト2つの縦積み */
+.ju-design__eyebrow{
+  font-size:clamp(14px, 1.5vw, 16px); letter-spacing:.05em; opacity:1;
+  margin:0 0 8px; position:relative;
+}
+.ju-design__eyebrow::before{
+  content:""; display:none; width:72px; height:1px;
+  background:currentColor; opacity:.28; margin-right:12px; vertical-align:middle;
+}
+.ju-design__text{ font-size:clamp(10px, 1.4vw, 12px); line-height:1.2; letter-spacing: 0.02em; color: #bfbfbf; margin:0; }
+.ju-design__image{ display:flex; align-items:flex-start; justify-content:center; background: transparent; }
+.ju-design__image img{
+  width:100%; height:auto; object-fit:contain;               /* ← 切らない */
+  max-height:clamp(360px, 50vh, 640px);                       /* ← 少し小さめに制限 */
+  border-radius:10px; box-shadow:none;                        /* 白い枠感を排除 */
+}
+@media (max-width: 820px){
+  .ju-design__row{ grid-template-columns:1fr; }
+}
+
+/* === Sticky/Animate modes (opt-in; default OFF) === */
+/* Mode A: Safe sticky for selected short sections */
+body.mode-sticky-a #story,
+body.mode-sticky-a #works,
+body.mode-sticky-a #features,
+body.mode-sticky-a #order{
+  position: sticky; top: 0; min-height: 100vh; display: grid; place-items: center;
+  z-index: var(--z, auto);
+  background: transparent; /* 既存の背景に委ねる */
+}
+
+/* Mode B: Panel wrapper (applied via JS only when enabled) */
+.juB-wrap{ position: relative; height: 100vh; }
+.juB-stick{ position: sticky; top: 0; min-height: 100vh; height: 100vh; z-index: var(--z, auto); background: #000; }
+
+/* Mode C: Transform-only center slide (no layout change) */
+body.mode-animate-c .juC-panel{ will-change: transform, opacity; transition: transform .35s ease, opacity .35s ease; }
+/* === AC-REBUILD START: お詫び(左) + お問合せ(右) in #contact-apology === */
+#contact-apology .apology-grid{
+  display:grid; gap:clamp(16px,2.6vw,32px); align-items:start;
+}
+@media (min-width: 960px){
+  #contact-apology .apology-grid{ grid-template-columns: minmax(320px,1fr) minmax(320px,1fr); }
+}
+#contact-apology .ju-contact{
+  background: rgba(0,0,0,.04); padding: clamp(12px,2vw,20px); border-radius:12px;
+}
+#contact-apology .ju-contact h3{ margin:0 0 .5em; font-size:clamp(18px,2.8vw,22px); }
+#contact-apology .ju-contact .row{ display:grid; gap:10px; }
+#contact-apology .ju-contact label{ font-size:.95em; }
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact select,
+#contact-apology .ju-contact textarea,
+#contact-apology .ju-contact button{
+  width:100%; max-width:100%;
+}
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact select,
+#contact-apology .ju-contact textarea{
+  padding:.7em .75em; border:1px solid rgba(0,0,0,.2); border-radius:8px; background:#fff;
+}
+#contact-apology .ju-contact textarea{ min-height:120px; resize:vertical; }
+#contact-apology .ju-contact .actions{ display:flex; gap:10px; align-items:center; margin-top:.5em; }
+#contact-apology .ju-contact button{
+  appearance:none; border:0; border-radius:8px; padding:.75em 1em; cursor:pointer;
+  background:#111; color:#fff;
+}
+#contact-apology .ju-contact .hint{ font-size:.85em; opacity:.8; }
+#contact-apology .ju-visually-hidden{
+  position:absolute !important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); border:0;
+}
+/* === AC-REBUILD END === */
+/* === AC-ENSURE START: #contact-apology 右にフォーム === */
+#contact-apology .apology-grid{
+  display:grid; gap:clamp(16px,2.6vw,32px); align-items:start;
+}
+@media (min-width:960px){
+  #contact-apology .apology-grid{ grid-template-columns:minmax(320px,1fr) minmax(320px,1fr); }
+}
+#contact-apology .apology-right .ju-contact{
+  background:rgba(0,0,0,.05); padding:clamp(12px,2vw,20px); border-radius:12px;
+}
+#contact-apology .ju-contact h3{ margin:0 0 .5em; font-size:clamp(18px,2.8vw,22px); }
+#contact-apology .ju-contact .row{ display:grid; gap:10px; }
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact select,
+#contact-apology .ju-contact textarea,
+#contact-apology .ju-contact button{ width:100%; max-width:100%; }
+#contact-apology .ju-contact textarea{ min-height:120px; resize:vertical; }
+#contact-apology .ju-contact button{
+  appearance:none; border:0; border-radius:8px; padding:.75em 1em; cursor:pointer;
+  background:#111; color:#fff;
+}
+#contact-apology .ju-visually-hidden{
+  position:absolute !important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); border:0;
+}
+/* === AC-ENSURE END === */
+/* === CONTACT-LAYOUT START: #contact-apology 右フォームを横長2カラムに === */
+
+/* PCでは2カラム、狭幅では自動で縦積み（既存グリッドは維持） */
+@media (min-width: 960px){
+  #contact-apology .ju-contact .row{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+    column-gap: clamp(12px, 2vw, 24px);
+    row-gap: 12px;
+    align-items: start;
+  }
+  /* テキストエリアとアクションは横幅いっぱいに */
+  #contact-apology .ju-contact .row label:has(textarea),
+  #contact-apology .ju-contact .actions{
+    grid-column: 1 / -1;
+  }
+  /* name/email, tel/subject を左右に並べる（順序はHTMLのまま） */
+  #contact-apology .ju-contact .row label{ margin: 0; }
+}
+
+/* ボタン：黒地＋白縁取り＋白文字（高コントラスト） */
+#contact-apology .ju-contact button{
+  background: #000; color: #fff;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  padding: .75em 1.1em;
+  font: inherit; cursor: pointer;
+}
+#contact-apology .ju-contact button:hover{ filter: brightness(1.05); }
+#contact-apology .ju-contact button:active{ transform: translateY(1px); }
+
+/* キーボード操作でも見えるフォーカスリング（白/黒の二重） */
+#contact-apology .ju-contact button:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px #000;
+}
+
+/* 入力群の基本体裁はそのまま */
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact select,
+#contact-apology .ju-contact textarea{
+  width: 100%; max-width: 100%;
+}
+
+/* === CONTACT-LAYOUT END === */
+/* === CONTACT-50_50 START === */
+
+/* 左右を常に 1:1（PC幅）に。スマホは縦積み維持 */
+@media (min-width: 960px){
+  #contact-apology .apology-grid{
+    display:grid; align-items:start; gap:clamp(16px,2.4vw,28px);
+    grid-template-columns: 1fr 1fr;  /* ← 50:50 */
+  }
+}
+
+/* 見出しのフォーマットと高さを統一（左h2相当／右h3相当を合わせる） */
+#contact-apology .apology-left .gs-heading,
+#contact-apology .ju-contact h3{
+  font-size: clamp(22px, 2.3vw, 28px);
+  line-height: 1.2;
+  margin: 0 0 .8em;
+}
+
+/* フォームの2カラム配置：name/email, tel/subject を左右、最下段は message | actions */
+@media (min-width: 960px){
+  #contact-apology .ju-contact .row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "name   email"
+      "tel    subject"
+      "message actions";
+    column-gap: clamp(12px, 2vw, 24px);
+    row-gap: 12px;
+    align-items:start;
+  }
+  #contact-apology .ju-contact .row .f-name     { grid-area: name; }
+  #contact-apology .ju-contact .row .f-email    { grid-area: email; }
+  #contact-apology .ju-contact .row .f-tel      { grid-area: tel; }
+  #contact-apology .ju-contact .row .f-subject  { grid-area: subject; }
+  #contact-apology .ju-contact .row .f-message  { grid-area: message; }
+  #contact-apology .ju-contact .row .actions    {
+    grid-area: actions; justify-self: stretch; align-self:start;
+    display:flex; justify-content:flex-end;
+  }
+}
+
+/* 入力の基本体裁 */
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact select,
+#contact-apology .ju-contact textarea{ width:100%; max-width:100%; }
+#contact-apology .ju-contact textarea{ min-height:120px; resize:vertical; }
+
+/* 送信ボタン：黒地＋白縁取り＋白文字（高コントラスト） */
+#contact-apology .ju-contact button{
+  background:#000; color:#fff; border:2px solid #fff;
+  border-radius:8px; padding:.75em 1.1em; font:inherit; cursor:pointer;
+}
+#contact-apology .ju-contact button:hover{ filter:brightness(1.05); }
+#contact-apology .ju-contact button:active{ transform:translateY(1px); }
+#contact-apology .ju-contact button:focus-visible{
+  outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px #000;
+}
+
+/* もし“個人情報コメントやヒント文”が残っていれば消す（保険） */
+#contact-apology .ju-contact .hint{ display:none !important; }
+
+/* === CONTACT-50_50 END === */
+/* === CONTACT-DARK START: #contact-apology 右フォームを黒地×白文字に === */
+#contact-apology .apology-right .ju-contact{
+  background:#000;                 /* 地の黒 */
+  color:#fff;                      /* 文字は白 */
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;
+}
+
+/* 入力系：黒地・白縁・白文字・白キャレット */
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact select,
+#contact-apology .ju-contact textarea{
+  background:#000;
+  color:#fff;
+  caret-color:#fff;
+  border:2px solid #fff;
+  border-radius:8px;
+  padding:.7em .75em;
+  width:100%; max-width:100%;
+}
+
+/* プレースホルダはやや薄い白 */
+#contact-apology .ju-contact input::placeholder,
+#contact-apology .ju-contact textarea::placeholder{
+  color:rgba(255,255,255,.7);
+}
+
+/* フォーカス時は強コントラストのリング */
+#contact-apology .ju-contact input:focus,
+#contact-apology .ju-contact select:focus,
+#contact-apology .ju-contact textarea:focus{
+  outline:none;
+  box-shadow:0 0 0 3px #fff, 0 0 0 6px #000;
+}
+
+/* Safari/Chrome のオートフィル黄背景を黒に矯正 */
+#contact-apology .ju-contact input:-webkit-autofill{
+  -webkit-text-fill-color:#fff;
+  -webkit-box-shadow:0 0 0 1000px #000 inset;
+  box-shadow:0 0 0 1000px #000 inset;
+}
+
+/* ボタンは黒地＋白縁取り＋白文字（キーボードリングも強調） */
+#contact-apology .ju-contact .actions{ display:flex; gap:12px; justify-content:flex-end; }
+#contact-apology .ju-contact button{
+  background:#000; color:#fff; border:2px solid #fff;
+  border-radius:8px; padding:.75em 1.1em; font:inherit; cursor:pointer;
+}
+#contact-apology .ju-contact button:hover{ filter:brightness(1.05); }
+#contact-apology .ju-contact button:active{ transform:translateY(1px); }
+#contact-apology .ju-contact button:focus-visible{
+  outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px #000;
+}
+
+/* 見出しの高さ・書式を左右で統一（既存指定があっても上書き） */
+#contact-apology .apology-left .gs-heading,
+#contact-apology .ju-contact h3{
+  font-size:clamp(22px,2.3vw,28px);
+  line-height:1.2;
+  margin:0 0 .8em;
+  color:#fff;
+}
+
+/* PCは50:50を維持。フォーム内部はメッセージ｜送信の横並びのまま */
+@media (min-width:960px){
+  #contact-apology .apology-grid{
+    display:grid; gap:clamp(16px,2.4vw,28px); align-items:start;
+    grid-template-columns:1fr 1fr; /* 50:50 固定 */
+  }
+  #contact-apology .ju-contact .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "name   email"
+      "tel    subject"
+      "message actions";
+    column-gap:clamp(12px,2vw,24px);
+    row-gap:12px;
+  }
+  #contact-apology .ju-contact .row .f-name    { grid-area:name; }
+  #contact-apology .ju-contact .row .f-email   { grid-area:email; }
+  #contact-apology .ju-contact .row .f-tel     { grid-area:tel; }
+  #contact-apology .ju-contact .row .f-subject { grid-area:subject; }
+  #contact-apology .ju-contact .row .f-message { grid-area:message; }
+  #contact-apology .ju-contact .row .actions   { grid-area:actions; }
+}
+/* === CONTACT-DARK END === */
+/* === CONTACT-REVERSE START: 見本どおり白フィールド＋白ボタン === */
+/* セクションは50:50の横長を維持 */
+@media (min-width:960px){
+  #contact-apology .apology-grid{
+    display:grid; gap:clamp(16px,2.4vw,28px); align-items:start;
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+/* 右側フォームの箱は黒地（ページと同化） */
+#contact-apology .apology-right .ju-contact{
+  background:#000; border:0; border-radius:12px; color:#fff;
+}
+
+/* 入力フィールド：白地・グレー縁・濃い文字（見本の“白枠”） */
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact textarea{
+  background:#fff; color:#111;
+  border:2px solid #5a5a5a;      /* 見本のやや濃いグレー */
+  border-radius:8px;
+  padding:.7em .75em;
+  width:100%; max-width:100%;
+}
+#contact-apology .ju-contact input::placeholder,
+#contact-apology .ju-contact textarea::placeholder{ color:#bdbdbd; }
+
+/* 2カラムの整列：最下段は Message | 送信ボタン を横並び */
+@media (min-width:960px){
+  #contact-apology .ju-contact .row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "name   email"
+      "company company"
+      "message actions";
+    column-gap: clamp(12px,2vw,24px);
+    row-gap: 12px;
+  }
+  #contact-apology .ju-contact .row .f-name    { grid-area:name; }
+  #contact-apology .ju-contact .row .f-email   { grid-area:email; }
+  #contact-apology .ju-contact .row .f-company { grid-area:company; }
+  #contact-apology .ju-contact .row .f-message { grid-area:message; }
+  #contact-apology .ju-contact .row .actions   { grid-area:actions; align-self:start; display:flex; justify-content:flex-end; }
+}
+
+/* 送信ボタン：白地＋黒縁＋黒文字（見本どおり） */
+#contact-apology .ju-contact button{
+  background:#fff; color:#000;
+  border:2px solid #000;
+  border-radius:8px;
+  padding:.75em 1.1em; font:inherit; cursor:pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,.45);
+}
+#contact-apology .ju-contact button:hover{ filter:brightness(.98); }
+#contact-apology .ju-contact button:active{ transform:translateY(1px); }
+
+/* 見出しの高さ・書式も左右で統一 */
+#contact-apology .apology-left .gs-heading,
+#contact-apology .ju-contact h3{
+  font-size: clamp(22px,2.3vw,28px);
+  line-height: 1.2;
+  margin: 0 0 .8em;
+  color:#fff;
+}
+/* === CONTACT-REVERSE END === */
+/* === APOLOGY-CONTACT FIX START === */
+
+/* 50:50 の横長（PC）、スマホは縦積み */
+@media (min-width:960px){
+  #contact-apology .apology-grid{
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:clamp(16px,2.4vw,28px); align-items:start;
+  }
+}
+
+/* 見出しの体裁を左右で揃える */
+#contact-apology .apology-left .gs-heading,
+#contact-apology .ju-contact h3{
+  font-size:clamp(22px,2.3vw,28px);
+  line-height:1.2;
+  margin:0 0 .8em;
+  color:#fff;
+}
+
+/* 右カラム：黒地に薄い白縁のカード＋余白 */
+#contact-apology .apology-right .ju-contact{
+  color:#fff; background:#000;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:12px;
+  padding:clamp(14px,2vw,22px);
+}
+
+/* 入力フィールドは白地・濃い文字（見本通り） */
+#contact-apology .ju-contact input,
+#contact-apology .ju-contact textarea{
+  background:#fff; color:#111;
+  border:2px solid #5a5a5a; border-radius:8px;
+  padding:.7em .75em; width:100%; max-width:100%;
+}
+#contact-apology .ju-contact input::placeholder,
+#contact-apology .ju-contact textarea::placeholder{ color:#bdbdbd; }
+
+/* 2カラムの整列（PC時）：最後の行は Message | 送信を横並び */
+@media (min-width:960px){
+  #contact-apology .ju-contact .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "name    email"
+      "company company"
+      "message actions";
+    column-gap:clamp(12px,2vw,24px);
+    row-gap:12px;
+  }
+  #contact-apology .ju-contact .row .f-name    { grid-area:name; }
+  #contact-apology .ju-contact .row .f-email   { grid-area:email; }
+  #contact-apology .ju-contact .row .f-company { grid-area:company; }
+  #contact-apology .ju-contact .row .f-message { grid-area:message; }
+  #contact-apology .ju-contact .row .actions   { grid-area:actions; display:flex; justify-content:flex-end; align-self:start; }
+}
+
+/* ボタンは白地＋黒縁＋黒文字（見本通り）、フォーカスも見える */
+#contact-apology .ju-contact button{
+  background:#fff; color:#000; border:2px solid #000;
+  border-radius:8px; padding:.75em 1.1em; font:inherit; cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+#contact-apology .ju-contact button:hover{ filter:brightness(.98); }
+#contact-apology .ju-contact button:active{ transform:translateY(1px); }
+#contact-apology .ju-contact button:focus-visible{
+  outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px #000;
+}
+
+/* ラベルの“視覚非表示”はテキストだけ。要素自体を隠さないためのクラス定義 */
+#contact-apology .ju-sr-only{
+  position:absolute !important; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+/* === APOLOGY-CONTACT FIX END === */
+/* ==== APOLOGY → 見本どおり：白い入力枠＋白ボタン（他は触らない） ==== */
+
+/* セクションは50:50の横長（あなたのスクリプトのまま）＋左右の内側余白を少しだけ確保 */
+@media (min-width:960px){
+  #contact-apology .apology-grid{ padding-inline: clamp(8px, 1.6vw, 20px); }
+}
+
+/* 左カラム（フォーム）: 白いフィールド／濃いテキスト／やや濃いグレー枠 */
+#contact-apology .apology-left .form-control,
+#contact-apology .apology-left input,
+#contact-apology .apology-left textarea{
+  background:#fff !important;
+  color:#111 !important;
+  border:2px solid #5a5a5a !important;
+  border-radius:8px !important;
+  padding:.7em .75em !important;
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box;
+}
+#contact-apology .apology-left input::placeholder,
+#contact-apology .apology-left textarea::placeholder{ color:#bdbdbd; }
+
+/* ボタン：白地＋黒縁＋黒文字（見本通り） */
+#contact-apology .apology-left .btn{
+  background:#fff !important; color:#000 !important;
+  border:2px solid #000 !important; border-radius:8px !important;
+  padding:.75em 1.1em !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+#contact-apology .apology-left .btn:hover{ filter:brightness(.98); }
+#contact-apology .apology-left .btn:active{ transform:translateY(1px); }
+#contact-apology .apology-left .btn:focus-visible{
+  outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px #000;
+}
+
+/* 右カラム（元テキスト側）のブロックに薄い白縁を付けるならここをON */
+#contact-apology .apology-right .gs-container,
+#contact-apology .apology-right .content{
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:12px;
+  padding: clamp(12px, 1.6vw, 20px);
+}
+/* ==== END ==== */
+/* === APOLOGY-CONTACT EMBED (最小) === */
+#contact-apology .apology-grid{ display:grid; gap:clamp(16px,2vw,24px); align-items:start; }
+@media (min-width:960px){
+  #contact-apology .apology-grid{ grid-template-columns:1fr 1fr; }
+}
+#ju-contact-embedded .form-control{
+  background:#fff; color:#111; border:2px solid #5a5a5a; border-radius:8px;
+  padding:.7em .75em; width:100%; max-width:100%;
+}
+#ju-contact-embedded .form-control::placeholder{ color:#bdbdbd; }
+#ju-contact-embedded .btn{
+  background:#fff; color:#000; border:2px solid #000; border-radius:8px;
+  padding:.75em 1.1em; box-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+#ju-contact-embedded .btn:hover{ filter:brightness(.98); }
+#ju-contact-embedded .btn:active{ transform:translateY(1px); }
+#contact-apology .gs-heading{ font-size:clamp(22px,2.3vw,28px); line-height:1.2; margin:0 0 .8em; color:#fff; }
+/* SAFETY: Standalone contact section は常に非表示（再挿入対策） */
+#contact-form-1-uTJ9kVF6n0{
+  display:none !important; visibility:hidden !important;
+  height:0 !important; overflow:hidden !important;
+  padding:0 !important; margin:0 !important;
+}
+/* === APOLOGY MID-KILL (CSS) === */
+/* 左カラム側に紛れた旧フォーム/右カラムの残骸を丸ごと非表示 */
+#contact-apology .apology-left .ju-contact,
+#contact-apology .apology-left #ju-contact-in-apology,
+#contact-apology .apology-left .apology-right { display:none !important; }
+/* 左カラムにネストされたグリッドが残っても段組を潰す */
+#contact-apology .apology-left .apology-grid { display:contents !important; gap:0 !important; }
+/* MOBILE cursor sanity */
+@media (hover: none), (pointer: coarse) {
+  html, body, * { cursor: auto !important; }
+}

@@ -1,0 +1,94 @@
+/* スティッキーコンテナの基本設定 */
+.scroll-container {
+    position: relative;
+}
+
+/* 各スクロールパネルの基本設定 */
+.scroll-panel {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    min-height: 100vh;          /* 1画面サイズ */
+    display: flex;              /* 中身はそのまま、全体を縦中央 */
+    flex-direction: column;
+    justify-content: center;    /* 垂直方向に中央表示 */
+    /* 上縁のソフトフェード用（下のパネルへ溶け込む演出） */
+    position: sticky;
+}
+
+/* 親に overflow:hidden があると sticky が効かないため可視に統一 */
+.scroll-container .gs-section { overflow: visible !important; }
+
+/* ギャラリーは独自レイアウトのため中央寄せフレックスを解除 */
+#gallery.scroll-panel{
+    display:grid; min-height:100vh;
+    align-content:center; justify-content:stretch;
+    padding-top:6vh;  /* 余白を抑えめに */
+}
+
+/* セクションの内容が常に手前に来るようにz-indexを設定 */
+.scroll-panel .gs-container,
+.scroll-panel .ju-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* 上部フェード（ギャラリーは除外） */
+.scroll-panel:not(#gallery)::before{
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 30vh;
+    pointer-events: none;
+    z-index: 1; /* コンテンツより下（背景の上） */
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 25%, rgba(0,0,0,.85) 55%, #000 100%);
+    opacity: var(--fade, 0);
+}
+
+/* 背景色を強制的に設定して、下のコンテンツが透けないようにする */
+.scroll-panel {
+    background-color: #000; /* プロジェクトの基本背景色に合わせる */
+}
+
+/* === Section background unify (HEROは除外) === */
+/* スクロールパネル以外のセクションでも必ず黒背景にし、重なり時の透けを防止 */
+.gs-section,
+.ju-policy,
+.ju-design,
+.ju-g-full {
+    background: #000; /* 透け防止のため全面黒 */
+}
+
+/* カードアニメーションの準備（JSでクラスをトグルする方式に変更） */
+.scroll-panel .card-anim-target {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 0.95s ease-out, transform 0.95s ease-out;
+}
+
+.scroll-panel .card-anim-target.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* HERO以降のセクションにのみ適用されるようにする */
+.scroll-container > .scroll-panel { min-height: 100vh; }
+
+/* 一部のセクションはコンテンツが少ないため、中央揃えを補助 */
+#testimonial-event-shop .gs-container,
+#testimonial-1 .gs-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: inherit; /* 親のmin-heightを継承 */
+}
+
+/* 中身のレイアウトは各コンテナに任せる（ここでは触らない） */
+
+/* CSS Scroll Snap: 各パネルで“吸い付き”は維持しつつ急停止を弱める */
+html { scroll-snap-type: none; }
+.scroll-panel { scroll-snap-align: start; scroll-snap-stop: normal; }
+
+/* === Brandium-like text reveal helpers === */
+.ju-word{ display:inline-block; will-change: transform, opacity, filter; }
+.ju-reveal{ will-change: opacity, transform, filter; }

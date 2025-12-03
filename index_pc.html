@@ -1,0 +1,2431 @@
+
+<html lang="ja"><head>
+<script>
+  if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+    location.href = 'index.html';
+  }
+</script>
+  
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script>
+      (function(){
+        var touch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+        if(touch) {
+          document.documentElement.classList.add('is-touch-device');
+          // remove 3D cursor script if present
+          var s=document.querySelector('script[src="/assets/js/cursor-3d.js"]');
+          if(s&&s.parentNode) s.parentNode.removeChild(s);
+          // unlock any scroll lock immediately
+          try{
+            document.documentElement.classList.remove('scroll-locked');
+            document.body.classList.remove('scroll-locked');
+            document.documentElement.style.overflowY='auto';
+            document.body.style.overflowY='auto';
+          }catch(_){ } 
+        }
+      })();
+    </script>
+  <title>オリジナルサッカーボール.com｜JUGEND</title>
+  <meta name="description" content="オリジナルサッカーボール制作します">
+  <link rel="canonical" href="https://originalsoccerball.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:url" content="https://originalsoccerball.com/">
+  <meta property="og:title" content="世界にひとつのオリジナルサッカーボールを制作">
+  <meta property="og:description" content="making with JU.">
+  <meta property="og:image" content="https://originalsoccerball.com/assets/icons/apple-touch-icon.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="世界にひとつのオリジナルサッカーボールを制作">
+  <meta name="twitter:description" content="JUGENDによるオリジナルサッカーボール制作">
+  <meta name="twitter:image" content="https://originalsoccerball.com/assets/icons/apple-touch-icon.webp">
+  <style>
+    /* Early mobile overrides to guarantee scroll */
+    @media (pointer:coarse){
+      html,body{overflow-y:auto !important; overscroll-behavior:auto !important; -webkit-overflow-scrolling:touch}
+      html{scroll-snap-type:none !important}
+      .scroll-panel{scroll-snap-align:none !important; scroll-snap-stop:normal !important}
+    }
+    /* Safari-specific scroll-snap override */
+    @media not all and (min-resolution:.001dpcm) { @media {
+      _::-webkit-full-page-media, _:future, :root, html { scroll-snap-type: none !important; }
+    }}
+  </style>
+    <script>
+      // Early theme: always start in black (non-invert)
+      (function(){ try{ document.documentElement.classList.remove('theme-invert'); }catch(_){ } })();
+    </script>
+    <!-- Cursor: handled by /assets/js/cursor-3d.js (WebGL difference blend). System cursor remains hidden when ready. -->
+    <!-- Google Fonts preconnect removed: using local Inter fonts -->
+    <!-- YouTube 高速化: 事前接続とサムネ先読み -->
+<!--     <link rel="preconnect" href="https://www.youtube.com"> -->
+<!--     <link rel="preconnect" href="https://i.ytimg.com" crossorigin=""> -->
+<!--     <link rel="preconnect" href="https://s.ytimg.com" crossorigin=""> -->
+    <!-- removed invalid preconnect: r3---sn -->
+<!--     <link rel="preconnect" href="https://googlevideo.com" crossorigin=""> -->
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="icon" href="/assets/icons/apple-touch-icon.webp">
+    <link rel="stylesheet" href="/assets/css/styles_pc.css?v=sticky-slide">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "JUGEND",
+      "url": "https://originalsoccerball.com/",
+      "logo": "https://originalsoccerball.com/assets/icons/apple-touch-icon.webp",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "email": "info@originalsoccerball.com",
+        "availableLanguage": ["ja","en"]
+      },
+      "sameAs": [
+        "https://www.instagram.com/originalsoccerball"
+      ]
+    }
+    </script>
+    <style>
+      /* Theme invert: flip entire page, then un-flip media */
+      html.theme-invert{ filter: invert(1) hue-rotate(180deg); }
+      /* Cursor: blend difference on image only (no container halo) */
+      html.theme-invert #ju-cursor{ filter: none !important; background: transparent; border:none; outline:0; }
+      html.theme-invert #ju-cursor img{ mix-blend-mode: difference; }
+      html.theme-invert img,
+      html.theme-invert video,
+      html.theme-invert canvas,
+      html.theme-invert iframe,
+      html.theme-invert .video-el,
+      html.theme-invert .video-thumb,
+      html.theme-invert .yt-player,
+      html.theme-invert .brand-logo-image,
+      html.theme-invert #face3d-layer{ filter: invert(1) hue-rotate(180deg) !important; }
+      html.theme-invert .stays-pink{ filter: invert(1) hue-rotate(180deg) !important; }
+      /* Do NOT invert the 3D cursor canvas; keep pure difference blending */
+      html.theme-invert #cursor3d,
+      html.theme-invert #cursor3d canvas{ filter: none !important; mix-blend-mode:difference !important; }
+      /* Toggle button */
+      .theme-toggle{ display:inline-flex; align-items:center; justify-content:flex-start; width:44px; height:24px; border-radius:999px; border:1px solid currentColor; background: transparent; cursor:pointer; position:relative; padding:0 2px; color: inherit; margin-left: clamp(12px, 3vw, 40px); }
+      .theme-toggle::after{ content:''; width:18px; height:18px; border-radius:50%; background: currentColor; opacity:.9; transform: translateX(0); transition: transform .25s ease; }
+      html.theme-invert .theme-toggle{ justify-content:flex-end; }
+      .theme-toggle[disabled]{ opacity:.5; cursor: not-allowed; }
+      @media (prefers-reduced-motion: reduce){ .theme-toggle::after{ transition: none; } }
+    </style>
+    <!-- <script>
+      // Emergency mobile unlock: ensure vertical scroll is enabled on touch devices
+      (function(){
+        var touch = ('ontouchstart' in window) || (navigator.maxTouchPoints>0);
+        if(!touch) return;
+        function unlock(){
+          try{ document.documentElement.classList.remove('scroll-locked'); }catch(_){ } 
+          try{ document.body.classList.remove('scroll-locked'); }catch(_){ } 
+          try{ document.documentElement.style.overflowY='auto'; document.body.style.overflowY='auto'; }catch(_){ } 
+          try{ document.documentElement.style.setProperty('--sbw','0px'); }catch(_){ } 
+        }
+        // run ASAP
+        unlock();
+        document.addEventListener('DOMContentLoaded', unlock, {once:true});
+        window.addEventListener('touchstart', unlock, {once:true, passive:true});
+      })();
+    </script> -->
+    <!-- Copied Icon Assets -->
+    <!-- Icon fonts: subset & WOFF2 only to reduce transfer size -->
+    <style>
+      @font-face{font-family:'MobiriseIconsSubset';font-display:swap;src:url('/assets/fonts/mobirise-icons.subset.woff2') format('woff2');font-weight:normal;font-style:normal}
+      @font-face{font-family:'Mobirise2Subset';font-display:swap;src:url('/assets/fonts/mobirise2.subset.woff2') format('woff2');font-weight:normal;font-style:normal}
+      .mbr-iconfont{font-style:normal;font-weight:normal;line-height:1;display:inline-block;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      .mbri-globe:before{font-family:'MobiriseIconsSubset'!important;content:"\e933"}
+      .mbri-users:before{font-family:'MobiriseIconsSubset'!important;content:"\e98c"}
+      .mbri-speed:before{font-family:'MobiriseIconsSubset'!important;content:"\e975"}
+      .mobi-mbri-quote-left:before{font-family:'Mobirise2Subset'!important;content:"\e965"}
+    </style>
+  <style>
+  /* === Flyout Section CSS === */
+  [data-flyout="true"] .pf-grid{
+    display:grid;
+    gap:clamp(20px,4vw,40px);
+    grid-template-columns:repeat(4,1fr); /* 広い画面は4列 */
+  }
+  @media (max-width:1024px){
+    [data-flyout="true"] .pf-grid{ grid-template-columns:repeat(2,1fr); } /* 2x2 */
+  }
+  @media (max-width:600px){
+    [data-flyout="true"] .pf-grid{ grid-template-columns:1fr; } /* 1列 */
+  }
+  [data-flyout="true"] .gs-work-image-wrapper{
+    aspect-ratio:1/1; overflow:hidden; border-radius:8px; margin-bottom:16px;
+  }
+  [data-flyout="true"] .gs-work-image{
+    width:100%; height:100%; object-fit:cover;
+    transition:transform  .90s ease;
+  }
+  [data-flyout="true"] .gs-work-card:hover .gs-work-image{ transform:scale(1.04); }
+  </style><style>
+  /* === Connector & Like-Order Spacing === */
+  /* Order と同等の余白感：上下面とも流体値で確保（clamp） */
+  .gs-section.is-like-order{
+    padding-block: clamp(56px, 9vw, 120px);
+  }
+  /* 見出し直下の接続コピー */
+  .gs-connector{
+    margin-block: clamp(8px, 1.2vw, 14px) clamp(20px, 3vw, 32px); /* 見出しと本文の間に呼吸 */
+    font-size: clamp(16px, 2.2vw, 20px);
+    line-height: 1.6;
+    letter-spacing: .04em;
+    opacity: .92;
+  }
+  /* セクション中のグリッドやカードに一貫したガターを付与（Gridのgapを使用） */
+  .gs-section.is-like-order .pf-grid,
+  .gs-section.is-like-order .gs-grid-4{
+    gap: clamp(20px, 4vw, 40px); /* ガター（row/column 双方） */
+  }
+
+  /* 動きに敏感なユーザー配慮：過剰なトランジション・アニメを抑制 */
+  @media (prefers-reduced-motion: reduce){
+    .gs-connector,
+    .gs-section.is-like-order *{
+      transition-duration: .01ms !important;
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+  </style><style>
+  /* === Connector Space & Scrollbar Hidden === */
+  /* 見出し直下に1行分の空き（環境に依るので clamp でおおよそ1行相当） */
+  .needs-connector-space{ margin-bottom: clamp(16px, 2.4vw, 24px); }
+
+  /* サイト全体のスクロールバーを非表示（スクロールは可能） */
+  html, body{ -ms-overflow-style: none; scrollbar-width: none; }
+  body::-webkit-scrollbar{ display: none; }
+  
+</style>
+  <style>
+  </style>
+  <script src="/assets/js/cursor-3d.js" defer></script>
+<script>
+  </script>
+<style>
+  </style>
+<style>
+/* === HARD FIX: heading space & stable scroll === */
+/* 見出しタグだけでなく、サイト固有の見出しクラスにも「直下余白」を強制 */
+h1, h2, h3,
+.gs-overline,
+.gs-heading,
+[data-flyout="true"] .gs-overline {
+  margin-bottom: clamp(16px, 2vw, 28px) !important;
+}
+
+/* スクロールバーは見せないが横幅は常に一定にする（Safari対策込み） */
+html { overflow-y: scroll; }              /* 常に縦スクロール領域を確保 */
+html, body { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+body::-webkit-scrollbar { display: none; } /* 見た目だけ非表示 */
+
+/* JSで測ったスクロールバー幅を常時確保（どのセクションもズレない） */
+:root{ --sbw: 0px; }
+body{ padding-right: 0; }
+</style>
+<script>
+/* === HARD FIX: measure scrollbar width === */
+(function(){
+  function setSBW(){
+    const probe=document.createElement('div');
+    probe.style.cssText='position:absolute;top:-9999px;width:100px;height:100px;overflow:scroll;';
+    document.body.appendChild(probe);
+    const sbw = probe.offsetWidth - probe.clientWidth;
+    probe.remove();
+    document.documentElement.style.setProperty('--sbw', (sbw||0)+'px');
+  }
+  if(document.readyState!=='loading') setSBW();
+  else document.addEventListener('DOMContentLoaded', setSBW);
+  window.addEventListener('resize', setSBW);
+})();
+</script>
+<style>
+  /* === Hard Spacer Fallback === */
+  .connector-space{ display:block; width:100%; height:clamp(16px,2.4vw,24px); }
+  </style>
+  <style>
+  /* === Normalize wraps & enforce heading gap === */
+  /* 改行は通常の折返しへ（以前の white-space: pre-line を上書き） */
+  
+
+  /* 見出し下の余白が効きづらい環境でも保険として gap を使う（親がflex/columnなら有効） */
+  .gs-container, .pf-grid, .gs-grid-4 { row-gap: clamp(16px, 2.4vw, 24px); }
+
+  /* 実体スペーサーの標準定義（既に inline 指定があるので上書きにはならない） */
+  .connector-space { display:block; width:100%; height:clamp(16px,2.4vw,24px); }
+  </style>
+  <style id="no-soft-reveal">
+    /* Disable post-HERO soft reveal animations: show content immediately */
+    .scroll-container .gs-overline:not(.animate-me),
+    .scroll-container .gs-heading:not(.animate-me),
+    .scroll-container .gs-card,
+    .scroll-container .gs-work-card,
+    .scroll-container .gs-feature-card,
+    .scroll-container .ju-design__eyebrow,
+    .scroll-container .ju-design__text,
+    .scroll-container .ju-policy .ju-acc__btn .ttl,
+    .scroll-container .ju-policy .ju-acc__text,
+    .scroll-container .ju-policy figure,
+    .scroll-container .ju-policy img,
+    #site-notice, footer{
+      opacity: 1 !important;
+      transform: none !important;
+      animation: none !important;
+      transition: none !important;
+    }
+  </style>
+  <style id="hide-acc-nums">
+    /* Remove numeric bullets from all accordion buttons */
+    .ju-acc__btn .num{ display:none !important; }
+    /* Remove numeric labels in production info cards */
+    .gs-info-title .gs-info-number{ display:none !important; }
+    /* After hiding numbers, make layout two columns: title (fill) + plus at far right */
+    #policy .ju-acc__btn,
+    #originalballmaking-accordion .ju-acc__btn,
+    #faq-accordion .ju-acc__btn{
+      display:grid; grid-template-columns: 1fr auto !important; align-items:center; gap:16px;
+    }
+    #policy .ju-acc__btn .sign,
+    #originalballmaking-accordion .ju-acc__btn .sign,
+    #faq-accordion .ju-acc__btn .sign{ justify-self:end; }
+  </style>
+<style>
+  /* === tight captions & title spacing === */
+  /* 説明文を強制1行＋小さく（必要なら値は下げられます） */
+  .desc-tight{
+    white-space: nowrap !important;
+    font-size: clamp(10px, 1.4vw, 12px) !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.02em;
+  }
+
+  /* 万一親がflex/gridでもタイトル直下の空きを確保できるよう補助 */
+  .gs-container, .pf-grid, .gs-grid-4{ row-gap: clamp(18px, 2.6vw, 28px); }
+  </style>
+  <style id="inline-line-badge">.ju-line-badge{display:inline-block;margin-left:.4rem;font-size:.75rem;opacity:.9}.ju-line--fullcolorballs{color:inherit}.ju-line--silkscreenballs{color:inherit}.ju-line--originalballmaking{color:inherit}.ju-line--other{color:inherit}</style>
+  <link rel="stylesheet" href="/assets/css/ju-line-pop.css">
+  <link rel="stylesheet" href="/assets/css/design-section.css">
+  <link rel="stylesheet" href="/assets/css/design-local.css?v=midkill_20250925-032718">
+  <link rel="stylesheet" href="/assets/css/gallery-3.css?v=2">
+  <link rel="stylesheet" href="/assets/css/sticky-scroll.css?v=sec-center-5">
+  <!-- JU_MARK JU-1758026351 -->
+  <!-- JU_MARK JU-1758026878 -->
+<style id="ju-slower-overrides">
+  [data-flyout="true"] .gs-work-image{ transition: transform .90s ease !important; }
+</style>
+
+    <style id="TESTIMONIAL_CENTER_LIFT">
+      /* セクションをグリッド中央寄せ + カードだけ少し上げる（被り防止で余白も整える） */
+      #testimonial-event-shop{display:grid;place-items:center;min-height:78vh;}
+      #testimonial-event-shop .gs-card{margin:0 auto;transform:translateY(-6vh);}
+       (max-width:980px){
+        #testimonial-event-shop{min-height:68vh;}
+        #testimonial-event-shop .gs-card{transform:translateY(-4vh);}
+      }
+      #testimonial-event-shop .gs-card-title{margin-bottom:.35rem !important;line-height:1.25 !important;}
+      #testimonial-event-shop .gs-card-text {margin-top:.25rem  !important;line-height:1.3  !important;}
+    </style>
+    
+  
+  <script src="/assets/js/pointerlock-guard.js" defer></script>
+
+  <meta name="theme-color" content="#111111">
+  <meta name="color-scheme" content="light dark">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.webp">
+  <link rel="icon" href="/assets/icons/icon-192.webp" sizes="192x192">
+  <link rel="stylesheet" href="/assets/css/final-overrides.css">
+  <link rel="stylesheet" href="/assets/css/mobile-responsive.css?v=2">
+  <link rel="stylesheet" href="assets/css/cursor-kill.css">
+  <link rel="stylesheet" href="assets/css/cursor-reset.css">
+  <style>
+/* —— #faq-accordion 専用オーバーライド —— */
+#faq-accordion, #faq-accordion * { color:#fff; }
+#faq-accordion .ju-acc__btn .sign::before,
+#faq-accordion .ju-acc__btn .sign::after { background:#fff; opacity:1; }
+#faq-accordion .ju-acc{ border-top:1px solid rgba(255,255,255,.25) !important; }
+#faq-accordion .ju-acc__item{ border-bottom:1px solid rgba(255,255,255,.18) !important; }
+#faq-accordion .ju-acc__panel{ display:block !important; }
+#faq-accordion .ju-acc__panel[hidden]{ display:none !important; }
+
+/*セクション余白 & コンテナ（他セクションと整合） */
+#faq-accordion{ padding-block:clamp(56px,9vw,120px); background: #000; }
+#faq-accordion .ju-container{ width:min(1200px,92vw); margin-inline:auto; }
+
+/* アコーディオン */
+#faq-accordion .ju-acc{ border-top:1px solid rgba(255,255,255,.15); }
+#faq-accordion .ju-acc__item{ border-bottom:1px solid rgba(255,255,255,.15); }
+#faq-accordion .ju-acc__btn{
+  width:100%; text-align:left; background:none; border:0; padding:18px 0;
+  display:grid; grid-template-columns:auto auto 1fr; align-items:center; gap:16px; cursor:pointer; font:inherit;
+}
+#faq-accordion .ju-acc__btn .num{ font-weight:600; opacity:.65; width:30px; text-align:left; }
+#faq-accordion .ju-acc__btn .ttl{ font-weight:600; letter-spacing:.02em; }
+#faq-accordion .ju-acc__btn .sign{ width:20px; height:20px; position:relative; flex:0 0 20px; opacity:.85; justify-self: end; }
+#faq-accordion .ju-acc__btn .sign::before,
+#faq-accordion .ju-acc__btn .sign::after{
+  content:""; position:absolute; left:50%; top:50%;
+  width:14px; height:2px; background:currentColor; transform:translate(-50%,-50%);
+}
+#faq-accordion .ju-acc__btn .sign::after{ transform:translate(-50%,-50%) rotate(90deg); } /* 開いたらマイナス */
+
+#faq-accordion .ju-acc__panel{ padding:0 0 16px 0; display:block !important; }
+#faq-accordion .ju-acc__panel[hidden]{ display:none !important; }
+#faq-accordion .ju-acc__text{ margin:0 0 8px 0; line-height:1.7; font-size:clamp(14px, 1.5vw, 15px); color: #bfbfbf; }
+</style>
+<style id="sticky-fix-override">
+  .scroll-container > .scroll-panel {
+    position: -webkit-sticky !important; /* Safari用 */
+    position: sticky !important;
+    top: 0 !important;
+    min-height: 100vh !important;
+    background-color: #000 !important; /* 透明化を防止 */
+    overflow: visible !important; /* クリップを防止 */
+  }
+  .scroll-container {
+    overflow: visible !important;
+  }
+</style>
+<style>
+  /* Scroll buffers leverage inert divs to extend total scroll distance without touching sticky panels */
+  .scroll-buffer{
+    width:100%;
+    height:clamp(35vh, 18vw, 60vh);
+    pointer-events:none;
+    flex-shrink:0;
+  }
+  .scroll-buffer[data-buffer="xl"]{
+    height:clamp(60vh, 30vw, 100vh);
+  }
+  .scroll-buffer[data-buffer="xxl"]{
+    height:clamp(90vh, 42vw, 140vh);
+  }
+  .scroll-buffer[data-buffer="mega"]{
+    height:clamp(120vh, 56vw, 180vh);
+  }
+  .scroll-buffer[data-buffer="sm"]{
+    height:clamp(20vh, 12vw, 40vh);
+  }
+</style>
+<style>
+      .ju-container{ width:min(1200px,92vw); margin-inline:auto; }
+      .ju-design__row{ display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(24px,4vw,48px); align-items:start; }
+      @media (max-width: 980px){ .ju-design__row{ grid-template-columns:1fr; } }
+      .ju-design__eyebrow{ font-weight:600; letter-spacing:.02em; opacity:.9; margin-bottom:.25rem; }
+      .ju-design__text{ line-height:1.6; opacity:.9; margin:0 0 .75rem 0; }
+      .ju-design__image img{ display:block; width:100%; height:auto; border-radius:8px; object-fit:cover; }
+    </style>
+    <style>
+      #order .order-gallery__track .gs-work-card {
+        flex: 0 0 clamp(400px, 42vw, 600px);
+      }
+      #order .gs-work-image {
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+      }
+    </style>
+  
+</head>
+  <body>
+    <svg id="filters" style="display: none;">
+      <defs>
+        <filter id="threshold" filterunits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000" color-interpolation-filters="sRGB">
+          <fecolormatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"></fecolormatrix>
+        </filter>
+      </defs>
+    </svg>
+    <!-- Sticky Header -->
+    <header class="site-header before-unlock" role="banner">
+      <div class="header-inner before-unlock">
+        <a class="brand" href="#" aria-label="JUGEND home">
+          <div class="brand-mark">
+  <img loading="lazy" src="/assets/icons/apple-touch-icon.webp" alt="JUGENDロゴ" class="brand-logo-image" decoding="async" fetchpriority="low" width="180" height="180">
+</div>
+          <span class="brand-text">JUGEND</span>
+        </a>
+
+        <nav class="nav">
+          <div class="status-tooltip-wrapper">
+            <span class="status-text stays-pink">現在製造中止</span>
+            <span class="tooltip-box">現在製造を中止しております</span>
+          </div>
+          <button id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="テーマ切替"></button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="content" role="main">
+      <!-- Hero with YouTube background -->
+      <section class="hero" id="hero">
+        <div class="hero-media">
+          <div class="hero-video">
+            <video id="hero-video" class="video-el" src="/assets/media/site.mp4" autoplay muted playsinline webkit-playsinline preload="auto"></video>
+          </div>
+          <!-- 3D Face Layer -->
+          <div id="face3d-layer" class="face3d-layer" aria-hidden="true"></div>
+          <div class="hero-fade" aria-hidden="true"></div>
+        </div>
+        <!-- Centered wrapper that we may scale (parent only) -->
+        <h1 class="hero-title" id="hero-title">
+                    <div class="gooey-wrapper">
+            <span id="text1"></span>
+            <span id="text2"></span>
+          </div>
+        </h1>
+      </section>
+
+      <div class="scroll-container">
+      <!-- Story Section -->
+      <section class="gs-section scroll-panel" id="story" data-ju-section-slide="4200">
+        <div class="gs-container">
+        <p class="gs-overline" data-ju-slide="heading" data-ju-slide-start="15000" data-ju-slide-end="-14980">サッカーボールを通じて</p>
+          <h2 class="gs-heading animate-me">つなぐ、をつくる。</h2>
+          <div class="gs-grid-3">
+            <div class="gs-card">
+              <div class="gs-card-icon-wrapper">
+                <span class="mbr-iconfont mbri-globe"></span>
+              </div>
+              <div class="gs-card-content">
+                <h3 class="gs-card-title">世界にただひとつ</h3>
+                <p class="gs-card-text text-nowrap desc-tight">自分らしさ・チームらしさを伝えるために</p>
+              </div>
+            </div>
+            <div class="gs-card">
+              <div class="gs-card-icon-wrapper">
+                <span class="mbr-iconfont mbri-users"></span>
+              </div>
+              <div class="gs-card-content">
+                <h3 class="gs-card-title">思い出を刻む</h3>
+                <p class="gs-card-text text-nowrap desc-tight">色褪せない記憶、かけがえのない想いや誓いに</p>
+              </div>
+            </div>
+            <div class="gs-card">
+              <div class="gs-card-icon-wrapper">
+                <span class="mbr-iconfont mbri-speed"></span>
+              </div>
+              <div class="gs-card-content">
+                <h3 class="gs-card-title">ともに歩む</h3>
+                <p class="gs-card-text desc-tight">迷ったらパスをください。<br>あなたのゴールデンコンビです。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+<!-- Works/Lineup Section: 平面から飛び出そう、蹴り出そう。 -->
+<section id="works" class="gs-section scroll-panel" data-flyout="true" data-ju-section-slide="4200">
+  <div class="gs-container gs-section is-like-order" style="margin-bottom: clamp(16px, 2vw, 28px);">
+        <p class="gs-overline animate-me">平面から飛び出そう、<br>蹴り出そう。</p>
+    <div class="gs-grid-4 pf-grid">
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/fullcolorballs_n42_upscayl_2x_remacri-4x.webp" alt="fullcolorballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="976">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">fullcolorballs</h3>
+          <p class="gs-work-text">自由に。個性的に。</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/photo-1660926655132-b6f25f755-h_mebj4naw.webp" alt="silkscreenballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">silkscreenballs</h3>
+          <p class="gs-work-text">プレミアムも。スタンダードも。</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj5g1n.webp" alt="stampballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="976">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">stampballs</h3>
+          <p class="gs-work-text">寄せ書き、選手のサインボールに＋。</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj7m72.webp" alt="other" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">other</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <!-- Features Section -->
+      <section class="gs-section scroll-panel" id="features" data-ju-section-slide="4200">
+        <div class="gs-container gs-section is-like-order" style="display:block; padding-bottom: clamp(22px, 3.2vw, 36px);">
+          <p class="gs-overline animate-me">私たちがサッカーボールに求める特別な価値</p>
+          <div class="gs-grid-2">
+            <div class="gs-feature-card">
+              <h3 class="gs-feature-title">Craftsmanship</h3>
+              <ul class="gs-feature-list">
+                <li>Precision</li>
+                <li>Passion</li>
+                <li>Performance</li>
+                <li>Artistry</li>
+              </ul>
+            </div>
+            <div class="gs-feature-card">
+              <h3 class="gs-feature-title">Materials</h3>
+              <ul class="gs-feature-list">
+                <li>Quality</li>
+                <li>Durability</li>
+                <li>Vibrancy</li>
+                <li>Uniqueness</li>
+
+
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Order Section -->
+      
+
+
+<section id="order" class="order-gallery scroll-panel" data-ju-section-slide="4200">
+  <div class="order-gallery__inner">
+    <div class="order-gallery__head">
+      <h2 class="gs-heading" data-ju-slide="heading" data-ju-slide-start="15000" data-ju-slide-end="-14980">Order</h2>
+    </div>
+    <div class="order-gallery__rail ju-rail" data-order-gallery>
+      <div class="order-gallery__track ju-track">
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/kaleidoBGlVZvXFUrNkybEvZiHrIf-h_mecraszk.webp" alt="kaleidoscope ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1708">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">kaleidoscope ball 01</h3>
+          <p class="gs-work-text desc-tight">2004 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/photo-1634114441919-7636abb21-h_mecr9gwy.webp" alt="kaleidoscope ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1708">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">kaleidoscope ball 02</h3>
+          <p class="gs-work-text desc-tight">2004 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/hachinosuJmtsrMPKesPxnqySGgDwTRm_upscayl_2x_remacri-4x.webp" alt="Bee ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Bee ball</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/photo-1634114441919-7636abb21-h_mecrcdfi.webp" alt="Face ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1000">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Face ball</h3>
+          <p class="gs-work-text desc-tight">2004 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/photo-1660926655800-3d11219f3-h_mecr7sx7.webp" alt="escher ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1708">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">escher ball</h3>
+          <p class="gs-work-text desc-tight">2004 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/halloweenYbCbhNivXEmqXscxtMDVxcK_upscayl_2x_ultrasharp-4x.webp" alt="Halloween ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1120">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Halloween ball</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/benhamOxmyBnKOOOGIFCGFEaoffUBvYG_upscayl_2x_ultrasharp-4x.webp?v=1" alt="Benham&#x27;s disk ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Benham's disk ball</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND+Client / コラボレーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/fullcolorballs_n42_upscayl_2x-h_mecroqg4.webp" alt="Blue marble ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="616">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Blue marble ball</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND+Client / コラボレーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/making_upscayl_2x_remacri-4x-h_mecrm36y.webp" alt="Fun ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1152">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Fun ball 01</h3>
+          <p class="gs-work-text desc-tight">2010 Client / サポーター/ファングッズ受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/IMGconvertXAKKKsgcyzuDiQuUQgSSNl_upscayl_2x_remacri-4x.webp" alt="Fun ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1192">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Fun ball 02</h3>
+          <p class="gs-work-text desc-tight">2010 Client / サポーター/ファングッズ受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper gs-work-image-wrapper--funball03">
+          <img loading="lazy" src="/assets/images/IMGMalYBtLllcEszPgcyLBPjLCzXL-h_mecrywga.webp" alt="Funball 03" class="gs-work-image gs-work-image--funball03" decoding="async" fetchpriority="low" width="435" height="435">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Funball 03</h3>
+          <p class="gs-work-text desc-tight">2010 Client / サポーター/ファングッズ受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/englandzvqRYSSgpIqrYAglFTDfsJyit_upscayl_2x_remacri-4x.webp" alt="England ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">England ball</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/bloomfKRYLVtZERGvXMEKHNMIEsHeMrY_upscayl_2x_ultramix-balanced-4x.webp" alt="Brand ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Brand ball 01</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/swaggerOVjNHUZuQYTivElDfAWVlQdXz_upscayl_2x_remacri-4x.webp" alt="Brand ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Brand ball 02</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/grandemfjWkMzYempFbsMiWZEmppsiOj_upscayl_2x_remacri-4x.webp" alt="Brand ball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Brand ball 03</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/grandeBRazlQSOWrYRiaUIaRKPWPofGr_upscayl_2x_remacri-4x.webp" alt="Brand ball 04" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Brand ball 04</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/fbtsSmPgjwRldEnVMmwkMgZlflevEjoq_upscayl_2x_remacri-4x.webp" alt="Wedding ball 04" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Wedding ball 04</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/numbXAvsutcfqoeVtQkhyhKjlgjsHoer_upscayl_2x_remacri-4x.webp" alt="rainy conditions Hi-vis ball" class="gs-work-image" decoding="async" fetchpriority="low" width="800" height="752">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">rainy conditions Hi-vis ball</h3>
+          <p class="gs-work-text desc-tight">2010 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/cUYOWZYcTlavUYfpiYYfFAOsWLLktvRr_upscayl_2x_remacri-4x.webp" alt="C140 ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="2140">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">C140 ball</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/denimihxGypmJgYLJJPeJlBoJdQQegFL_upscayl_2x_remacri-4x.webp" alt="Denim ball" class="gs-work-image" decoding="async" fetchpriority="low" width="984" height="892">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Denim ball</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND + Client / コラボレーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card" data-popup="fullcolorballs" data-group="fullcolorballs">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/tiger-shot.webp" alt="Tiger shot" class="gs-work-image" decoding="async" fetchpriority="low" width="1896" height="1848">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Tiger shot</h3>
+          <p class="gs-work-text desc-tight">2006 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card" data-popup="fullcolorballs" data-group="fullcolorballs">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/IMG_2403_upscayl_2x_remacri-4x.webp" alt="Blue marble ball v2" class="gs-work-image" decoding="async" fetchpriority="low" width="3947" height="3878">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Blue marble ball v2</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card" data-popup="fullcolorballs" data-group="fullcolorballs">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/mascotsize-ball.webp" alt="Blue marble ball mascot" class="gs-work-image" decoding="async" fetchpriority="low" width="1840" height="1744">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Blue marble ball mascot</h3>
+          <p class="gs-work-text desc-tight">2010 JUGEND / プロモーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card" data-popup="other" data-group="other">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/leatherbag_upscayl_2x_remacri-4x.webp" alt="Leather ball bag" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Leather ball bag</h3>
+          <p class="gs-work-text desc-tight">JUGEND+JOURNEY / コラボレーション</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/team-ball-01.webp" alt="Team ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1968" height="1848">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Team ball 01</h3>
+          <p class="gs-work-text desc-tight">2004 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/team-ball-02.webp" alt="Team ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1776" height="1776">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Team ball 02</h3>
+          <p class="gs-work-text desc-tight">2004 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/team-ball03.webp" alt="Team ball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="1928" height="1760">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Team ball 03</h3>
+          <p class="gs-work-text desc-tight">2004 Client / 受注製作</p>
+        </div>
+      </div>
+      <div class="gs-work-card">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/uniform_upscayl_2x_remacri-4x.webp" alt="Equipment" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">Equipment</h3>
+          <p class="gs-work-text desc-tight">2004 Client / 受注製作</p>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+    
+    <!-- Three.js + GLTFLoader をフェイルオーバー付きでロードし、その後 face3d を起動 -->
+    <!-- ESMは無効化して UMD のみに戻す（安定版） -->
+    <!-- Hero 3D (UMD) をローカルライブラリで同期読み込み（CDN未使用） -->
+    <script>
+      (function(){
+        var queue = [
+          "/assets/libs/three-0.128.0.min.js",
+          "/assets/libs/GLTFLoader.js",
+          "/assets/libs/DRACOLoader.js",
+          "/assets/js/face3d.umd.js"
+        ];
+        function loadNext(){
+          if (!queue.length) return;
+          var src = queue.shift();
+          var s = document.createElement('script');
+          s.src = src;
+          s.defer = true;
+          s.onload = loadNext;
+          document.head.appendChild(s);
+        }
+        function start(){
+          loadNext();
+        }
+        if (document.readyState === 'complete') {
+          start();
+        } else {
+          window.addEventListener('load', start, { once: true });
+        }
+      })();
+    </script>
+    <script src="/assets/js/script.js?v=sticky-slide-safari" defer></script>
+    <!-- Mobile safety: ensure scroll is unlocked on touch devices even if autoplay is blocked -->
+
+    <!-- Mobile fallback: convert vertical touch moves into scroll -->
+
+    <!-- Section scroll animations (HERO untouched) -->
+    
+    <script src="/assets/libs/gsap/gsap.min.js" defer></script>
+    <script src="/assets/libs/gsap/ScrollTrigger.min.js" defer></script>
+    <script src="/assets/js/text-animation.js" defer></script>
+    <script src="/assets/js/scroll-anim.js?v=2" defer></script>
+    <script>
+      (function(){
+        var origWindowAdd = window.addEventListener;
+        var origDocAdd = document.addEventListener;
+        function wrapAdd(original){
+          return function(type, listener, options){
+            if ((type === 'touchstart' || type === 'touchmove') && listener) {
+              if (options == null) {
+                options = { passive: true };
+              } else if (typeof options === 'boolean') {
+                options = { capture: options, passive: true };
+              } else if (options.passive === undefined) {
+                options = Object.assign({}, options, { passive: true });
+              }
+            }
+            return original.call(this, type, listener, options);
+          };
+        }
+        window.addEventListener = wrapAdd(origWindowAdd);
+        document.addEventListener = wrapAdd(origDocAdd);
+      })();
+    </script>
+    <script>
+      // Theme toggle behavior (no gating)
+      (function(){
+        var btn = document.getElementById('theme-toggle'); if(!btn) return;
+        var root=document.documentElement;
+        function sync(){ var inv=root.classList.contains('theme-invert'); btn.setAttribute('aria-pressed', inv?'true':'false'); }
+        btn.addEventListener('click', function(){
+          var inv=root.classList.toggle('theme-invert');
+          try{ localStorage.setItem('ju-theme', inv ? 'invert' : 'default'); }catch(_){ } 
+          sync();
+        });
+        sync();
+      })();
+    </script>
+    <!-- dev-only redirect to :3000 removed for production stability -->
+  
+  
+  <script>
+(function(){
+  const MAP = {
+    "kaleidoscope ball 01":"fullcolorballs",
+    "kaleidoscope ball 02":"fullcolorballs",
+    "bee ball":"fullcolorballs",
+    "face ball":"fullcolorballs",
+    "escher ball":"fullcolorballs",
+    "halloween ball":"fullcolorballs",
+    "benham’s disk ball":"fullcolorballs",
+    "benham's disk ball":"fullcolorballs",
+    "blue marble ball":"fullcolorballs",
+    "fun ball 01":"fullcolorballs",
+    "fun ball 02":"fullcolorballs",
+    "fun ball 03":"fullcolorballs",
+    "funball 03":"fullcolorballs",
+    "england ball":"silkscreenballs",
+    "brand ball 01":"fullcolorballs",
+    "brand ball 02":"fullcolorballs",
+    "brand ball 03":"fullcolorballs",
+    "brand ball 04":"fullcolorballs",
+    "wedding ball 04":"fullcolorballs",
+    "rainy conditions hi-vis ball":"silkscreenballs",
+    "c140 ball":"originalballmaking",
+    "denim ball":"originalballmaking",
+    "team ball 01":"fullcolorballs",
+    "team ball 02":"fullcolorballs",
+    "team ball 03":"fullcolorballs",
+    "equipment":"other"
+  };
+
+  const CARD_SEL = 'li,article,[class*="card"],[class*="product"],[class*="order"],[class*="item"]';
+  const TITLE_SEL = '.title,.name,.product-title,h3,h4,a,strong,span';
+
+  const norm = s => (s||'').replace(/\s+/g,' ').trim().toLowerCase();
+
+  function findCardFor(img){
+    return img.closest(CARD_SEL) || img.parentElement;
+  }
+  function findTitleIn(card){
+    return card.querySelector(TITLE_SEL) || card;
+  }
+  function titleToKey(t){
+    return norm(t.textContent).replace(/—.*/,'').replace(/：.*/,'');
+  }
+  function ensureCardClass(card){
+    if(!card.classList.contains('ju-card')) card.classList.add('ju-card');
+  }
+  function addPop(card, text){
+    if(card.querySelector(':scope > .ju-pop')) return;
+    const tip = document.createElement('div');
+    tip.className = 'ju-pop';
+    tip.textContent = text;
+    card.appendChild(tip);
+  }
+
+  function run(){
+    document.querySelectorAll('img').forEach(img=>{
+      const card = findCardFor(img);
+      if(!card) return;
+      const titleEl = findTitleIn(card);
+      const base = titleToKey(titleEl);
+      const line = MAP[base] || MAP[base.replace(/\s*ball$/,'')];
+      if(!line) return;
+      ensureCardClass(card);
+      addPop(card, line);
+    });
+  }
+
+  (document.readyState==='loading')
+    ? document.addEventListener('DOMContentLoaded', run)
+    : run();
+})();
+  </script>
+
+
+
+      <section id="design" class="ju-design scroll-panel" data-ju-section-slide="4200">
+        <div class="ju-container">
+          <div class="ju-design__row">
+            <div class="ju-design__col">
+              <div class="ju-design__stack">
+                <div>
+                  <div class="ju-design__eyebrow">デザインについて</div>
+                  <p class="ju-design__text">JUGENDのツイストされたボールデザインは国内だけでなく海外でも評価が高い。</p>
+                </div>
+                <div>
+                  <div class="ju-design__eyebrow">JUGENDについて</div>
+                  <p class="ju-design__text">JUGENDはセールスを目標としないところから始まっている。<br>クリエイティブは常に進化／深化／真価を問われるものとして活動する。</p>
+                </div>
+              </div>
+            </div>
+            <div class="ju-design__col">
+              <figure class="ju-design__image">
+                <img src="/assets/images/jugend-about.webp" alt="JUGENDのデザインに関するイメージ" loading="lazy" class="about-image" decoding="async" fetchpriority="low" width="475" height="368">
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+<!-- GALLERY_REBUILT -->
+<section id="gallery" class="ju-g-full scroll-panel" data-ju-section-slide="4200">
+  <style>
+    .ju-g-full{padding-block:clamp(40px,6vw,80px);left:50%;width:100vw;margin-left:-50vw}
+    .ju-rail{position:relative;overflow:hidden;height:clamp(220px,52vh,560px);touch-action:none;cursor:grab}
+    .ju-rail.ju-rail--dragging{cursor:grabbing}
+    .ju-track{display:flex;align-items:center;gap:16px;height:100%;will-change:transform;user-select:none;-webkit-user-select:none;width:max-content}
+    .ju-track img{height:100%;width:auto;display:block;object-fit:contain}
+  </style>
+  <div class="ju-rail">
+    <div class="ju-track" data-repeat="2">
+      <img loading="lazy" src="/assets/images/photo-1520363909542-9f69145ab-h_meb7kk6w.webp" alt="photo-1520363909542-9f69145ab-h_meb7kk6w" decoding="async" fetchpriority="low" width="1436" height="2048">
+      <img loading="lazy" src="/assets/images/photo-1553778263-73a83bab9b0c-h_meb7l9ua.webp" alt="photo-1553778263-73a83bab9b0c-h_meb7l9ua" decoding="async" fetchpriority="low" width="1600" height="3368">
+      <img loading="lazy" src="/assets/images/photo-1521731978332-9e9e714bd-h_meb9zel3.webp" alt="photo-1521731978332-9e9e714bd-h_meb9zel3" decoding="async" fetchpriority="low" width="1280" height="1816">
+      <img loading="lazy" src="/assets/images/photo-1553778263-73a83bab9b0c-h_meb9n8gk.webp" alt="photo-1553778263-73a83bab9b0c-h_meb9n8gk" decoding="async" fetchpriority="low" width="1800" height="2332">
+      <img loading="lazy" src="/assets/images/photo-1520363909542-9f69145ab-h_mebk0ebj.webp" alt="photo-1520363909542-9f69145ab-h_mebk0ebj" decoding="async" fetchpriority="low" width="2380" height="3368">
+      <img loading="lazy" src="/assets/images/photo-1553778263-73a83bab9b0c-h_mebk12d8.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk12d8" decoding="async" fetchpriority="low" width="1264" height="1752">
+      <img loading="lazy" src="/assets/images/photo-1521731978332-9e9e714bd-h_mebk3suo.webp" alt="photo-1521731978332-9e9e714bd-h_mebk3suo" decoding="async" fetchpriority="low" width="1816" height="2544">
+      <img loading="lazy" src="/assets/images/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk4q7k" decoding="async" fetchpriority="low" width="1400" height="1980">
+      <img loading="lazy" src="/assets/images/photo-1520363909542-9f69145ab-h_mebk6lfo.webp" alt="photo-1520363909542-9f69145ab-h_mebk6lfo" decoding="async" fetchpriority="low" width="1400" height="1208">
+      <img loading="lazy" src="/assets/images/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk7tud" decoding="async" fetchpriority="low" width="1400" height="1220">
+      <img loading="lazy" src="/assets/images/photo-1521731978332-9e9e714bd-h_meclgp61.webp" alt="photo-1521731978332-9e9e714bd-h_meclgp61" decoding="async" fetchpriority="low" width="1200" height="1652">
+      <img loading="lazy" src="/assets/images/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp" alt="photo-1553778263-73a83bab9b0c-h_mebka1dg" decoding="async" fetchpriority="low" width="1160" height="1596">
+      <img loading="lazy" src="/assets/images/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp" alt="kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1200" height="808">
+      <img loading="lazy" src="/assets/images/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp" alt="munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1600" height="1256">
+      <img loading="lazy" src="/assets/images/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp" alt="everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1800" height="2424">
+    </div>
+  </div>
+  </section>
+
+<!-- GALLERY_REBUILT -->
+
+<!-- GALLERY_REBUILT -->
+
+<!-- Works/Lineup Section moved above features -->
+
+  <script src="/assets/js/gallery-3.js?v=2" defer></script>
+
+<section id="policy" class="ju-policy scroll-panel" aria-labelledby="ju-policy-title" data-ju-section-slide="4200">
+
+<style id="policy-swap-override">
+/* —— #policy 専用オーバーライド —— */
+/* 文字色（全要素を白系に統一） */
+#policy, #policy * { color:#fff; }
+#policy .ju-acc__btn .sign::before,
+#policy .ju-acc__btn .sign::after { background:#fff; opacity:1; }
+/* 罫線も白系で再描画 */
+#policy .ju-acc{ border-top:1px solid rgba(255,255,255,.25) !important; }
+#policy .ju-acc__item{ border-bottom:1px solid rgba(255,255,255,.18) !important; }
+/* デスクトップでは「テキスト(アコーディオン)を左、画像(aside)を右」に入れ替え */
+@media (min-width:980px){
+  #policy .ju-policy__wrap{ display:grid; grid-template-columns:1.1fr .9fr; }
+  #policy .ju-policy__wrap .ju-acc{ order:1; }
+  #policy .ju-policy__wrap aside{ order:2; }
+}
+/* モバイルは読み順優先（テキスト→画像） */
+@media (max-width:979.98px){
+  #policy .ju-policy__wrap{ display:grid; grid-template-columns:1fr; }
+  #policy .ju-policy__wrap .ju-acc{ order:1; }
+  #policy .ju-policy__wrap aside{ order:2; }
+}
+/* パネル表示は [hidden] のみで制御（他CSSの display:none を無効化） */
+#policy .ju-acc__panel{ display:block !important; }
+#policy .ju-acc__panel[hidden]{ display:none !important; }
+</style>
+
+  <style>
+    /* セクション余白 & コンテナ（他セクションと整合） */
+    #policy{ padding-block:clamp(56px,9vw,120px); }
+    #policy .ju-container{ width:min(1200px,92vw); margin-inline:auto; }
+    #policy .ju-policy__wrap{ display:grid; gap:clamp(24px,4vw,48px); }
+    @media (min-width:980px){
+      #policy .ju-policy__wrap{ grid-template-columns:1.1fr .9fr; align-items:start; }
+    }
+
+    /* 右側画像（Designと同ルック・ローカル） */
+    #policy .ju-policy__img{
+      display:block; width:100%; height:auto;
+      border-radius:8px; box-shadow:none; /* 白い枠に見える効果を外す */
+      object-fit:contain; max-height:clamp(260px,52vh,520px);
+    }
+
+    /* アコーディオン（表示切替は [hidden] のみで制御） */
+    #policy .ju-acc{ border-top:1px solid rgba(255,255,255,.15); }
+    #policy .ju-acc__item{ border-bottom:1px solid rgba(255,255,255,.15); }
+    #policy .ju-acc__btn{
+      width:100%; text-align:left; background:none; border:0; padding:18px 0;
+      display:grid; grid-template-columns:auto auto 1fr; align-items:center; gap:16px; cursor:pointer; font:inherit;
+    }
+    #policy .ju-acc__btn .num{ font-weight:600; opacity:.65; width:30px; text-align:left; }
+    #policy .ju-acc__btn .ttl{ font-weight:600; letter-spacing:.02em; }
+    #policy .ju-acc__btn .sign{ width:20px; height:20px; position:relative; flex:0 0 20px; opacity:.85; justify-self: end; }
+    #policy .ju-acc__btn .sign::before, 
+    #policy .ju-acc__btn .sign::after{
+      content:""; position:absolute; left:50%; top:50%;
+      width:14px; height:2px; background:currentColor; transform:translate(-50%,-50%);
+    }
+    #policy .ju-acc__btn .sign::after{ transform:translate(-50%,-50%) rotate(90deg); } /* 縦棒＝プラス */
+    #policy .ju-acc__btn[aria-expanded="true"] .sign::after{ display:none; }           /* 開いたらマイナス */
+
+    #policy .ju-acc__panel{ padding:0 0 16px 0; display:block !important; }
+    #policy .ju-acc__panel[hidden]{ display:none !important; }
+    #policy .ju-acc__text{ margin:0 0 8px 0; line-height:1.2; font-size:clamp(10px, 1.4vw, 12px); letter-spacing: 0.02em; color: #bfbfbf; }
+  </style>
+
+  <div class="ju-container">
+    <h2 id="ju-policy-title" class="gs-overline animate-me">JUGENDのポリシー</h2>
+    <div class="ju-policy__wrap">
+      <aside>
+        
+        <figure><picture><source type="image/webp" srcset="/assets/images/policy.webp"><img loading="lazy" class="ju-policy__img" src="/assets/images/policy.webp" alt="JUGEND policy image" decoding="async" fetchpriority="low" width="1500" height="2000"></picture></figure>
+      </aside>
+
+      <div class="ju-acc" role="region" aria-labelledby="ju-policy-title">
+        <!-- 1 -->
+        <div class="ju-acc__item">
+          <button class="ju-acc__btn" aria-expanded="false" aria-controls="ju-acc-p1" id="ju-acc-b1">
+            <span class="num">1</span><span class="ttl">Paradigm</span><span class="sign" aria-hidden="true"></span>
+          </button>
+          <div id="ju-acc-p1" class="ju-acc__panel" role="region" aria-labelledby="ju-acc-b1" hidden>
+            <p class="ju-acc__text">originalsoccerball.comのデザインは、「クラフトマンシップと革新の融合」というパラダイム（思考の枠組み）に基づいています。単に最新技術を追求するのではなく、長年受け継がれてきた手作業の技術を尊重し、それを現代の素材やテクノロジーと組み合わせることで、最高の品質とパフォーマンスを持つサッカーボールを生み出します。これは、伝統と未来を両立させるという、私たちの根幹をなすアプローチです。</p>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div class="ju-acc__item">
+          <button class="ju-acc__btn" aria-expanded="false" aria-controls="ju-acc-p2" id="ju-acc-b2">
+            <span class="num">2</span><span class="ttl">Manifesto</span><span class="sign" aria-hidden="true"></span>
+          </button>
+          <div id="ju-acc-p2" class="ju-acc__panel" role="region" aria-labelledby="ju-acc-b2" hidden>
+            <p class="ju-acc__text">私たちは、単なる道具としてのサッカーボールではなく、「本質を蹴る」ためのボールを創造します。<br><br>・私たちは、妥協のない品質を追求します。<br><br>・私たちは、記憶や情熱を形にします。<br><br>・私たちは、ゲームの美学を讃えます。<br><br>私たちは、未来に最高の碑を届けます。<br><br>このマニフェストは、ブランドの存在意義と、私たちが何のためにボールを作るのか表明するものです。</p>
+          </div>
+        </div>
+        <!-- 3 -->
+        <div class="ju-acc__item">
+          <button class="ju-acc__btn" aria-expanded="false" aria-controls="ju-acc-p3" id="ju-acc-b3">
+            <span class="num">3</span><span class="ttl">Philosophy</span><span class="sign" aria-hidden="true"></span>
+          </button>
+          <div id="ju-acc-p3" class="ju-acc__panel" role="region" aria-labelledby="ju-acc-b3" hidden>
+            <p class="ju-acc__text">私たちのデザインフィロソフィーは、サッカーボールが単なる物体ではなく、「気持ちを運ぶ媒体」であるという考えに基づいています。それは、選手たちが希望、情熱、そして夢を乗せてゴールへシュートするのに似ています。ひとつひとつのボールに職人の魂と、試合の躍動感、そして芸術的な美しさを吹き込みたい。ボールに触れるすべての瞬間が、意味のある体験となるように、デザインに敬虔な想いを乗せています。</p>
+          </div>
+        </div>
+        <!-- 4 -->
+        <div class="ju-acc__item">
+          <button class="ju-acc__btn" aria-expanded="false" aria-controls="ju-acc-p4" id="ju-acc-b4">
+            <span class="num">4</span><span class="ttl">Credo</span><span class="sign" aria-hidden="true"></span>
+          </button>
+          <div id="ju-acc-p4" class="ju-acc__panel" role="region" aria-labelledby="ju-acc-b4" hidden>
+            <p class="ju-acc__text">私たちのチームは、日々の行動において、以下のクレド（信条）を共有しています。<br><br>触れる： 常に最高の素材を探し、その感触を大切にする。<br><br>見る： 美学と機能性を両立させたデザインを追求する。<br><br>聞く： クライアントの声に耳を傾け、彼らのニーズに応える。<br><br>作り込む： 手作業だとしても工程を怠らず、細部にまでこだわり抜く。<br><br>チェックする： 最適なパフォーマンスかどうかを検証する。<br><br>これらの具体的な信条が、私たちのすべてのデザインと製造プロセスを導き、最終的にJUGEND品質のボールを完成させると考えます。</p>
+          </div>
+        </div>
+        <!-- 5 -->
+        <div class="ju-acc__item">
+          <button class="ju-acc__btn" aria-expanded="false" aria-controls="ju-acc-p5" id="ju-acc-b5">
+            <span class="num">5</span><span class="ttl">Vision</span><span class="sign" aria-hidden="true"></span>
+          </button>
+          <div id="ju-acc-p5" class="ju-acc__panel" role="region" aria-labelledby="ju-acc-b5" hidden>
+            <p class="ju-acc__text">私たちは、サッカーを愛するすべての人々が、世代を超えて、喜びを分かち合う未来を創造したいと思います。私たちのボールが、ピッチ内外で、情熱と夢を乗せてパスをつなぎ合うことを目指します。</p>
+          </div>
+        </div>
+        <!-- 6 -->
+        <div class="ju-acc__item">
+          <button class="ju-acc__btn" aria-expanded="false" aria-controls="ju-acc-p6" id="ju-acc-b6">
+            <span class="num">6</span><span class="ttl">Mission</span><span class="sign" aria-hidden="true"></span>
+          </button>
+          <div id="ju-acc-p6" class="ju-acc__panel" role="region" aria-labelledby="ju-acc-b6" hidden>
+            <p class="ju-acc__text">私たちは、熟練の職人技とクリエイティブなテクノロジーを融合させることで、比類ないサッカーボールを製造します。サッカー文化の発展はもちろん、画一化、ロストテクノロジー化するクリエイティブへのアンチとして貢献することが私たちの使命です。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    var root = document.currentScript.closest('#policy'); if(!root) return;
+    var btns = Array.from(root.querySelectorAll('.ju-acc__btn'));
+    var panels = btns.map(function(b){ return document.getElementById(b.getAttribute('aria-controls')); });
+
+    function setOpen(i, open){
+      btns[i].setAttribute('aria-expanded', open ? 'true':'false');
+      if(open){ panels[i].removeAttribute('hidden'); } else { panels[i].setAttribute('hidden',''); } 
+    }
+
+    // 初期：全て閉
+    btns.forEach(function(_,i){ setOpen(i, false); });
+
+    // クリックで開閉
+    btns.forEach(function(btn,i){
+      btn.addEventListener('click', function(e){
+        // クリックされたのが「+」マーク（.sign）の場合のみ動作
+        if (e.target.closest('.sign')) {
+          setOpen(i, btn.getAttribute('aria-expanded') !== 'true');
+        }
+      });
+    });
+
+    // キーボード（Enter/Space/↑↓/Home/End）
+    function focusBtn(idx){ if(idx<0) idx=btns.length-1; if(idx>=btns.length) idx=0; btns[idx].focus(); return idx; } 
+    btns.forEach(function(btn,i){
+      btn.addEventListener('keydown', function(e){
+        var k=e.key;
+        if(k==='Enter' || k===' '){ e.preventDefault(); btn.click(); }
+        else if(k==='ArrowDown'){ e.preventDefault(); focusBtn(i+1); }
+        else if(k==='ArrowUp'){ e.preventDefault(); focusBtn(i-1); }
+        else if(k==='Home'){ e.preventDefault(); focusBtn(0); }
+        else if(k==='End'){ e.preventDefault(); focusBtn(btns.length-1); }
+      });
+    });
+  })();
+  </script>
+</section>
+
+<!-- Video Section -->
+<section id="modeling" class="gs-section scroll-panel" data-ju-section-slide="4200">
+  <style>
+    /* Container scroll animation (vanilla) */
+    /* 上下スペースを大幅に圧縮 */
+    #modeling{ --ju-header-h: clamp(36px, 7vh, 84px); --ju-card-gap: clamp(12px, 3vh, 48px); }
+    #modeling .ju-csa{ position:relative; padding: 0 2rem 4vh; display:flex; align-items:center; justify-content:center; min-height: clamp(36rem, 70vh, 48rem); }
+    /* デモ構成に合わせ sticky を使用しない。container基準でアニメーション */
+    #modeling .ju-persp{ position:relative; width:100%; height:clamp(30rem,60vh,40rem); perspective:1000px; }
+    /* タイトルは上部・背面（カードの後ろ） */
+    #modeling .ju-header{
+      position:absolute; top:0; left:0; right:0; height: var(--ju-header-h);
+      z-index:0; /* 背面 */
+      display:flex; align-items:center; justify-content:center; text-align:center;
+      padding-top: clamp(4px, 1.2vh, 16px);
+      color:#fff; pointer-events:none;
+    }
+    /* 上部用に少しだけタイトルを小さく */
+    #modeling .ju-header .ju-title-small{ font-size: clamp(18px, 2.6vw, 28px); }
+    #modeling .ju-header .ju-title-big{ font-size: clamp(28px, 5vw, 56px); }
+    #modeling .ju-header .ju-title-small{ font-size: clamp(24px, 3.2vw, 40px); font-weight:600; line-height:1.2; }
+    #modeling .ju-header .ju-title-big{ display:block; font-size: clamp(38px, 9vw, 96px); font-weight:800; line-height:1; margin-top:.2em; }
+    #modeling .ju-card{ position:relative; z-index:1; max-width:min(1100px,92vw); margin: calc(var(--ju-header-h) + var(--ju-card-gap)) auto 0; height:clamp(30rem,60vh,40rem); border:4px solid #6C6C6C; padding:12px; background:#222; border-radius:30px; box-shadow:0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003; transform-origin:center; transform-style:preserve-3d; will-change:transform; }
+    #modeling .ju-media{ width:100%; height:100%; overflow:hidden; border-radius:20px; background:#000; }
+    #modeling .ju-media iframe{ width:100%; height:100%; display:block; border:0; background:#000; }
+    @media (max-width: 768px){
+      /* モバイル時の縦余白をさらに圧縮 */
+      #modeling .ju-csa{ height: 40rem; padding: 2vh 1.5rem 8vh; }
+      #modeling .ju-card{ height:clamp(22rem, 52vh, 30rem); padding:8px; }
+      #modeling .ju-header{ }
+    }
+  </style>
+  <div class="gs-container">
+    <div class="ju-csa" id="modeling-csa">
+      <div class="ju-persp">
+        <div class="ju-header">
+          <h2 class="gs-heading" style="margin:0;">
+            <span class="ju-title-small">Pre-production</span>
+            <span class="ju-title-big">3DCG modeling</span>
+          </h2>
+        </div>
+        <div class="ju-card">
+          <div class="ju-media">
+            <iframe class="ju-yt" loading="lazy" src="https://www.youtube.com/embed/cU7YvQI-vPo?loop=1&amp;playlist=cU7YvQI-vPo&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;controls=0&amp;rel=0&amp;showinfo=0&amp;enablejsapi=1" allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-container" style="margin-top: 24px; display:flex; gap:16px; justify-content:center;">
+      <span class="custom-btn">デザインオプション</span>
+      <span class="custom-btn">別途</span>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var root=document.getElementById('modeling-csa'); if(!root) return;
+      var target = root.querySelector('.ju-persp');
+      function clamp01(x){ return x<0?0:(x>1?1:x); }
+      function update(){
+        // Framer MotionのuseScroll( target )の既定オフセットに近い進捗算出
+        // progress = map(top: vh -> -height, 0..1)
+        var r = root.getBoundingClientRect();
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        var p = (vh - r.top) / (vh + r.height);
+        if (!Number.isFinite(p)) p = 0;
+        p = p < 0 ? 0 : (p > 1 ? 1 : p);
+        // 直接styleへ適用（デモ値）
+        var card = root.querySelector('.ju-card');
+        var header = root.querySelector('.ju-header');
+        var isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 768;
+        var scaleStart = isMobile ? 0.7 : 1.05;
+        var scaleEnd = isMobile ? 0.9 : 1.0;
+        var rotate = 20 * (1 - p);
+        var scale = scaleStart + (scaleEnd - scaleStart) * p;
+        var translate = -100 * p;
+        if(card){ card.style.transform = 'rotateX(' + rotate.toFixed(2) + 'deg) translateY(' + translate.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')'; }
+        if(header){ header.style.transform = 'translateY(' + translate.toFixed(1) + 'px)'; }
+      }
+      // IntersectionObserver + rAFで確実に更新
+      let active=false, rafId=0;
+      const io=new IntersectionObserver((entries)=>{
+        active = entries.some(e=> e.isIntersecting);
+        if(active && !rafId){ loop(); } 
+        if(!active && rafId){ cancelAnimationFrame(rafId); rafId=0; } 
+      }, { root:null, rootMargin:'200px 0px', threshold:[0,0.25,0.5,0.75,1] });
+      io.observe(root);
+
+      function loop(){ if(!active){ rafId=0; return; } update(); rafId=requestAnimationFrame(loop); } 
+      function update(){
+        var r = root.getBoundingClientRect();
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        var p = (vh - r.top) / (vh + r.height);
+        if (!Number.isFinite(p)) p = 0; p = p<0?0:(p>1?1:p);
+        var card = root.querySelector('.ju-card');
+        var header = root.querySelector('.ju-header');
+        var isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 768;
+        // デモ寄り：中央付近でまっすぐになるよう遅延
+        var pb = (p - 0.18) * 1.7; if(pb<0) pb=0; if(pb>1) pb=1;
+        var pe = 1 - Math.pow(1 - pb, 3);
+        var scaleStart = isMobile ? 0.62 : 1.16;
+        var scaleEnd = isMobile ? 0.92 : 1.00;
+        var rotate = 36 * (1 - pe);            // 角度をさらに増加
+        var scale = scaleStart + (scaleEnd - scaleStart) * pe;
+        var translate = -160 * pe;             // 上がり量は控えめに（空間を作る）
+        if(card){ card.style.transform = 'rotateX(' + rotate.toFixed(2) + 'deg) translateY(' + translate.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')'; }
+        // 見出しは「下から上へ」移動（背面で開始してせり上がる）
+        // startY: +180px（下に隠れる）, endY: -220px（上へ抜ける）
+        var startY = 180, endY = -220;
+        var ty = startY + (endY - startY) * pe; // 線形補間
+        if(header){ header.style.transform = 'translateY(' + ty.toFixed(1) + 'px)'; }
+      }
+      // 初期呼び出し
+      update();
+    })();
+  </script>
+</section>
+
+<!-- Simulator Section -->
+<section id="simulator" class="gs-section scroll-panel" data-ju-section-slide="4200">
+  <style>
+    #simulator .gs-heading { opacity: 1 !important; transform: none !important; }
+    #simulator .simu-wrapper{ max-width:1200px; margin:0 auto; padding:clamp(8px,3vw,16px); }
+    #simulator .simu-card{
+      padding:12px;
+      background:#222;
+      border:4px solid #6C6C6C;
+      border-radius:30px;
+      box-shadow:0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003;
+    }
+    #simulator .simu-frame{ position:relative; width:100%; border:none; border-radius:22px; overflow:hidden; background:#000; }
+    #simulator .simu-frame::after{
+      content:""; position:absolute; inset:0; border:2px dashed rgba(245,196,0,0); border-radius:22px; pointer-events:none; transition: border-color .15s ease, background-color .15s ease;
+    }
+    #simulator .simu-frame.dragging::after{
+      border-color: rgba(245,196,0,0.9); background-color: rgba(245,196,0,0.08);
+    }
+    #simulator .simu-frame .simu-overlay{
+      position:absolute; inset:0; pointer-events:none; background:transparent; z-index:5;
+    }
+    #simulator .simu-frame iframe{ width:100%; height:clamp(720px, 82vh, 1200px); border:0; background:#000; }
+    @media (max-width: 768px){
+      #simulator .simu-wrapper{ padding:clamp(6px,5vw,14px); }
+      #simulator .simu-frame iframe{ height:max(100vh, 1100px); }
+    }
+  </style>
+  <div class="gs-container">
+    <div class="simu-wrapper">
+      <div class="simu-card">
+              <div class="simu-frame">
+          <iframe id="simulatorIframe" src="/simulator/index.html" title="fullcolorballs simulator" loading="lazy" allow="fullscreen"></iframe>
+          <div class="simu-overlay" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <script>
+            // Prevent navigation on file drop (ドラッグ＆ドロップは停止、ファイル選択のみ運用)
+            (function(){
+              const frameContainer = document.querySelector('#simulator .simu-frame');
+              const iframeElement = document.getElementById('simulatorIframe');
+              const overlay = document.querySelector('.simu-overlay');
+
+              function clearDrag(){
+                if(frameContainer) frameContainer.classList.remove('dragging');
+                if (overlay) (overlay as HTMLElement).style.pointerEvents = 'none';
+              }
+
+              function handleDrag(e){
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+
+                const targetElement = e.target;
+                const overIframe = iframeElement && targetElement instanceof Node && (targetElement === iframeElement || iframeElement.contains(targetElement));
+                if (frameContainer) frameContainer.classList.toggle('dragging', !!overIframe);
+                if (overlay) (overlay as HTMLElement).style.pointerEvents = 'auto';
+              }
+
+              function handleDrop(e){
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+                clearDrag();
+              }
+
+              window.addEventListener('dragover', handleDrag, { passive: false, capture: true });
+              window.addEventListener('dragenter', handleDrag, { passive: false, capture: true });
+              window.addEventListener('drop', handleDrop, { passive: false, capture: true });
+              window.addEventListener('dragleave', clearDrag, true);
+
+              // Overlay to intercept drops over the iframe (some browsers don't bubble from iframe to parent)
+              if (overlay) {
+                overlay.addEventListener('dragover', handleDrag, { passive: false });
+                overlay.addEventListener('dragenter', handleDrag, { passive: false });
+                overlay.addEventListener('drop', handleDrop, { passive: false });
+                overlay.addEventListener('dragleave', clearDrag);
+              }
+
+            })();
+        </script>
+
+<!-- Info Section -->
+<section id="production-info" class="gs-section scroll-panel" data-ju-section-slide="4200">
+      <div class="gs-container">
+        <div class="gs-grid-3">
+          <!-- Item 1 -->
+          <div class="gs-info-card">
+            <h4 class="gs-info-title"><span class="gs-info-number">1</span>生産工場</h4>
+            <p class="gs-info-text">プロリーグ公認球の生産もしている複数の海外提携工場にて生産しています。主に中国・パキスタン製です。</p>
+          </div>
+          <!-- Item 2 -->
+          <div class="gs-info-card">
+            <h4 class="gs-info-title"><span class="gs-info-number">2</span>縫製方法</h4>
+            <p class="gs-info-text">現地での手縫い製法（ブチルチューブ加工）、空気を抜いた状態で完成品をお届けします。</p>
+          </div>
+          <!-- Item 3 -->
+          <div class="gs-info-card">
+            <h4 class="gs-info-title"><span class="gs-info-number">3</span>納品日数</h4>
+            <p class="gs-info-text">小ロットの場合原則的に現地縫製→船便での輸入となります。入金・デザインのやりとり等を含めると凡そ約１ヶ月程度を要します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- Usage Example Section (gallery) -->
+<section id="usage-title" class="gs-section scroll-panel" style="padding-bottom: 0; text-align: left;" data-ju-section-slide="4200">
+  <style>
+  </style>
+  <div class="gs-container">
+    <h2 class="gs-heading" data-ju-slide="heading" data-ju-slide-start="15000" data-ju-slide-end="-14980">Usage example</h2>
+  </div>
+  <section id="usage-example-slider" class="ju-g-full">
+    <style>
+      /* ヘッドフォン型カバーフロー（フルブリード、非トリミング） */
+      #usage-example-slider{ position: relative; left:50%; width:100vw; margin-left:-50vw; }
+      #usage-example-slider .coverflow-container{ position:relative; width:100%; height:100vh; height:100svh; perspective:1200px; overflow:visible; }
+      #usage-example-slider .coverflow-slider{ position:absolute; inset:0; transform-style:preserve-3d; will-change:transform; }
+      #usage-example-slider .coverflow-slide{ position:absolute; top:50%; left:50%;
+        height:min(96vh,1400px); width:auto; transform:translate(-50%,-50%);
+        object-fit:contain; border-radius:0; transition:filter .2s, opacity .2s, transform .2s; box-shadow:none; }
+      #usage-example-slider .coverflow-slide.is-active{ filter:none; opacity:1; }
+    </style>
+    <div class="coverflow-container" data-follow="hover">
+      <div class="coverflow-slider">
+        <img loading="lazy" src="/assets/images/SxfiXYsLujRAJhVkIvqeRfWiGyRMj-h_mebju1kd.webp" alt="チャリティ 01" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900">
+        <img loading="lazy" src="/assets/images/SxfiXYsLujRAJhVkIvqeRfWiGyRMjEYw_upscayl_2x_ultrasharp-4x.webp" alt="チャリティ 02" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900">
+        <img loading="lazy" src="/assets/images/SxHHuuseliklSaGFDpJKNrEjISnvsXUU_upscayl_2x_ultrasharp-4x.webp" alt="チャリティ 03" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900">
+      </div>
+    </div>
+    <script>
+    (function(){
+      const container = document.querySelector('#usage-example-slider .coverflow-container');
+      const slider = container.querySelector('.coverflow-slider'); if(!slider) return;
+      const slides = Array.from(slider.children); if(!slides.length) return;
+      let target=0, current=0, hover=false, lastX=0, dragging=false, inertia=0;
+      let tiltT=0, tiltC=0, preT=0, preC=0; // X傾き, Z歳差
+      const lerp = (a,b,t)=>a+(b-a)*t;
+      function layout(){
+        const n = slides.length; if(!n) return;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const base = Math.min(vw*0.92, vh*0.98, 1700); // 画面基準でさらに大きく
+        const radius = base * 0.90;                  // さらに密に（半径縮小）
+        const step = 360 / n;
+        // 慣性（徐々に減速）
+        if (Math.abs(inertia) > 0.01) { target += inertia; inertia *= 0.94; } /* 慣性減衰を強め、反応を半分に */
+        current = lerp(current, target, 0.03); // さらにスロー
+        // X軸傾きとZ軸歳差もスムーズに
+        tiltC = lerp(tiltC, tiltT, 0.10);
+        preC  = lerp(preC,  preT,  0.08);
+        slider.style.transform = `translateZ(${-radius}px) rotateX(${tiltC}deg) rotateY(${current}deg) rotateZ(${preC}deg)`;
+        // 前面度でスケール/不透明度/ぼかしを連続制御（中心を強調）
+        slides.forEach((el,i)=>{
+          const rot = i*step;
+          const a = ((rot + current) % 360 + 360) % 360; // 0=正面
+          const frontLin = 1 - Math.min(Math.abs(a)/180, 1); // 1:前, 0:背
+          const front = Math.pow(frontLin, 1.6);
+          const scale = 0.80 + 0.45*front;               // 最大 ~1.25
+          const opacity = 0.30 + 0.70*front;
+          const blur = (1-front)*7;                       // px
+          const roll = preC*0.15*(1-front) - tiltC*0.12*(1-front);
+          el.style.transform = `translate(-50%,-50%) rotateY(${rot}deg) translateZ(${radius}px) rotateX(${tiltC*0.25}deg) rotateZ(${roll}deg) scale(${scale})`;
+          
+          el.style.opacity = opacity.toFixed(2);
+          el.classList.toggle('is-active', front>0.96);
+        });
+        // センタースnap（近いほど引力を強く）
+        const nearest = Math.round(current/step)*step;
+        const delta = nearest - current;
+        const closeness = Math.max(0, 1 - Math.abs(delta)/(step*0.8));
+        if (!document.documentElement.classList.contains('is-touch-device')) { target += delta * 0.012 * Math.pow(closeness, 2); } // 半分の引力
+        requestAnimationFrame(layout);
+      }
+      container.addEventListener('pointerenter',e=>{ hover=true; lastX=e.clientX; });
+      container.addEventListener('pointerleave',()=>{ hover=false; dragging=false; });
+      container.addEventListener('pointerdown',e=>{ dragging=true; lastX=e.clientX; inertia=0; container.setPointerCapture(e.pointerId); });
+      container.addEventListener('pointerup',()=>{ dragging=false; });
+      container.addEventListener('pointermove',e=>{
+        if(!(hover||dragging)) return;
+        const rect = container.getBoundingClientRect();
+        const dx = e.clientX - lastX; lastX = e.clientX;
+        const yn = (e.clientY - rect.top)/rect.height - 0.5; // -0.5..0.5
+        target += dx * 0.03;           // 反応半分
+        inertia = dx * 0.012;           // 慣性も半分
+        // X軸傾き: マウス上下で -20..20deg
+        tiltT = Math.max(-20, Math.min(20, -yn*40));
+        // Z軸歳差: 水平方向の勢いで少し
+        preT *= 0.9; preT += dx*0.01;
+      });
+      // ホイール: 横成分のみ回転。縦スクロールはページに委ねる
+      container.addEventListener('wheel',e=>{
+        const rawDx = e.deltaX || 0;
+        const rawDy = e.deltaY || 0;
+        const absX = Math.abs(rawDx);
+        const absY = Math.abs(rawDy);
+        if (absX === 0 || absX <= absY) return; // allow vertical or diagonal scroll to bubble up
+        const scale=(e.deltaMode===1)?16:(e.deltaMode===2?window.innerHeight:1);
+        const dx = rawDx * scale;
+        target += dx * 0.03;
+        e.preventDefault();
+      }, {passive:false});
+      const imgs = Array.from(container.querySelectorAll('img'));
+      Promise.all(imgs.map(img=> img.complete?Promise.resolve():new Promise(r=>{ img.onload = img.onerror = r; }))).then(()=> requestAnimationFrame(layout));
+    })();
+    </script>
+  </section>
+</section>
+
+<!-- Event/Shop Section (gallery) -->
+<section id="event-shop-title" class="gs-section scroll-panel" style="padding-bottom: 0; text-align: left;" data-ju-section-slide="4200">
+  <style>
+  </style>
+  <div class="gs-container">
+    <h2 class="gs-heading" data-ju-slide="heading" data-ju-slide-start="15000" data-ju-slide-end="-14980">イベント / ショップ</h2>
+  </div>
+  <section id="event-shop-slider" class="ju-g-full">
+    <style>
+      #event-shop-slider{ position: relative; left:50%; width:100vw; margin-left:-50vw; }
+      #event-shop-slider .coverflow-container{ position:relative; width:100%; height:100vh; height:100svh; perspective:1200px; overflow:visible; }
+      #event-shop-slider .coverflow-slider{ position:absolute; inset:0; transform-style:preserve-3d; will-change:transform; }
+      #event-shop-slider .coverflow-slide{ position:absolute; top:50%; left:50%;
+        height:min(92vh,1200px); width:auto; transform:translate(-50%,-50%);
+        object-fit:contain; border-radius:0; transition:filter .2s, opacity .2s, transform .2s; box-shadow:none; }
+      #event-shop-slider .coverflow-slide.is-active{ filter:none; opacity:1; }
+    </style>
+    <div class="coverflow-container" data-follow="hover">
+      <div class="coverflow-slider">
+        <img loading="lazy" src="/assets/images/ORANGERIBBONFDJKtFskAWICzipbgnlN_upscayl_2x_remacri-4x.webp" alt="オレンジリボン" class="coverflow-slide" decoding="async" fetchpriority="low" width="1364" height="1864">
+        <img loading="lazy" src="/assets/images/eNFogjXkeMALURSfSubjMzisXCDWteub_upscayl_2x_remacri-4x.webp" alt="eNFOG" class="coverflow-slide" decoding="async" fetchpriority="low" width="2000" height="1500">
+        <img loading="lazy" src="/assets/images/bloomfKRYLVtZERGvXMEKHNMIEsHe-h_mecrganp.webp" alt="bloom" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200">
+        <img loading="lazy" src="/assets/images/dragonballcAOmdSyQtQdBkuDJhJsluE_upscayl_2x_ultramix-balanced-4x.webp" alt="dragonball" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200">
+        <img loading="lazy" src="/assets/images/inazumaylJUVLEXzqBjWCkaZBFtlJYsF_upscayl_2x_remacri-4x.webp" alt="inazuma" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200">
+        <img loading="lazy" src="/assets/images/ultimoYxWgSivaRIyqSmMfzZKJuSLcgc_upscayl_2x_ultrasharp-4x.webp" alt="ultimo" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200">
+        <img loading="lazy" src="/assets/images/zozoQNyoYGKkBStPaUZlraVoqyQtQDZn_upscayl_2x_remacri-4x.webp" alt="zozo" class="coverflow-slide" decoding="async" fetchpriority="low" width="1104" height="860">
+        <img loading="lazy" src="/assets/images/photo-1551958219-acbc608c6377-h_mebafizs.webp" alt="adidas" class="coverflow-slide" decoding="async" fetchpriority="low" width="2000" height="1500">
+      </div>
+    </div>
+    <script>
+    (function(){
+      const container = document.querySelector('#event-shop-slider .coverflow-container');
+      const slider = container.querySelector('.coverflow-slider'); if(!slider) return;
+      const slides = Array.from(slider.children); if(!slides.length) return;
+      let target=0, current=0, hover=false, lastX=0, dragging=false, inertia=0;
+      let tiltT=0, tiltC=0, preT=0, preC=0;
+      const lerp = (a,b,t)=>a+(b-a)*t;
+      function layout(){
+        const n = slides.length; if(!n) return;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const base = Math.min(vw*0.72, vh*0.96, 1600);  // 画面基準
+        const radius = base * 1.85;                     // さらに広く
+        const step = 360 / n;
+        if (Math.abs(inertia) > 0.01) { target += inertia; inertia *= 0.93; }
+        current = lerp(current, target, 0.03); // さらにスロー
+        tiltC = lerp(tiltC, tiltT, 0.10);
+        preC  = lerp(preC,  preT,  0.08);
+        slider.style.transform = `translateZ(${-radius}px) rotateX(${tiltC}deg) rotateY(${current}deg) rotateZ(${preC}deg)`;
+        slides.forEach((el,i)=>{
+          const rot = i*step;
+          const a = ((rot + current) % 360 + 360) % 360;
+          const frontLin = 1 - Math.min(Math.abs(a)/180, 1);
+          const front = Math.pow(frontLin, 1.4);
+          const scale = 0.76 + 0.26*front;            // 控えめスケール
+          const opacity = 0.35 + 0.65*front;
+          const blur = (1-front)*6;
+          const roll = preC*0.12*(1-front) - tiltC*0.10*(1-front);
+          el.style.transform = `translate(-50%,-50%) rotateY(${rot}deg) translateZ(${radius}px) rotateX(${tiltC*0.22}deg) rotateZ(${roll}deg) scale(${scale})`;
+          el.style.filter = `blur(${blur.toFixed(1)}px)`;
+          el.style.opacity = opacity.toFixed(2);
+          el.classList.toggle('is-active', front>0.96);
+        });
+        // センタースナップ（近いほど引力）
+        const nearest = Math.round(current/step)*step;
+        const delta = nearest - current;
+        const closeness = Math.max(0, 1 - Math.abs(delta)/(step*0.8));
+        if (!document.documentElement.classList.contains('is-touch-device')) { target += delta * 0.012 * Math.pow(closeness, 2); } // 半分の引力
+        requestAnimationFrame(layout);
+      }
+      container.addEventListener('pointerenter',e=>{ hover=true; lastX=e.clientX; });
+      container.addEventListener('pointerleave',()=>{ hover=false; dragging=false; });
+      container.addEventListener('pointerdown',e=>{ dragging=true; lastX=e.clientX; inertia=0; container.setPointerCapture(e.pointerId); });
+      container.addEventListener('pointerup',()=>{ dragging=false; });
+      container.addEventListener('pointermove',e=>{
+        if(!(hover||dragging)) return;
+        const rect = container.getBoundingClientRect();
+        const dx = e.clientX - lastX; lastX = e.clientX;
+        const yn = (e.clientY - rect.top)/rect.height - 0.5;
+        target += dx * 0.03; // 反応半分
+        inertia = dx * 0.012;
+        tiltT = Math.max(-15, Math.min(15, -yn*30)); // Event: 傾き控えめ
+        preT *= 0.9; preT += dx*0.008;
+      });
+      container.addEventListener('wheel',e=>{
+        const rawDx = e.deltaX || 0;
+        const rawDy = e.deltaY || 0;
+        const absX = Math.abs(rawDx);
+        const absY = Math.abs(rawDy);
+        if (absX === 0 || absX <= absY) return;
+        const scale=(e.deltaMode===1)?16:(e.deltaMode===2?window.innerHeight:1);
+        const dx = rawDx * scale;
+        target += dx * 0.03;
+        e.preventDefault();
+      }, {passive:false});
+      const imgs = Array.from(container.querySelectorAll('img'));
+      Promise.all(imgs.map(img=> img.complete?Promise.resolve():new Promise(r=>{ img.onload = img.onerror = r; }))).then(()=> requestAnimationFrame(layout));
+    })();
+    </script>
+  </section>
+</section>
+
+<section id="testimonial-event-shop" class="gs-section scroll-panel" data-ju-section-slide="4200">
+  <div class="gs-container" style="max-width: 800px;">
+    <div class="gs-card is-visible"> 
+      <div class="gs-card-icon-wrapper">
+        <span class="mbr-iconfont mobi-mbri-quote-left mobi-mbri"></span>
+      </div>
+      <div class="gs-card-content">
+        <h3 class="gs-card-title">アート&リスペクト。 他に無いデザインが目立つ。 どこでも評判が良いです。</h3>
+        <p class="gs-card-text desc-tight">運営マネージャー</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Duplicate testimonial removed -->
+
+<!-- Visual-2 with overlay title (before specs) -->
+<section id="originalballmaking-visual-2" class="gs-section scroll-panel" aria-hidden="false" style="padding-bottom:0;" data-ju-section-slide="4200">
+  <style>
+    #originalballmaking-visual-2 .ov{ position:relative; overflow:hidden; border-radius:0; }
+    #originalballmaking-visual-2 .ov img{ display:block; width:100%; height:auto; transform:scale(1.18); transform-origin:center; border-radius:0; }
+    #originalballmaking-visual-2 .ttl-wrap{ text-align:center; margin-bottom: clamp(12px, 2vw, 20px); }
+  </style>
+  <div class="gs-container">
+    <div class="ttl-wrap">
+      <p class="gs-overline animate-me">パネル数・ロット相談可</p>
+    </div>
+    <figure class="ov">
+      <img src="/assets/images/originalballmaking-1800x980.webp" alt="パネル数・ロット相談可" loading="lazy" decoding="async" fetchpriority="low" width="1800" height="980">
+    </figure>
+  </div>
+</section>
+
+<section id="specs" class="gs-section scroll-panel" style="padding-top: 0px;" data-ju-section-slide="4200">
+  <div class="gs-container">
+    <!-- Features Grid -->
+    <div class="gs-grid-4">
+      <!-- Item 1: 素材 -->
+      <div class="gs-work-card is-visible">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" alt="素材" class="gs-work-image" decoding="async" fetchpriority="low" width="1063" height="596">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">素材</h3>
+          <p class="gs-work-text">fullcolorballs<br>
+・人工皮革<br>
+<br>
+silkscreenballs<br>
+・PU / PVC 人工皮革<br>
+<br>
+stampballs<br>
+・PVC 人工皮革</p>
+        </div>
+      </div>
+      <!-- Item 2: 印刷品質 -->
+      <div class="gs-work-card is-visible">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" alt="印刷品質" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1136">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">印刷品質</h3>
+          <p class="gs-work-text">fullcolorballs<br>
+・フルカラーオンデマンド印刷<br>
+・4c（※特色不可）<br>
+・ワンポイント〜全面<br>
+・強度☆☆☆<br>
+<br>
+silkscreenballs<br>
+・PANTONEシルクスクリーン印刷<br>
+・特色1c〜<br>
+・ワンポイント〜全面（※デザインにより）<br>
+・強度☆☆☆☆☆<br>
+<br>
+stampballs<br>
+・フルカラーオンデマンドシート転写<br>
+・4c（※特色不可）<br>
+・パネル内ワンポイント<br>
+・強度☆</p>
+        </div>
+      </div>
+      <!-- Item 3: サイズ / パネル -->
+      <div class="gs-work-card is-visible">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" alt="サイズ / パネル" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1200">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">サイズ / パネル</h3>
+          <p class="gs-work-text">fullcolorballs<br>
+・5号球 / 4号球 / 3号球 / マスコット<br>
+・32パネル<br>
+・手縫い<br>
+<br>
+silkscreenballs<br>
+・5号球 / 4号球 / 3号球 / 2号球 / 1号球 / フットサル / ブラインド<br>
+・32パネル<br>
+・手縫い<br>
+<br>
+stampballs<br>
+・5号球<br>
+・32パネル<br>
+・手縫い</p>
+        </div>
+      </div>
+      <!-- Item 4: 最小ロット -->
+      <div class="gs-work-card is-visible">
+        <div class="gs-work-image-wrapper">
+          <img loading="lazy" src="/assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" alt="最小ロット" class="gs-work-image" decoding="async" fetchpriority="low" width="1312" height="652">
+        </div>
+        <div class="gs-work-content">
+          <h3 class="gs-work-title">最小ロット</h3>
+          <p class="gs-work-text">fullcolorballs<br>
+・1個〜<br>
+<br>
+silkscreenballs<br>
+・100個〜<br>
+<br>
+stampballs<br>
+・1個〜</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Custom Design Section -->
+
+<style>
+/* —— #originalballmaking-accordion 専用オーバーライド —— */
+#originalballmaking-accordion, #originalballmaking-accordion * { color:#fff; }
+#originalballmaking-accordion .ju-acc__btn .sign::before,
+#originalballmaking-accordion .ju-acc__btn .sign::after { background:#fff; opacity:1; }
+#originalballmaking-accordion .ju-acc{ border-top:1px solid rgba(255,255,255,.25) !important; }
+#originalballmaking-accordion .ju-acc__item{ border-bottom:1px solid rgba(255,255,255,.18) !important; }
+@media (min-width:980px){
+  #originalballmaking-accordion .ju-policy__wrap{ display:grid; grid-template-columns:1.1fr .9fr; }
+  #originalballmaking-accordion .ju-policy__wrap .ju-acc{ order:1; }
+  #originalballmaking-accordion .ju-policy__wrap aside{ order:2; }
+}
+@media (max-width:979.98px){
+  #originalballmaking-accordion .ju-policy__wrap{ display:grid; grid-template-columns:1fr; }
+  #originalballmaking-accordion .ju-policy__wrap .ju-acc{ order:1; }
+  #originalballmaking-accordion .ju-policy__wrap aside{ order:2; }
+}
+#originalballmaking-accordion .ju-acc__panel{ display:block !important; }
+#originalballmaking-accordion .ju-acc__panel[hidden]{ display:none !important; }
+
+/*セクション余白 & コンテナ（他セクションと整合） */
+#originalballmaking-accordion{ padding-block:clamp(56px,9vw,120px); }
+#originalballmaking-accordion .ju-container{ width:min(1200px,92vw); margin-inline:auto; }
+#originalballmaking-accordion .ju-policy__wrap{ display:grid; gap:clamp(24px,4vw,48px); }
+@media (min-width:980px){
+  #originalballmaking-accordion .ju-policy__wrap{ grid-template-columns:1.1fr .9fr; align-items:start; }
+}
+
+/* 右側画像（Designと同ルック・ローカル） */
+#originalballmaking-accordion .ju-policy__img{
+  display:block; width:100%; height:auto;
+  border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.25);
+  object-fit:contain; max-height:clamp(260px,52vh,520px);
+}
+
+/* アコーディオン（表示切替は [hidden] のみで制御） */
+#originalballmaking-accordion .ju-acc{ border-top:1px solid rgba(255,255,255,.15); }
+#originalballmaking-accordion .ju-acc__item{ border-bottom:1px solid rgba(255,255,255,.15); }
+#originalballmaking-accordion .ju-acc__btn{
+  width:100%; text-align:left; background:none; border:0; padding:18px 0;
+  display:grid; grid-template-columns:auto auto 1fr; align-items:center; gap:16px; cursor:pointer; font:inherit;
+}
+#originalballmaking-accordion .ju-acc__btn .num{ font-weight:600; opacity:.65; width:30px; text-align:left; }
+#originalballmaking-accordion .ju-acc__btn .ttl{ font-weight:600; letter-spacing:.02em; }
+#originalballmaking-accordion .ju-acc__btn .sign{ width:20px; height:20px; position:relative; flex:0 0 20px; opacity:.85; justify-self: end; }
+#originalballmaking-accordion .ju-acc__btn .sign::before,
+#originalballmaking-accordion .ju-acc__btn .sign::after{
+  content:""; position:absolute; left:50%; top:50%;
+  width:14px; height:2px; background:currentColor; transform:translate(-50%,-50%);
+}
+#originalballmaking-accordion .ju-acc__btn .sign::after{ transform:translate(-50%,-50%) rotate(90deg); } /* 縦棒＝プラス */
+#originalballmaking-accordion .ju-acc__btn[aria-expanded="true"] .sign::after{ display:none; }           /* 開いたらマイナス */
+
+#originalballmaking-accordion .ju-acc__panel{ padding:0 0 16px 0; display:block !important; }
+#originalballmaking-accordion .ju-acc__panel[hidden]{ display:none !important; }
+#originalballmaking-accordion .ju-acc__text{ margin:0 0 8px 0; line-height:1.2; font-size:clamp(10px, 1.4vw, 12px); letter-spacing: 0.02em; color: #bfbfbf; }
+</style>
+
+<!-- Visual lead (regular sections, no full-bleed) -->
+<section id="originalballmaking-visual-1" class="gs-section scroll-panel" aria-hidden="false" data-ju-section-slide="4200">
+  <style>
+    #originalballmaking-visual-1 .ov{ position:relative; overflow:hidden; border-radius:0; }
+    #originalballmaking-visual-1 .ju-wide-image{ display:block; width:100%; height:auto; border-radius:0; transform:scale(1.18); transform-origin:center; }
+    #originalballmaking-visual-1 .ttl-wrap{ text-align:center; margin-bottom: clamp(12px, 2vw, 20px); }
+  </style>
+  <div class="gs-container">
+    <div class="ttl-wrap">
+      <p class="gs-overline animate-me">プリントを超えた<br>オーダーメイド。</p>
+    </div>
+    <figure class="ov">
+      <img src="/assets/images/originalballmaking-1200x900.webp" alt="プリントを超えたオーダーメイド" width="1200" height="900" loading="lazy" decoding="async" class="ju-wide-image" fetchpriority="low">
+    </figure>
+  </div>
+ </section>
+
+<!-- Custom Design Section: プリントを超えたオーダーメイド。 -->
+<section id="design-intro" class="ju-design scroll-panel" data-ju-section-slide="4200">
+  <style>
+    #design-intro .ju-container{ width:min(1200px,92vw); margin-inline:auto; }
+    #design-intro .ju-design__row{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(20px,4vw,40px); align-items:center; }
+    @media (min-width: 980px){ #design-intro .ju-design__row{ grid-template-columns:1fr 1fr 1fr; } }
+    @media (max-width: 979.98px){ #design-intro .ju-design__row{ grid-template-columns:1fr; } }
+    #design-intro .ju-design__image img{ display:block; width:100%; height:auto; border-radius:8px; object-fit:cover; }
+    #design-intro .ju-design__eyebrow{ font-weight:700; font-size:clamp(20px,3.2vw,36px); line-height:1.25; letter-spacing:.02em; }
+    #design-intro .ju-design__text{ line-height:1.7; opacity:.9; }
+  </style>
+  <div class="ju-container">
+    <div class="ju-design__row" style="align-items: center;">
+      <div class="ju-design__col">
+        <figure class="ju-design__image">
+          <img loading="lazy" src="/assets/images/photo-1663270010598-f288e7801-h_mebi86k2.webp" alt="Original Ball Making" decoding="async" fetchpriority="low" width="505" height="758">
+        </figure>
+      </div>
+      <div class="ju-design__col">
+        <div class="ju-design__stack">
+          <div>
+            <p class="ju-design__text">妥協なき 日本の職人技が成せる 異素材の独自性。</p>
+          </div>
+          <div>
+            <p class="ju-design__text">それが<br>「original ball making」<br><br>私たちの特別な<br><strong>Kraft Gilde </strong>* ラインで製作します。</p>
+            <p class="ju-design__text" style="font-size: 0.8rem; opacity: 0.8; margin-top: 2rem;"><strong>Kraft Gilde</strong>：中世において手工業の職人たちが集まって組織した同業者組合。現代では特定の分野で高い技術を持つプロフェッショナルが集まり、チームとして活動する際にギルドという言葉がよく用いられる。メンバー随時募集中。</p>
+          </div>
+        </div>
+      </div>
+      <!-- Right image to sandwich the text area -->
+      <div class="ju-design__col">
+        <figure class="ju-design__image">
+          <img loading="lazy" src="/assets/images/craft-needle-1400x1052.webp" alt="職人の縫製道具と刺繍" width="1400" height="1052" decoding="async" fetchpriority="low">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Accordion Section for Original Ball Making -->
+<section id="originalballmaking-accordion" class="ju-policy scroll-panel" aria-labelledby="originalballmaking-title" data-ju-section-slide="4200">
+  <div class="ju-container">
+    <h2 id="originalballmaking-title" class="gs-overline">originalballmaking</h2>
+    <div class="ju-acc" role="region" aria-labelledby="originalballmaking-title">
+      <!-- 1. 素材 -->
+      <div class="ju-acc__item">
+        <button class="ju-acc__btn" aria-expanded="false" aria-controls="acc-p1" id="acc-b1">
+          <span class="num">1</span><span class="ttl">素材</span><span class="sign" aria-hidden="true"></span>
+        </button>
+        <div id="acc-p1" class="ju-acc__panel" role="region" aria-labelledby="acc-b1" hidden>
+          <p class="ju-acc__text">縫製可能なものであれば、デニム/レザー/ファー/リネン/ヘンプ/その他、お持ち込みの素材もご相談ください。</p>
+        </div>
+      </div>
+      <!-- 2. 加工 -->
+      <div class="ju-acc__item">
+        <button class="ju-acc__btn" aria-expanded="false" aria-controls="acc-p2" id="acc-b2">
+          <span class="num">2</span><span class="ttl">加工</span><span class="sign" aria-hidden="true"></span>
+        </button>
+        <div id="acc-p2" class="ju-acc__panel" role="region" aria-labelledby="acc-b2" hidden>
+          <p class="ju-acc__text">カービング/ステッチ/鋲打・金具打/焼印/箔押、などのご相談も受付けております。</p>
+        </div>
+      </div>
+      <!-- 3. 製法 -->
+      <div class="ju-acc__item">
+        <button class="ju-acc__btn" aria-expanded="false" aria-controls="acc-p3" id="acc-b3">
+          <span class="num">3</span><span class="ttl">製法</span><span class="sign" aria-hidden="true"></span>
+        </button>
+        <div id="acc-p3" class="ju-acc__panel" role="region" aria-labelledby="acc-b3" hidden>
+          <p class="ju-acc__text">日本の職人による手縫い製法となります。</p>
+        </div>
+      </div>
+      <!-- 4. ロット -->
+      <div class="ju-acc__item">
+        <button class="ju-acc__btn" aria-expanded="false" aria-controls="acc-p4" id="acc-b4">
+          <span class="num">4</span><span class="ttl">ロット</span><span class="sign" aria-hidden="true"></span>
+        </button>
+        <div id="acc-p4" class="ju-acc__panel" role="region" aria-labelledby="acc-b4" hidden>
+          <p class="ju-acc__text">手作業工程により日数を要します。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  // This script is a copy from the #policy accordion, adapted for this new section.
+  (function(){
+    var root = document.currentScript.closest('#originalballmaking-accordion'); if(!root) return;
+    var btns = Array.from(root.querySelectorAll('.ju-acc__btn'));
+    var panels = btns.map(function(b){ return document.getElementById(b.getAttribute('aria-controls')); });
+
+    function setOpen(i, open){
+      btns[i].setAttribute('aria-expanded', open ? 'true':'false');
+      if(open){ panels[i].removeAttribute('hidden'); } else { panels[i].setAttribute('hidden',''); }
+    }
+    btns.forEach(function(_,i){ setOpen(i, false); });
+    btns.forEach(function(btn,i){
+      btn.addEventListener('click', function(e){
+        if (e.target.closest('.sign')) {
+          setOpen(i, btn.getAttribute('aria-expanded') !== 'true');
+        }
+      });
+    });
+    function focusBtn(idx){ if(idx<0) idx=btns.length-1; if(idx>=btns.length) idx=0; btns[idx].focus(); return idx; } 
+    btns.forEach(function(btn,i){
+      btn.addEventListener('keydown', function(e){
+        var k=e.key;
+        if(k==='Enter' || k===' '){ e.preventDefault(); btn.click(); }
+        else if(k==='ArrowDown'){ e.preventDefault(); focusBtn(i+1); }
+        else if(k==='ArrowUp'){ e.preventDefault(); focusBtn(i-1); }
+        else if(k==='Home'){ e.preventDefault(); focusBtn(0); }
+        else if(k==='End'){ e.preventDefault(); focusBtn(btns.length-1); }
+      });
+    });
+  })();
+  </script>
+</section>
+
+<section class="gs-section scroll-panel" data-ju-section-slide="4200">
+  <div class="gs-container">
+    <div class="gs-grid-4">
+      <!-- Item 1: fullcolorballs -->
+      <div class="gs-feature-card is-visible">
+        <h3 class="gs-feature-title">fullcolorballs</h3>
+        <div class="btn-container" style="margin-top: 16px;">
+            <span class="custom-btn">現在製造中止</span>
+        </div>
+      </div>
+      <!-- Item 2: silkscreenballs -->
+      <div class="gs-feature-card is-visible">
+        <h3 class="gs-feature-title">silkscreenballs</h3>
+        <div class="btn-container" style="margin-top: 16px;">
+            <span class="custom-btn">現在製造中止</span>
+        </div>
+      </div>
+      <!-- Item 3: stampballs -->
+      <div class="gs-feature-card is-visible">
+        <h3 class="gs-feature-title">stampballs</h3>
+        <div class="btn-container" style="margin-top: 16px;">
+            <span class="custom-btn">現在製造中止</span>
+        </div>
+      </div>
+      <!-- Item 4: other -->
+      <div class="gs-feature-card is-visible">
+        <h3 class="gs-feature-title">other</h3>
+        <div class="btn-container" style="margin-top: 16px;">
+            <span class="custom-btn">現在製造中止</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+        <!-- Hero 2 Section -->
+        <section id="hero-2-slide" class="scroll-panel" style="min-height: 100vh;" data-ju-section-slide="4200">
+          <div id="hero-2" class="hero">
+            <div class="hero-media" style="position: absolute; inset: 0; z-index: 0; pointer-events: none;">
+              <div class="hero-video" style="position: absolute; inset: 0; overflow: hidden; z-index: 0;">
+                <iframe class="ju-yt" loading="lazy" src="https://www.youtube.com/embed/lOEVeKGXO3U?loop=1&amp;playlist=lOEVeKGXO3U&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;controls=0&amp;rel=0&amp;showinfo=0&amp;enablejsapi=1" allow="autoplay; fullscreen; picture-in-picture" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border:0;" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+              </div>
+              <div class="hero-fade" style="display:none;"></div>
+            </div>
+            <h2 class="hero-title" style="opacity: 1; position: absolute; top: 48vh; left: 50%; transform: translate(-50%, 0); margin: 0 auto; text-align: center; mix-blend-mode: normal; color: #fff; font-size: clamp(40px, 8vw, 90px); z-index: 1; padding: 0; max-width: 92vw; width: auto;">You'll never walk alone.</h2>
+          </div>
+        </section>
+
+        <section id="faq-slide" class="scroll-panel" style="min-height: 100vh;" data-ju-section-slide="4200">
+          <section id="faq-accordion" class="ju-policy" aria-labelledby="faq-title">
+            <div class="ju-container">
+              <p class="gs-overline animate-me">さあ、キックオフ。</p>
+              <h2 id="faq-title" class="gs-heading" style="margin-bottom: clamp(40px, 6vw, 70px);">FAQ</h2>
+              <div class="ju-acc" role="region" aria-labelledby="faq-title">
+              <!-- 1 -->
+              <div class="ju-acc__item">
+                <button class="ju-acc__btn" aria-expanded="false" aria-controls="faq-p1" id="faq-b1">
+                  <span class="num">1</span><span class="ttl">fullcolorballsの特徴は?</span><span class="sign" aria-hidden="true"></span>
+                </button>
+                <div id="faq-p1" class="ju-acc__panel" role="region" aria-labelledby="faq-b1" hidden>
+                  <p class="ju-acc__text">グラデーション・写真など、全面デザインのサッカーボールが作れます。<br>記念品、演出品、贈答にも適しています。<br>直接に印刷面が傷付きにくく劣化しにくい、表皮をコーティングしたボールです。<br>量産の場合18パネル5号球も可能です。</p>
+                </div>
+              </div>
+              <!-- 2 -->
+              <div class="ju-acc__item">
+                <button class="ju-acc__btn" aria-expanded="false" aria-controls="faq-p2" id="faq-b2">
+                  <span class="num">2</span><span class="ttl">silkscreenballsの特徴は?</span><span class="sign" aria-hidden="true"></span>
+                </button>
+                <div id="faq-p2" class="ju-acc__panel" role="region" aria-labelledby="faq-b2" hidden>
+                  <p class="ju-acc__text">ロゴや名入れ、模様などのデザインを印刷します。ベタ/マット/光沢/特色可能です。<br>数量が多いほど1個あたりの単価は低くなります。<br>版の数(色数・柄数)やボールの数・皮革の種類によって料金が変わります。<br>写真印刷・混色・濃淡印刷などは条件によります。</p>
+                </div>
+              </div>
+              <!-- 3 -->
+              <div class="ju-acc__item">
+                <button class="ju-acc__btn" aria-expanded="false" aria-controls="faq-p3" id="faq-b3">
+                  <span class="num">3</span><span class="ttl">stampballsの特徴は?</span><span class="sign" aria-hidden="true"></span>
+                </button>
+                <div id="faq-p3" class="ju-acc__panel" role="region" aria-labelledby="faq-b3" hidden>
+                  <p class="ju-acc__text">真っ白なボールをベースに1パネル毎に印刷費がかかります。<br>パネル毎に写真・ロゴ・模様などのプリントが入ったサッカーボールが作れます。<br>縫い目をまたぐデザイン、縫い目のきわまで絵柄があるデザインはできません。また、細か過ぎる文字や絵柄はつぶれる可能性があります。<br>グラフィックシートを簡易プリントするタイプになります。</p>
+                </div>
+              </div>
+              <!-- 4 -->
+              <div class="ju-acc__item">
+                <button class="ju-acc__btn" aria-expanded="false" aria-controls="faq-p4" id="faq-b4">
+                  <span class="num">4</span><span class="ttl">無地も可能ですか?</span><span class="sign" aria-hidden="true"></span>
+                </button>
+                <div id="faq-p4" class="ju-acc__panel" role="region" aria-labelledby="faq-b4" hidden>
+                  <p class="ju-acc__text">はい。ベースは全28色、金・銀・銅のトロフィボールやインテリア演出品などに適しています。<br>プリントの場合はフルカラーボール又はシルクスクリーンボールでの対応となります。</p>
+                </div>
+              </div>
+              <!-- 5 -->
+              <div class="ju-acc__item">
+                <button class="ju-acc__btn" aria-expanded="false" aria-controls="faq-p5" id="faq-b5">
+                  <span class="num">5</span><span class="ttl">自分でデザインする場合は?</span><span class="sign" aria-hidden="true"></span>
+                </button>
+                <div id="faq-p5" class="ju-acc__panel" role="region" aria-labelledby="faq-b5" hidden>
+                  <p class="ju-acc__text">お客様がデザインデータを制作する場合はイラストレータデータ（またはフォトショップデータ）で制作して下さい。</p>
+                </div>
+              </div>
+              <!-- 6 -->
+              <div class="ju-acc__item">
+                <button class="ju-acc__btn" aria-expanded="false" aria-controls="faq-p6" id="faq-b6">
+                  <span class="num">6</span><span class="ttl">オーダーメードは手が出ない。</span><span class="sign" aria-hidden="true"></span>
+                </button>
+                <div id="faq-p6" class="ju-acc__panel" role="region" aria-labelledby="faq-b6" hidden>
+                  <p class="ju-acc__text">学生の方はアカデミックディスカウントします。</p>
+                </div>
+              </div>
+            </div>
+            </div>
+            <script>
+            (function(){
+              var root = document.currentScript.closest('#faq-accordion'); if(!root) return;
+              var btns = Array.from(root.querySelectorAll('.ju-acc__btn'));
+              var panels = btns.map(function(b){ return document.getElementById(b.getAttribute('aria-controls')); });
+              function setOpen(i, open){
+                btns[i].setAttribute('aria-expanded', open ? 'true':'false');
+                if(open){ panels[i].removeAttribute('hidden'); } else { panels[i].setAttribute('hidden',''); }
+              }
+              btns.forEach(function(_,i){ setOpen(i, false); });
+              btns.forEach(function(btn,i){
+                btn.addEventListener('click', function(e){
+                  if (e.target.closest('.sign')) {
+                    setOpen(i, btn.getAttribute('aria-expanded') !== 'true');
+                  }
+                });
+              });
+              function focusBtn(idx){ if(idx<0) idx=btns.length-1; if(idx>=btns.length) idx=0; btns[idx].focus(); return idx; }
+              btns.forEach(function(btn,i){
+                btn.addEventListener('keydown', function(e){
+                  var k=e.key;
+                  if(k==='Enter' || k===' '){ e.preventDefault(); btn.click(); }
+                  else if(k==='ArrowDown'){ e.preventDefault(); focusBtn(i+1); }
+                  else if(k==='ArrowUp'){ e.preventDefault(); focusBtn(i-1); }
+                  else if(k==='Home'){ e.preventDefault(); focusBtn(0); }
+                  else if(k==='End'){ e.preventDefault(); focusBtn(btns.length-1); }
+                });
+              });
+            })();
+            </script>
+          </section>
+        </section>
+
+<!-- Contact Form Section removed per request -->
+<!-- Combined Address and Apology Section (move inside scroll-container) -->
+<section id="contact-apology" class="gs-section scroll-panel" data-ju-section-slide="4200">
+<div class="apology-grid">
+  <div class="apology-left">
+    <div class="gs-container" style="max-width:800px;">
+      <div class="gs-feature-card is-visible">
+        <h3 class="gs-feature-title">お詫び</h3>
+        <p class="gs-card-text" style="margin-bottom: 2rem;">現在、海外工場生産が難しくなり、製造を中止いたしております。<br>We're seeking a supportive partner factory that can help with our manufacturing processes.<br><span dir="rtl" lang="ar">نبحث عن مصنع شريك داعم يمكنه المساعدة في عملياتنا التصنيعية.</span></p>
+      </div>
+    </div>
+<!-- end contact-apology -->
+  </div>
+  <div class="apology-right">
+    <section data-bs-version="5.1" class="form01 modelm5 cid-juContact ju-form-simple" id="ju-contact-embedded">
+      <h2 class="gs-heading">お問合せ</h2>
+      <form id="contactForm">
+        <div class="dragArea">
+          <div class="form-group mb-3">
+            <input type="text" id="form-name" class="form-control" placeholder="Name" required>
+          </div>
+          <div class="form-group mb-3">
+            <input type="email" id="form-email" class="form-control" placeholder="Email" required>
+          </div>
+          <div class="form-group mb-3">
+            <input type="text" id="form-company" class="form-control" placeholder="Company">
+          </div>
+          <div class="form-group mb-3">
+            <textarea id="form-message" class="form-control" placeholder="Message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">メールソフトを起動して送信</button>
+          <p id="ap-thanks" class="mt-3" style="display:none;">ありがとう！メール作成画面が開きます。</p>
+        </div>
+      </form>
+      <script>
+        (function () {
+          const form = document.getElementById('contactForm');
+          if (!form) return;
+          const TO = 'info@originalsoccerball.com';
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name    = (document.getElementById('form-name')||{}).value || '';
+            const email   = (document.getElementById('form-email')||{}).value || '';
+            const company = (document.getElementById('form-company')||{}).value || '';
+            const message = (document.getElementById('form-message')||{}).value || '';
+            const subject = encodeURIComponent('ウェブサイトからのお問い合わせ');
+            const body = encodeURIComponent(
+              'お名前 (Name):\n'+name+'\n\n'
+              +'返信先メールアドレス (Email):\n'+email+'\n\n'
+              +'会社名 (Company):\n'+company+'\n\n'
+              +'メッセージ (Message):\n'+message+'\n\n'
+              +'Sent: '+new Date().toLocaleString()
+            );
+            window.location.href = 'mailto:' + TO + '?subject=' + subject + '&body=' + body;
+          });
+        })();
+      </script>
+    </section>
+  </div>
+</div>
+</section>
+
+</div>
+
+<!-- Site-wide Notice Band just above Footer -->
+<section id="site-notice" aria-label="site notice">
+  <style>
+    #site-notice{ position: relative; left:50%; width:100vw; margin-left:-50vw; }
+    #site-notice .band{
+      display:block; width:100%;
+      background:#ff6ec7; color:#000;
+      border-top:1px solid rgba(0,0,0,.15); border-bottom:1px solid rgba(0,0,0,.15);
+      overflow: hidden;
+      padding: 10px 0;
+    }
+    #site-notice .marquee{ display:flex; width:max-content; white-space: nowrap; will-change: transform; }
+    #site-notice .row{ flex:0 0 auto; }
+    #site-notice .msg{ letter-spacing:.02em; opacity:.92; }
+    @keyframes ju-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    #site-notice .marquee{ animation: ju-marquee 22s linear infinite; }
+    @media (prefers-reduced-motion: reduce){ #site-notice .marquee{ animation: none; } }
+  </style>
+  <div class="band stays-pink" role="status" aria-live="polite">
+    <div class="marquee" aria-hidden="true">
+      <span class="row msg">このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　</span>
+      <span class="row msg">このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　このサイトは現在運営されておりません。　</span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer Section -->
+<footer style="text-align: center; padding: clamp(30px, 5vw, 50px); border-top: 1px solid #222;">
+    <p class="gs-card-text" style="margin: 0;">© 2006 originalsoccerball.com「JUGEND」 All rights reserved.</p>
+</footer>
+
+<script>
+(function(){
+  if (document.documentElement.classList.contains('is-touch-device')) return;
+  var root = document.querySelector('.scroll-container');
+  if (!root) return;
+  var sections = root.querySelectorAll('.scroll-panel');
+  if (!sections.length) return;
+  sections.forEach(function(section){
+    var next = section.nextElementSibling;
+    if (next && next.classList && next.classList.contains('scroll-buffer')) return;
+    var spacer = document.createElement('div');
+    spacer.className = 'scroll-buffer';
+    spacer.dataset.buffer = 'mega';
+    spacer.setAttribute('aria-hidden', 'true');
+    section.insertAdjacentElement('afterend', spacer);
+  });
+})();
+</script>
+
+<script>
+(function(){
+  if (typeof window === 'undefined') return;
+  var headings = Array.prototype.slice.call(document.querySelectorAll('[data-ju-slide="heading"]'));
+  if (!headings.length) return;
+
+  var trackers = headings.map(function(el){
+    var distance = parseFloat(el.getAttribute('data-ju-slide-start'));
+    var travel = Number.isFinite(distance) ? distance : 1200;
+    el.style.setProperty('--ju-slide-start', travel + 'px');
+    el.style.transform = 'translate3d(0,' + travel + 'px,0)';
+    el.classList.remove('ju-slide-active');
+    return { el: el, travel: travel, current: travel };
+  });
+
+  var ticking = false;
+  function updateSlides(){
+    ticking = false;
+    var vh = window.innerHeight || document.documentElement.clientHeight || 1;
+    var trigger = vh * 0.9;
+    var zone = vh * 4.2;
+    var holdStart = 0.4;
+    var holdEnd = 0.72;
+    trackers.forEach(function(track){
+      var rect = track.el.getBoundingClientRect();
+      var delta = trigger - rect.top;
+      var progress = delta / zone;
+      if (progress < 0) progress = 0;
+      else if (progress > 1) progress = 1;
+      var mapped = progress;
+      if (mapped >= holdStart && mapped <= holdEnd){
+        mapped = holdStart;
+      } else if (mapped > holdEnd){
+        mapped = holdStart + (mapped - holdEnd) * ((1 - holdStart) / (1 - holdEnd));
+        if (mapped > 1) mapped = 1;
+      }
+      var targetOffset = track.travel * (1 - mapped);
+      if (!Number.isFinite(track.current)) track.current = targetOffset;
+      var eased = track.current + (targetOffset - track.current) * 0.12;
+      if (Math.abs(eased - targetOffset) < 0.2) eased = targetOffset;
+      track.current = eased;
+      track.el.style.transform = 'translate3d(0,' + eased + 'px,0)';
+      if (mapped >= 1){
+        track.el.classList.add('ju-slide-active');
+      }
+    });
+  }
+
+  function requestUpdate(){
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateSlides);
+  }
+
+  requestUpdate();
+  window.addEventListener('scroll', requestUpdate, { passive: true });
+  window.addEventListener('resize', requestUpdate);
+  window.addEventListener('load', requestUpdate);
+})();
+</script>
+
+
+  <!-- <script src="/assets/js/add_design_next_strict_min.js"></script> -->
+
+
+  <script src="/assets/js/order-popups.js" defer></script>
+  <script src="/assets/js/lazy-images.js" defer></script>
+  <script src="assets/js/cursor-kill.js" defer></script>
+  <script src="assets/js/cursor-none-enforcer.js"></script>
+<!-- === Safari hotfix (paste just before </body>) === -->
+<style id="safari-hotfix-css">
+@supports (-webkit-touch-callout: none) {
+  /* テキストのにじみ/太りを抑える（Safariのフィルタ/変形の副作用対策） */
+  .hero-title{
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transform: translateZ(0);           /* 合成レイヤを固定化してブレ抑制 */
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;                 /* 祖先のfilterの影響を遮断 */
+  }
+  /* SVG/CSSフィルタの“しきい値/グーピー”系はSafariで文字が崩れやすい */
+  .gooey-wrapper{ filter: url(#threshold); }
+}
+</style>
+
+<script id="safari-hotfix-js">
+(function(){
+  const heroVideo = document.getElementById('hero-video');
+  function prime(video){
+    if(!video) return;
+    video.setAttribute('muted','muted');
+    video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
+    video.setAttribute('playsinline','');
+    video.setAttribute('webkit-playsinline','');
+    video.setAttribute('autoplay','');
+    video.autoplay = true;
+    video.setAttribute('preload','auto');
+    try{ if(video.readyState < 2) video.load(); }catch(_){ }
+  }
+  function requestPlay(fromUser){
+    if(!heroVideo) return;
+    const user = !!fromUser;
+    if(typeof heroVideo.__juTryPlay === 'function'){
+      if(!user && heroVideo.dataset.autoplayState === 'blocked') return;
+      heroVideo.__juTryPlay(user);
+    } else if(user){
+      try{
+        heroVideo.play();
+      }catch(_){ }
+    }
+  }
+  if(heroVideo){
+    prime(heroVideo);
+    if(document.readyState !== 'loading') requestPlay(false);
+    else document.addEventListener('DOMContentLoaded', () => requestPlay(false), { once:true });
+    document.addEventListener('visibilitychange', () => {
+      if(!document.hidden && heroVideo.paused) requestPlay(false);
+    });
+    document.addEventListener('pointerdown', () => requestPlay(true), { once:true, passive:true });
+    document.addEventListener('keydown', () => requestPlay(true), { once:true });
+  }
+
+  const ytFrames = Array.prototype.slice.call(document.querySelectorAll('iframe[src*="youtube.com/embed/"]'));
+  ytFrames.forEach((iframe, idx) => {
+    try{
+      const url = new URL(iframe.src, location.href);
+      if(!url.searchParams.has('playsinline')) url.searchParams.set('playsinline','1');
+      if(!url.searchParams.has('mute')) url.searchParams.set('mute','1');
+      if(!url.searchParams.has('autoplay')) url.searchParams.set('autoplay','1');
+      url.searchParams.set('origin', location.origin);
+      iframe.src = url.toString();
+    }catch(_){ }
+    const allow = new Set((iframe.getAttribute('allow')||'').split(';').map(s=>s.trim()).filter(Boolean));
+    ['autoplay','fullscreen','picture-in-picture'].forEach(flag => allow.add(flag));
+    iframe.setAttribute('allow', Array.from(allow).join('; '));
+    if(!iframe.hasAttribute('referrerpolicy')) iframe.setAttribute('referrerpolicy','origin-when-cross-origin');
+    iframe.setAttribute('playsinline','');
+
+    const id = iframe.id || `ju-yt-${idx}`;
+    iframe.id = id;
+    const post = payload => {
+      try{
+        if(iframe.contentWindow){
+          iframe.contentWindow.postMessage(JSON.stringify(payload), '*');
+        }
+      }catch(_){ }
+    };
+    const triggerPlay = () => {
+      post({ event:'listening', id });
+      post({ event:'command', func:'mute', args:[], id });
+      post({ event:'command', func:'playVideo', args:[], id });
+    };
+    iframe.addEventListener('load', () => setTimeout(triggerPlay, 350), { once:true });
+    document.addEventListener('pointerdown', triggerPlay, { once:true, passive:true });
+    document.addEventListener('keydown', triggerPlay, { once:true });
+  });
+
+  try{
+    const headScripts = Array.from(document.querySelectorAll('head > script'));
+    const redir = headScripts.find(s=>/location\.href\s*=\s*'index\.html'/.test(s.textContent));
+    if(redir && (location.pathname.endsWith('/index.html') || location.pathname === '/')){
+      redir.parentNode.removeChild(redir);
+    }
+  }catch(_){ }
+})();
+</script>
+<!-- === /Safari hotfix === -->
+</body></html>

@@ -1,0 +1,2 @@
+.design-section{padding:96px 0}.design-section__row{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;margin-bottom:80px}@media(max-width:768px){.design-section__row{grid-template-columns:1fr;gap:28px;margin-bottom:56px}}
+.design-section__text{font-size:clamp(16px,2.2vw,18px);line-height:1.9}

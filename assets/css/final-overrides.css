@@ -1,0 +1,15 @@
+/* --- cursor fixes --- */
+/* 元の .ju-hide-cursor, .ju-hide-cursor * { cursor:none !important; } を“同セレクタ”かつ後勝ちで無効化 */
+.ju-hide-cursor, .ju-hide-cursor * { cursor: auto !important; }
+/* 既定の操作性を維持 */
+a[href], button, [role="button"], label, summary,
+input[type="button"], input[type="submit"], input[type="reset"] { cursor: pointer !important; }
+/* キャンバスや全体も強制的に通常カーソル */
+canvas, html, body, * { cursor: auto !important; }
+
+/* --- scroll fixes --- */
+/* JSが html/body に scroll-locked を付けても、ページスクロールは殺さない */
+/* MOBILE cursor sanity */
+@media (hover: none), (pointer: coarse) {
+  html, body, * { cursor: auto !important; }
+}

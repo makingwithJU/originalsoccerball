@@ -589,20 +589,44 @@ function gooeyTextAnimation() {
   }
 
   function ensureThree(next){
-    // 既に THREE が存在する場合は重複ロードを避ける
-    const hasThree = !!window.THREE;
-    const hasGLTF = hasThree && !!window.THREE.GLTFLoader;
-    const hasDRACO = hasThree && !!window.THREE.DRACOLoader;
-    if (hasThree && hasGLTF && hasDRACO) return next();
+    function add(src, cb){
+      var s=document.createElement('script');
+      s.src=src;
+      s.onload=cb||null;
+      s.onerror=cb||null;
+      document.head.appendChild(s);
+    }
 
-    function add(src, cb){ var s=document.createElement('script'); s.src=src; s.onload=cb||null; s.onerror=cb||null; document.head.appendChild(s); }
-    // NOTE: ライブラリは /assets/libs 配下に配置されているため、ドキュメントルート基準のパスにする
-    const loadMeshopt = () => add('assets/libs/meshopt_decoder.js', next);
-    const loadDRACO = () => hasDRACO ? loadMeshopt() : add('assets/libs/DRACOLoader.js', loadMeshopt);
-    const loadGLTF = () => hasGLTF ? loadDRACO() : add('assets/libs/GLTFLoader.js', loadDRACO);
-    const loadThree = () => add('assets/libs/three-0.128.0.min.js', loadGLTF);
+    function ensureLoaders(){
+      var hasThree = !!window.THREE;
+      var hasGLTF = hasThree && !!window.THREE.GLTFLoader;
+      var hasDRACO = hasThree && !!window.THREE.DRACOLoader;
+      if (!hasThree) return;
+      // GLTF / DRACO が揃っていなければ順次ロード
+      if (!hasGLTF){
+        add('assets/libs/GLTFLoader.js', ensureLoaders);
+        return;
+      }
+      if (!hasDRACO){
+        add('assets/libs/DRACOLoader.js', function(){
+          // Meshopt は任意（存在すれば使う）
+          add('assets/libs/meshopt_decoder.js', ensureLoaders);
+        });
+        return;
+      }
+      // ここまで来たら Three + Loader 完備
+      next();
+    }
 
-    hasThree ? loadGLTF() : loadThree();
+    // グローバルローダがあればそれを利用（複数箇所からのロードを一本化）
+    if (typeof window.juEnsureThree === 'function'){
+      window.juEnsureThree(ensureLoaders);
+    } else if (window.THREE){
+      ensureLoaders();
+    } else {
+      // フォールバック: 自前で Three をロード
+      add('assets/libs/three-0.128.0.min.js', ensureLoaders);
+    }
   }
 
   ensureThree(init);

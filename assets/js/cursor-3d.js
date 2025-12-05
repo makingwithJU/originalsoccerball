@@ -13,9 +13,48 @@
     function mount(){ if(!document.getElementById('cursor3d')) document.body.appendChild(host); }
     function onMove(e){ host.style.left=e.clientX+'px'; host.style.top=e.clientY+'px'; }
 
+    // === Global Three.js loader (共有用) ===
+    function ensureThreeGlobal(next){
+      // 既に THREE があれば即実行
+      if (window.THREE){
+        try{ next(); }catch(_){ }
+        return;
+      }
+      // 読み込みキューを共有（複数箇所から呼ばれても1回だけロード）
+      var q = window.__juThreeQueue;
+      if (!q){
+        q = [];
+        window.__juThreeQueue = q;
+        var s=document.createElement('script');
+        s.src='/assets/libs/three-0.128.0.min.js';
+        s.onload=function(){
+          try{
+            // Three.js 準備完了を通知
+            try{
+              document.dispatchEvent(new CustomEvent('ju-three-ready'));
+            }catch(_){}
+            var list = window.__juThreeQueue || [];
+            window.__juThreeQueue = null;
+            for (var i=0;i<list.length;i++){
+              try{ list[i](); }catch(_){ }
+            }
+          }catch(_){ }
+        };
+        document.head.appendChild(s);
+      }
+      q.push(function(){ try{ next(); }catch(_){ } });
+    }
+    // グローバル API として公開（他スクリプトと共有）
+    if (!window.juEnsureThree){
+      window.juEnsureThree = ensureThreeGlobal;
+    }
+
     function ensureTHREE(next){
-      if(window.THREE){ next(); return; }
-      var s=document.createElement('script'); s.src='/assets/libs/three-0.128.0.min.js'; s.onload=next; document.head.appendChild(s);
+      if (typeof window.juEnsureThree === 'function'){
+        window.juEnsureThree(next);
+        return;
+      }
+      ensureThreeGlobal(next);
     }
     function ensureSTL(next){
       if(window.THREE && (THREE.STLLoader||window.STLLoader)){ next(); return; }

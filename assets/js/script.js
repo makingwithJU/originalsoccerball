@@ -596,10 +596,11 @@ function gooeyTextAnimation() {
     if (hasThree && hasGLTF && hasDRACO) return next();
 
     function add(src, cb){ var s=document.createElement('script'); s.src=src; s.onload=cb||null; s.onerror=cb||null; document.head.appendChild(s); }
-    const loadMeshopt = () => add('libs/meshopt_decoder.js', next);
-    const loadDRACO = () => hasDRACO ? loadMeshopt() : add('libs/DRACOLoader.js', loadMeshopt);
-    const loadGLTF = () => hasGLTF ? loadDRACO() : add('libs/GLTFLoader.js', loadDRACO);
-    const loadThree = () => add('libs/three-0.128.0.min.js', loadGLTF);
+    // NOTE: ライブラリは /assets/libs 配下に配置されているため、ドキュメントルート基準のパスにする
+    const loadMeshopt = () => add('assets/libs/meshopt_decoder.js', next);
+    const loadDRACO = () => hasDRACO ? loadMeshopt() : add('assets/libs/DRACOLoader.js', loadMeshopt);
+    const loadGLTF = () => hasGLTF ? loadDRACO() : add('assets/libs/GLTFLoader.js', loadDRACO);
+    const loadThree = () => add('assets/libs/three-0.128.0.min.js', loadGLTF);
 
     hasThree ? loadGLTF() : loadThree();
   }

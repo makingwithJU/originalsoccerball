@@ -1418,8 +1418,8 @@ body{ padding-right: 0; }
               const overlay = document.querySelector('.simu-overlay');
 
               function clearDrag(){
-                if(frameContainer) frameContainer.classList.remove('dragging');
-                if (overlay) (overlay as HTMLElement).style.pointerEvents = 'none';
+                if (frameContainer) frameContainer.classList.remove('dragging');
+                if (overlay) overlay.style.pointerEvents = 'none';
               }
 
               function handleDrag(e){
@@ -1427,10 +1427,15 @@ body{ padding-right: 0; }
                 e.stopPropagation();
                 if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
 
-                const targetElement = e.target;
-                const overIframe = iframeElement && targetElement instanceof Node && (targetElement === iframeElement || iframeElement.contains(targetElement));
+                var targetElement = e.target;
+                var overIframe = false;
+                if (iframeElement && targetElement && iframeElement.contains) {
+                  // iframe 自身、またはその子要素上でのドラッグのみを強調
+                  overIframe = (targetElement === iframeElement) ||
+                               (targetElement instanceof Node && iframeElement.contains(targetElement));
+                }
                 if (frameContainer) frameContainer.classList.toggle('dragging', !!overIframe);
-                if (overlay) (overlay as HTMLElement).style.pointerEvents = 'auto';
+                if (overlay) overlay.style.pointerEvents = 'auto';
               }
 
               function handleDrop(e){

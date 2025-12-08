@@ -626,10 +626,10 @@ body{ padding-right: 0; }
         }
 
         // パース完了直後にできるだけ早く開始（描画を早める）
-        if (document.readyState === 'complete'){
+        if (document.readyState === 'complete' || document.readyState === 'interactive'){
           start();
         } else {
-          window.addEventListener('load', start, { once:true });
+          document.addEventListener('DOMContentLoaded', start, { once:true });
         }
       })();
     </script>
@@ -2028,16 +2028,20 @@ body{ padding-right: 0; }
       <form id="contactForm">
         <div class="dragArea">
           <div class="form-group mb-3">
-            <input type="text" id="form-name" class="form-control" placeholder="Name" required>
+            <label class="ju-visually-hidden" for="form-name">Name</label>
+            <input type="text" id="form-name" name="name" class="form-control" placeholder="Name" required>
           </div>
           <div class="form-group mb-3">
-            <input type="email" id="form-email" class="form-control" placeholder="Email" required>
+            <label class="ju-visually-hidden" for="form-email">Email</label>
+            <input type="email" id="form-email" name="email" class="form-control" placeholder="Email" required>
           </div>
           <div class="form-group mb-3">
-            <input type="text" id="form-company" class="form-control" placeholder="Company">
+            <label class="ju-visually-hidden" for="form-company">Company</label>
+            <input type="text" id="form-company" name="company" class="form-control" placeholder="Company">
           </div>
           <div class="form-group mb-3">
-            <textarea id="form-message" class="form-control" placeholder="Message" rows="5" required></textarea>
+            <label class="ju-visually-hidden" for="form-message">Message</label>
+            <textarea id="form-message" name="message" class="form-control" placeholder="Message" rows="5" required></textarea>
           </div>
           <button type="submit" class="btn btn-primary w-100">メールソフトを起動して送信</button>
           <p id="ap-thanks" class="mt-3" style="display:none;">ありがとう！メール作成画面が開きます。</p>

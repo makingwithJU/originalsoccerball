@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ja"><head>
 <script>
   if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
@@ -900,10 +900,11 @@ body{ padding-right: 0; }
           }
         }
 
-        if (document.readyState === 'complete'){
+        // パース完了直後にできるだけ早く開始（描画を早める）
+        if (document.readyState === 'complete' || document.readyState === 'interactive'){
           start();
         } else {
-          window.addEventListener('load', start, { once:true });
+          document.addEventListener('DOMContentLoaded', start, { once:true });
         }
       })();
     </script>

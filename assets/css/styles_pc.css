@@ -21,8 +21,6 @@ html, body { height: 100%; overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce){.animate-me .ju-char{transition:none;transform:none;opacity:1;}}
 /* Mobile text rendering: respect user/device adjustments */
 html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-/* Smooth scrolling on iOS */
-html, body{ -webkit-overflow-scrolling: touch; }
 /* スクロールバーを常時確保して横ズレ抑止（サポート環境）*/
 html { overflow-y: scroll; scrollbar-gutter: stable both-edges; }
 /* スクロール禁止（動画の終了まで） */

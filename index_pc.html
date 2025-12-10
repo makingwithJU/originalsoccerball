@@ -66,7 +66,7 @@
 <!--     <link rel="preconnect" href="https://googlevideo.com" crossorigin=""> -->
     <link rel="stylesheet" href="./assets/css/fonts.css">
     <link rel="icon" href="./assets/icons/apple-touch-icon.webp">
-    <link rel="stylesheet" href="./assets/css/styles_pc.css?v=sticky-slide">
+	    <link rel="stylesheet" href="./assets/css/styles_pc.css?v=hero2-frame-1">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -202,10 +202,8 @@
   <style>
   </style>
   <script src="./assets/js/cursor-3d.js" defer></script>
-<script>
-  </script>
-<style>
-  </style>
+  <!-- iPad / タブレット専用：各セクションを縮小＋中央寄せ＋下余白 -->
+  <script src="./assets/js/ipad-center-layout.js" defer></script>
 <style>
 /* === HARD FIX: heading space & stable scroll === */
 /* 見出しタグだけでなく、サイト固有の見出しクラスにも「直下余白」を強制 */
@@ -339,7 +337,7 @@ body{ padding-right: 0; }
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.webp">
   <link rel="icon" href="./assets/icons/icon-192.webp" sizes="192x192">
   <link rel="stylesheet" href="./assets/css/final-overrides.css">
-  <link rel="stylesheet" href="./assets/css/mobile-responsive.css?v=2">
+	  <link rel="stylesheet" href="./assets/css/mobile-responsive.css?v=3">
   <link rel="stylesheet" href="assets/css/cursor-kill.css">
   <link rel="stylesheet" href="assets/css/cursor-reset.css">
   <style>
@@ -474,9 +472,12 @@ body{ padding-right: 0; }
         </div>
         <!-- Centered wrapper that we may scale (parent only) -->
         <h1 class="hero-title" id="hero-title">
-                    <div class="gooey-wrapper">
-            <span id="text1"></span>
-            <span id="text2"></span>
+          <!-- 位置調整用のラッパー：アニメ(transform)とは分離 -->
+          <div class="hero-shift-wrapper">
+            <div class="gooey-wrapper">
+              <span id="text1"></span>
+              <span id="text2"></span>
+            </div>
           </div>
         </h1>
       </section>
@@ -1706,7 +1707,7 @@ body{ padding-right: 0; }
 </section>
 
 <section id="testimonial-event-shop" class="gs-section scroll-panel" data-ju-section-slide="4200">
-  <div class="gs-container" style="max-width: 800px;">
+  <div class="gs-container">
     <div class="gs-card is-visible"> 
       <div class="gs-card-icon-wrapper">
         <span class="mbr-iconfont mobi-mbri-quote-left mobi-mbri"></span>

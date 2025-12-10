@@ -163,6 +163,12 @@ function isTrueTouchDevice(){
   return false;
 }
 
+// iPad / タブレット: HEROの文字ブロック位置調整（現在はCSSで制御）
+function nudgeHeroVisualForTablet(){
+  // 位置の最終調整は CSS (media query) で行う。
+  return;
+}
+
 function safeStartGooey(){
   try {
     if (!window.__gooeyStarted) {
@@ -276,6 +282,25 @@ window.addEventListener('DOMContentLoaded', () => {
     heroTitle.classList.remove('is-visible');
   }
 
+  // HEROのgooey-wrapperを1段ラップして、位置調整用のレイヤーを分離
+  (function(){
+    try{
+      var gooey = document.querySelector('#hero .gooey-wrapper');
+      if (!gooey) return;
+      var parent = gooey.parentElement;
+      if (parent && parent.classList.contains('hero-shift-wrapper')) return;
+      var shift = document.createElement('div');
+      shift.className = 'hero-shift-wrapper';
+      shift.style.display = 'inline-block';
+      shift.style.willChange = 'transform';
+      shift.style.transformOrigin = 'center center';
+      parent.insertBefore(shift, gooey);
+      shift.appendChild(gooey);
+    }catch(_){}
+  })();
+
+  // 位置調整は CSS に委ねる（JS側では何もしない）
+
   // --- Event Listeners ---
   const heroVideo = document.getElementById('hero-video');
   if (heroVideo) {
@@ -358,6 +383,9 @@ window.addEventListener('DOMContentLoaded', () => {
         console.error('Gooey animation failed to start:', e);
       }
     }, { once: true });
+
+    // 動画・Gooey開始後にも、念のため位置を再調整
+    setTimeout(nudgeHeroVisualForTablet, 800);
 
     if (isVideoActivelyPlaying()) {
       markHeroVideoAsVisible();
@@ -901,14 +929,22 @@ function gooeyTextAnimation() {
     if (!vw || !vh) return;
     var ratio = 16 / 9;
     var width, height;
+    // まず「全体像」が切れない contain サイズを出す
     if (vw / vh > ratio){
-      width = vw;
-      height = vw / ratio;
-    } else {
+      // 横に広い画面: 高さを基準に幅を決める
       height = vh;
-      width = vh * ratio;
+      width  = vh * ratio;
+    } else {
+      // 縦に長い画面: 幅を基準に高さを決める
+      width  = vw;
+      height = vw / ratio;
     }
-    iframe.style.width = width + 'px';
+  // そこからごくわずかだけ拡大して、額縁マスクの内側いっぱいに収める
+  var overscan = 1.04; // 約4%拡大（端だけ数％カット）
+    width  *= overscan;
+    height *= overscan;
+
+    iframe.style.width  = width  + 'px';
     iframe.style.height = height + 'px';
   }
   ready(function(){

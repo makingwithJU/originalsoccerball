@@ -198,10 +198,12 @@
 
   .ju-policy .ju-acc__btn, .ju-policy .ju-acc__panel { padding-inline: 0; }
 
-  #contact-apology, #site-notice, footer {
-      position: static !important;
-      transform: none !important;
-      opacity: 1 !important;
+  /* お詫び〜 (#contact-apology) は他セクションと同じスクロール挙動を保つため、
+     固定解除の対象からは外す。サイト全体の notice と footer だけ静的配置にする。 */
+  #site-notice, footer {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
   }
 
   #ju-cursor, #cursor3d, #cursor3d canvas { display: none !important; }

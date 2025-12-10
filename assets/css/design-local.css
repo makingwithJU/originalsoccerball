@@ -22,6 +22,19 @@
   max-height:clamp(360px, 50vh, 640px);                       /* ← 少し小さめに制限 */
   border-radius:10px; box-shadow:none;                        /* 白い枠感を排除 */
 }
+/* iPad縦向きなどでは画像だけさらに小さくして、テキストサイズは維持 */
+@media (orientation: portrait) and (min-width: 600px){
+  #design-intro .ju-design__image img{
+    max-height:30vh;
+    width:100%;
+    max-width:800px;      /* テキストと同じくらいの横幅に揃える */
+    margin-inline:auto;   /* 中央寄せ */
+  }
+  #design-intro .ju-design__stack{
+    max-width:800px;      /* テキスト側も同じ横幅に */
+    margin-inline:auto;
+  }
+}
 @media (max-width: 820px){
   .ju-design__row{ grid-template-columns:1fr; }
 }
@@ -49,6 +62,10 @@ body.mode-animate-c .juC-panel{ will-change: transform, opacity; transition: tra
 }
 @media (min-width: 960px){
   #contact-apology .apology-grid{ grid-template-columns: minmax(320px,1fr) minmax(320px,1fr); }
+}
+/* iPadなど縦向きタブレットでは1カラムに縦積み */
+@media (orientation: portrait) and (min-width: 768px) and (max-width: 1366px){
+  #contact-apology .apology-grid{ grid-template-columns: 1fr !important; }
 }
 #contact-apology .ju-contact{
   background: rgba(0,0,0,.04); padding: clamp(12px,2vw,20px); border-radius:12px;

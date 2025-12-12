@@ -65,6 +65,27 @@
 <!--     <link rel="preconnect" href="https://googlevideo.com" crossorigin=""> -->
     <link rel="preload" as="image" href="https://i.ytimg.com/vi/XuAbUiwpzrA/hqdefault.jpg">
     <link rel="preload" as="fetch" href="./assets/images/test3Dface_patched.glb" type="model/gltf-binary" crossorigin="anonymous">
+    <script>
+      // 3D GLB をページロード直後にフェッチして preloading 警告を回避
+      (function(){
+        var glbHref = './assets/images/test3Dface_patched.glb';
+        function preloadGLB(){
+          if (window.juGLBPrefetched) return;
+          window.juGLBPrefetched = true;
+          try{
+            // force-cache で一度取得し、実際の3D描画時にキャッシュ利用
+            fetch(glbHref, { cache: 'force-cache' }).then(function(res){
+              return res && res.arrayBuffer ? res.arrayBuffer() : null;
+            }).catch(function(){});
+          }catch(_){}
+        }
+        if (document.readyState === 'complete' || document.readyState === 'interactive'){
+          preloadGLB();
+        } else {
+          document.addEventListener('DOMContentLoaded', preloadGLB, { once:true });
+        }
+      })();
+    </script>
   <link rel="stylesheet" href="./assets/css/fonts.css">
   <link rel="icon" href="./assets/icons/apple-touch-icon.webp">
   <link rel="stylesheet" href="./assets/css/styles.css?v=mobile3">

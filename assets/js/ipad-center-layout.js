@@ -13,6 +13,24 @@
 
     if (!isTabletLike()) return;
 
+    // iPad ライクな画面にはクラスを付与してスタイルからも判定できるようにする
+    function updateTabletClasses(){
+      var root = document.documentElement || document.body;
+      if (!root) return;
+      var w = window.innerWidth || root.clientWidth || 0;
+      var h = window.innerHeight || root.clientHeight || 0;
+      if (!w || !h) return;
+      var isPortrait = h >= w;
+      root.classList.add('ju-tablet');
+      if (isPortrait){
+        root.classList.add('ju-tablet-portrait');
+        root.classList.remove('ju-tablet-landscape');
+      } else {
+        root.classList.add('ju-tablet-landscape');
+        root.classList.remove('ju-tablet-portrait');
+      }
+    }
+
     function panels(){
       return Array.prototype.slice.call(document.querySelectorAll('.scroll-panel'));
     }
@@ -27,23 +45,25 @@
 
       list.forEach(function(panel){
         var id = panel.id || '';
+
+        // MODIFICATION: Exclude specific sections from this layout script
+        // HERO / HERO2 / FAQ / Usage / Event / Apology は元のsticky挙動を優先（sticky-scroll.cssに任せる）
+        if (id === 'hero'
+          || id === 'hero-2-slide'
+          || id === 'faq-slide'
+          || id === 'usage-title'
+          || id === 'event-shop-title'
+          || id === 'contact-apology') {
+          // Reset any styles that might have been applied
+          panel.style.display = '';
+          panel.style.paddingTop = '';
+          panel.style.paddingBottom = '';
+          return;
+        }
+
         var content;
 
-        // Usage / Event セクションは、見出し＋スライダーをまとめてラップして縮小
-        if (id === 'usage-title' || id === 'event-shop-title') {
-          if (!panel.__ipadWrap) {
-            var wrap = document.createElement('div');
-            wrap.className = 'ipad-section-wrap';
-            while (panel.firstChild) {
-              wrap.appendChild(panel.firstChild);
-            }
-            panel.appendChild(wrap);
-            panel.__ipadWrap = wrap;
-          }
-          content = panel.__ipadWrap;
-        } else {
-          content = panel.querySelector('.gs-container, .ju-container, .order-gallery__inner') || panel.firstElementChild;
-        }
+        content = panel.querySelector('.gs-container, .ju-container, .order-gallery__inner') || panel.firstElementChild;
 
         if (!content) return;
 
@@ -56,6 +76,12 @@
         content.style.transform = '';
         content.style.transformOrigin = '';
 
+        // iPad 縦向きでは Order セクションは PC 版と同じレイアウトにする
+        // （scale や上下の余白をここでは触らない）
+        if (!isLandscape && id === 'order') {
+          return;
+        }
+
         // コンテンツ高さを取得
         var rect = content.getBoundingClientRect();
         var h = rect.height;
@@ -67,7 +93,7 @@
         if (id === 'order') {
           baseScale = 0.9;
           minScale = 0.8;
-        } else if (id === 'usage-title' || id === 'event-shop-title' || id === 'testimonial-event-shop') {
+        } else if (id === 'testimonial-event-shop') {
           baseScale = 0.6;
           minScale = 0.5;
         } else if (!isLandscape && id === 'specs') {
@@ -102,10 +128,6 @@
             // この3つは今の位置のまま（かなり上）
             topSpace = free * 0.05;
             bottomSpace = free - topSpace;
-          } else if (id === 'usage-title' || id === 'event-shop-title') {
-            // Usage / イベントショップ：上げすぎているので少し下げる
-            topSpace = free * 0.15;
-            bottomSpace = free - topSpace;
           }
         } else {
           // 縦向き: Story は中央より少し上、Works/Production はさらに上に
@@ -137,11 +159,6 @@
             topSpace = free * 0.25;
             bottomSpace = free - topSpace;
           }
-          if (id === 'usage-title' || id === 'event-shop-title') {
-            // 縦向き Usage / イベントは少しだけ上寄せ
-            topSpace = free * 0.22;
-            bottomSpace = free - topSpace;
-          }
         }
 
         panel.style.display = 'flex';
@@ -154,9 +171,7 @@
         // Order は横幅はそのまま、高さだけ調整（縦方向だけ縮小）
         var scaleX = scale;
         var scaleY = scale;
-        if (id === 'order') {
-          scaleX = 1;
-        }
+
 
         content.style.transform = 'scale(' + scaleX.toFixed(3) + ',' + scaleY.toFixed(3) + ')';
         content.style.transformOrigin = 'top center';
@@ -166,7 +181,10 @@
     var timer;
     function schedule(){
       if (timer) clearTimeout(timer);
-      timer = setTimeout(applyCentering, 150);
+      timer = setTimeout(function(){
+        updateTabletClasses();
+        applyCentering();
+      }, 150);
     }
 
     if (document.readyState === 'loading'){

@@ -8,6 +8,7 @@
       'pointer-events:none;z-index:100000;transform:translate(-50%,-50%)',
       'background:transparent; mix-blend-mode:difference; will-change: transform'
     ].join(';');
+
     var ready=false, renderer, scene, camera, obj;
 
     function mount(){ if(!document.getElementById('cursor3d')) document.body.appendChild(host); }
@@ -109,9 +110,32 @@
     }
 
     function start(){ mount(); ensureTHREE(function(){ ensureSTL(init); }); }
-    document.addEventListener('mousemove', onMove, {passive:true});
+    // --- MODIFICATION START ---
+    var isDesktop = !('ontouchstart' in window || navigator.maxTouchPoints > 0); // Heuristic for touch-first vs mouse-first
+
+    if (isDesktop) {
+      // Desktop behavior: Custom cursor always visible, hide system cursor on load.
+      document.addEventListener('mousemove', onMove, {passive:true}); // Start moving immediately
+      var hideOnce = setInterval(function(){ // Hide system cursor after custom one mounts
+        if(host.parentNode){ document.documentElement.classList.add('ju-hide-cursor'); clearInterval(hideOnce);}
+      }, 200);
+    } else {
+      // Touch device behavior: Hide custom cursor initially, show on first mouse move, then hide system cursor.
+      host.style.display = 'none'; // Hide custom cursor by default
+
+      var showCursorOnFirstMove = function(e) {
+        // Only trigger if it's a real mouse event, not touch emulation (if possible to distinguish)
+        if (e.pointerType && e.pointerType !== 'mouse') return; // Ignore non-mouse pointers for this.
+
+        host.style.display = 'block'; // Show custom cursor
+        document.documentElement.classList.add('ju-hide-cursor'); // Hide system cursor
+        window.removeEventListener('mousemove', showCursorOnFirstMove); // Remove self
+        document.addEventListener('mousemove', onMove, {passive:true}); // Start regular movement listener
+      };
+      window.addEventListener('mousemove', showCursorOnFirstMove, {passive:true}); // Listen for first mousemove
+    }
+
     if(document.readyState!=='loading') start(); else document.addEventListener('DOMContentLoaded', start);
-    // Hide system cursor once ready
-    var hideOnce = setInterval(function(){ if(host.parentNode){ document.documentElement.classList.add('ju-hide-cursor'); clearInterval(hideOnce);} }, 200);
+    // --- MODIFICATION END
   }catch(_){ }
 })();

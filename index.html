@@ -64,6 +64,7 @@
     <!-- removed invalid preconnect: r3---sn -->
 <!--     <link rel="preconnect" href="https://googlevideo.com" crossorigin=""> -->
     <link rel="preload" as="image" href="https://i.ytimg.com/vi/XuAbUiwpzrA/hqdefault.jpg">
+    <link rel="preload" as="fetch" href="./assets/images/test3Dface_patched.glb" type="model/gltf-binary" crossorigin="anonymous">
   <link rel="stylesheet" href="./assets/css/fonts.css">
   <link rel="icon" href="./assets/icons/apple-touch-icon.webp">
   <link rel="stylesheet" href="./assets/css/styles.css?v=mobile3">
@@ -642,7 +643,6 @@ body{ padding-right: 0; }
     <script src="./assets/js/scroll-anim.js?v=2" defer></script>
     <script src="./assets/libs/gsap/gsap.min.js"></script>
     <script src="./assets/libs/gsap/ScrollTrigger.min.js"></script>
-
     <script>
       // Theme toggle behavior (no gating)
       (function(){
@@ -807,7 +807,7 @@ body{ padding-right: 0; }
 
 <!-- Works/Lineup Section moved above features -->
 
-  <script src="./assets/js/gallery-3.js?v=2" defer></script>
+  <script src="./assets/js/gallery-3.js?v=3" defer></script>
 
 <section id="policy" class="ju-policy scroll-panel" aria-labelledby="ju-policy-title">
 
@@ -1429,6 +1429,7 @@ body{ padding-right: 0; }
       const container = document.querySelector('#usage-example-slider .coverflow-container');
       const slider = container.querySelector('.coverflow-slider'); if(!slider) return;
       const slides = Array.from(slider.children); if(!slides.length) return;
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints>0) || document.documentElement.classList.contains('is-touch-device');
       let target=0, current=0, hover=false, lastX=0, dragging=false, inertia=0;
       let tiltT=0, tiltC=0, preT=0, preC=0; // X傾き, Z歳差
       const lerp = (a,b,t)=>a+(b-a)*t;
@@ -1436,12 +1437,17 @@ body{ padding-right: 0; }
         const n = slides.length; if(!n) return;
         const vw = window.innerWidth, vh = window.innerHeight;
         const base = Math.min(vw*0.92, vh*0.98, 1700); // 画面基準でさらに大きく
-        const radius = base * 0.90;                  // さらに密に（半径縮小）
+        const radius = base * 0.90;                  // 元の半径
         const step = 360 / n;
-        // 慣性（徐々に減速）
-        if (Math.abs(inertia) > 0.01) { target += inertia; inertia *= 0.94; } /* 慣性減衰を強め、反応を半分に */
-        current = lerp(current, target, 0.03); // さらにスロー
-        // X軸傾きとZ軸歳差もスムーズに
+        // 慣性（徐々に減速）: タッチはかなり長く・速く流す
+        if (Math.abs(inertia) > 0.005) {
+          target += inertia;
+          inertia *= isTouch ? 0.992 : 0.94; // タッチは減速をさらに弱く
+        } else {
+          inertia = 0;
+        }
+        current = lerp(current, target, isTouch ? 0.22 : 0.03);
+        // X軸傾きとZ軸歳差もスムーズに（形はPCと同じ）
         tiltC = lerp(tiltC, tiltT, 0.10);
         preC  = lerp(preC,  preT,  0.08);
         slider.style.transform = `translateZ(${-radius}px) rotateX(${tiltC}deg) rotateY(${current}deg) rotateZ(${preC}deg)`;
@@ -1451,7 +1457,7 @@ body{ padding-right: 0; }
           const a = ((rot + current) % 360 + 360) % 360; // 0=正面
           const frontLin = 1 - Math.min(Math.abs(a)/180, 1); // 1:前, 0:背
           const front = Math.pow(frontLin, 1.6);
-          const scale = 0.80 + 0.45*front;               // 最大 ~1.25
+          const scale = (0.80 + 0.45*front) * 0.7;               // 最大 ~1.25
           const opacity = 0.30 + 0.70*front;
           const blur = (1-front)*7;                       // px
           const roll = preC*0.15*(1-front) - tiltC*0.12*(1-front);
@@ -1476,9 +1482,11 @@ body{ padding-right: 0; }
         const rect = container.getBoundingClientRect();
         const dx = e.clientX - lastX; lastX = e.clientX;
         const yn = (e.clientY - rect.top)/rect.height - 0.5; // -0.5..0.5
-        target += dx * 0.03;           // 反応半分
-        inertia = dx * 0.012;           // 慣性も半分
-        // X軸傾き: マウス上下で -20..20deg
+        const speed = isTouch ? 0.19 : 0.03;       // タッチはかなり強く動く
+        const inertiaGain = isTouch ? 0.070 : 0.012;
+        target += dx * speed;
+        inertia = dx * inertiaGain;
+        // X軸傾き: マウス/タッチ上下で -20..20deg
         tiltT = Math.max(-20, Math.min(20, -yn*40));
         // Z軸歳差: 水平方向の勢いで少し
         preT *= 0.9; preT += dx*0.01;
@@ -1532,6 +1540,7 @@ body{ padding-right: 0; }
       const container = document.querySelector('#event-shop-slider .coverflow-container');
       const slider = container.querySelector('.coverflow-slider'); if(!slider) return;
       const slides = Array.from(slider.children); if(!slides.length) return;
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints>0) || document.documentElement.classList.contains('is-touch-device');
       let target=0, current=0, hover=false, lastX=0, dragging=false, inertia=0;
       let tiltT=0, tiltC=0, preT=0, preC=0;
       const lerp = (a,b,t)=>a+(b-a)*t;
@@ -1539,10 +1548,15 @@ body{ padding-right: 0; }
         const n = slides.length; if(!n) return;
         const vw = window.innerWidth, vh = window.innerHeight;
         const base = Math.min(vw*0.72, vh*0.96, 1600);  // 画面基準
-        const radius = base * 1.85;                     // さらに広く
+        const radius = base * 1.85;                     // 元の半径
         const step = 360 / n;
-        if (Math.abs(inertia) > 0.01) { target += inertia; inertia *= 0.93; }
-        current = lerp(current, target, 0.03); // さらにスロー
+        if (Math.abs(inertia) > 0.005) { 
+          target += inertia; 
+          inertia *= isTouch ? 0.992 : 0.93;  // タッチはかなり減速を弱く
+        } else {
+          inertia = 0;
+        }
+        current = lerp(current, target, isTouch ? 0.16 : 0.03);
         tiltC = lerp(tiltC, tiltT, 0.10);
         preC  = lerp(preC,  preT,  0.08);
         slider.style.transform = `translateZ(${-radius}px) rotateX(${tiltC}deg) rotateY(${current}deg) rotateZ(${preC}deg)`;
@@ -1551,7 +1565,7 @@ body{ padding-right: 0; }
           const a = ((rot + current) % 360 + 360) % 360;
           const frontLin = 1 - Math.min(Math.abs(a)/180, 1);
           const front = Math.pow(frontLin, 1.4);
-          const scale = 0.76 + 0.26*front;            // 控えめスケール
+          const scale = (0.76 + 0.26*front) * 0.7;
           const opacity = 0.35 + 0.65*front;
           const blur = (1-front)*6;
           const roll = preC*0.12*(1-front) - tiltC*0.10*(1-front);
@@ -1576,8 +1590,10 @@ body{ padding-right: 0; }
         const rect = container.getBoundingClientRect();
         const dx = e.clientX - lastX; lastX = e.clientX;
         const yn = (e.clientY - rect.top)/rect.height - 0.5;
-        target += dx * 0.03; // 反応半分
-        inertia = dx * 0.012;
+        const speed = isTouch ? 0.11 : 0.03;
+        const inertiaGain = isTouch ? 0.045 : 0.012;
+        target += dx * speed;
+        inertia = dx * inertiaGain;
         tiltT = Math.max(-15, Math.min(15, -yn*30)); // Event: 傾き控えめ
         preT *= 0.9; preT += dx*0.008;
       });
@@ -2105,7 +2121,7 @@ body{ padding-right: 0; }
 </section>
 
 <!-- Footer Section -->
-<footer style="text-align: center; padding: clamp(30px, 5vw, 50px); border-top: 1px solid #222;">
+<footer style="text-align: center; padding: clamp(15px, 2.5vw, 25px); border-top: 1px solid #222;">
     <p class="gs-card-text" style="margin: 0;">© 2006 originalsoccerball.com「JUGEND」 All rights reserved.</p>
 </footer>
 
@@ -2155,4 +2171,5 @@ body{ padding-right: 0; }
       });
     })();
   </script>
-</body></html>
+</body>
+</html>

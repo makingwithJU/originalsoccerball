@@ -702,7 +702,7 @@ function gooeyTextAnimation() {
     } catch(_){}
     let model, pivot = new THREE.Group();
     scene.add(pivot);
-    loader.load('assets/test3Dface_patched.glb', (gltf)=>{
+    loader.load('assets/images/test3Dface_patched.glb', (gltf)=>{
       model = gltf.scene;
       log('glb loaded');
       model.traverse(n=>{

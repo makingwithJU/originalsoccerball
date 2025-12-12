@@ -58,6 +58,10 @@
     let inertiaId = 0;
     let resizeRaf = 0;
 
+    // --- New variables for robust velocity tracking ---
+    let velHistory = [];
+    let lastMoveTimestamp = 0;
+
     const computeWidth = () => {
       const style = getComputedStyle(track);
       const gap = parseFloat(style.columnGap || style.gap || '0') || 0;
@@ -89,8 +93,9 @@
     };
 
     const stepInertia = () => {
-      vx *= 0.92;
-      if (Math.abs(vx) < 0.1) {
+      // Friction for inertia
+      vx *= 0.985;
+      if (Math.abs(vx) < 0.05) { // Stop if velocity is negligible
         vx = 0;
         inertiaId = 0;
         return;
@@ -100,21 +105,55 @@
       render();
       inertiaId = requestAnimationFrame(stepInertia);
     };
-
+    
+    // --- MODIFIED: pointerMove function ---
     const pointerMove = (clientX) => {
       if (!isDown) return;
       const delta = clientX - prevX;
       prevX = clientX;
-      tx += delta;
+      
+      // Direct dragging feel
+      tx += delta * 1.4;
       wrap();
       render();
-      vx = delta;
+
+      // Record history for velocity calculation
+      const now = performance.now();
+      if (now - lastMoveTimestamp > 5) { // Throttle recording
+          velHistory.push({ x: clientX, time: now });
+          if (velHistory.length > 30) { // Keep a limited history
+              velHistory.shift();
+          }
+          lastMoveTimestamp = now;
+      }
     };
 
+    // --- MODIFIED: endDrag function ---
     const endDrag = () => {
       if (!isDown) return;
       isDown = false;
-      if (Math.abs(vx) > 0.1) {
+
+      // Calculate velocity from recent history for a flick gesture
+      const now = performance.now();
+      const relevantHistory = velHistory.filter(p => now - p.time < 100); // last 100ms
+
+      vx = 0; // Default to no velocity
+      if (relevantHistory.length > 2) {
+          const first = relevantHistory[0];
+          const last = relevantHistory[relevantHistory.length - 1];
+          const dist = last.x - first.x;
+          const time = last.time - first.time;
+          
+          if (time > 0) {
+              const velocity = dist / time; // pixels per millisecond
+              vx = velocity * 15; // Amplify for a better feel
+          }
+      }
+      
+      velHistory = []; // Clear history
+
+      // Start inertia if velocity is significant
+      if (Math.abs(vx) > 1) {
         stopInertia();
         inertiaId = requestAnimationFrame(stepInertia);
       }
@@ -157,12 +196,15 @@
 
     window.addEventListener('resize', handleResize, { passive: true });
 
+    // --- MODIFIED: pointerdown event ---
     rail.addEventListener('pointerdown', (e) => {
       if (e.button !== undefined && e.button !== 0) return;
       isDown = true;
       prevX = e.clientX;
       vx = 0;
       stopInertia();
+      velHistory = [{x: e.clientX, time: performance.now()}]; // Reset and seed history
+      lastMoveTimestamp = performance.now();
       rail.classList.add('ju-rail--dragging');
       rail.setPointerCapture?.(e.pointerId);
       e.preventDefault();
@@ -187,12 +229,15 @@
       endDrag();
     });
 
+    // --- MODIFIED: touchstart event ---
     rail.addEventListener('touchstart', (e) => {
       if (!e.touches.length) return;
       isDown = true;
       prevX = e.touches[0].clientX;
       vx = 0;
       stopInertia();
+      velHistory = [{x: e.touches[0].clientX, time: performance.now()}]; // Reset and seed history
+      lastMoveTimestamp = performance.now();
       rail.classList.add('ju-rail--dragging');
     }, { passive: true });
 

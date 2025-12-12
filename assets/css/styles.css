@@ -1050,6 +1050,15 @@ html.is-touch-device #hero-2 .hero-title {
     max-width: 92vw !important;
   }
 }
+
+/* iPad縦向き（タブレット想定: 幅600〜1400）: Hero2 のタイトルを小さく＆少し上に */
+@media (pointer:coarse) and (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
+  #hero-2 .hero-title {
+    font-size: clamp(22px, 4vw, 34px);
+    top: 44vh;
+    transform: translate(-50%, 0);
+  }
+}
 /* ========== RESPONSIVE OVERRIDE (2025-09-23) ========== */
 
 /* --- 1. Layout Grids --- */
@@ -1146,3 +1155,4 @@ p, .gs-work-text, .gs-card-text, .ju-design__text {
 @media (hover: none), (pointer: coarse) {
   html, body, * { cursor: auto !important; }
 }
+

@@ -409,6 +409,19 @@ html.is-safari-desktop .gooey-wrapper {
   color: var(--muted);
 }
 
+.apology-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 5vw, 60px);
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .apology-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .text-nowrap {
   white-space: nowrap;
   overflow: hidden;
@@ -499,6 +512,23 @@ html.is-safari-desktop .gooey-wrapper {
 
 .gs-work-card:hover .gs-work-image--funball03 {
   transform: scale(1.31);
+}
+
+/* iPad縦向きではトリミングを避けて少し引いた見え方にする */
+html.ju-tablet-portrait .gs-work-image-wrapper--funball03 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1px, 0.35vw, 8px);
+}
+
+html.ju-tablet-portrait .gs-work-image--funball03 {
+  object-fit: contain;
+  transform: scale(1.05);
+}
+
+html.ju-tablet-portrait .gs-work-card:hover .gs-work-image--funball03 {
+  transform: scale(1.12);
 }
 
 .gs-work-content {
@@ -879,50 +909,22 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
 
 #hero-2 {
   position: relative;
-  background: #000;
+  background: var(--hero2-bg);
   overflow: hidden;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-}
-
-/* HERO2専用マスク:
-   上下と左右で厚みの違うグレー額縁を作る。
-   - 上下: 薄め（高さを半分程度に）
-   - 左右: やや太め（横方向にしっかり余白を出す） */
-#hero-2::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  /* 上下と左右で厚みを変えた4辺の帯を描く */
-  /* 上下は左右の約半分の高さに、左右はしっかり余白が出るようにする */
-  --ju-frame-y: clamp(6px, 2.5vh, 24px);   /* 上下のグレー帯（かなり薄め） */
-  --ju-frame-x: clamp(28px, 10vw, 96px);   /* 左右のグレー帯（太め） */
-  background:
-    /* 上 */
-    linear-gradient(#080808, #080808) top / 100% var(--ju-frame-y) no-repeat,
-    /* 下 */
-    linear-gradient(#080808, #080808) bottom / 100% var(--ju-frame-y) no-repeat,
-    /* 左 */
-    linear-gradient(#080808, #080808) left / var(--ju-frame-x) 100% no-repeat,
-    /* 右 */
-    linear-gradient(#080808, #080808) right / var(--ju-frame-x) 100% no-repeat;
 }
 
 #hero-2 .hero-media {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
-  background: #000; /* レターボックス部分も同じ黒 */
 }
 
 #hero-2 .hero-video {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  background: #000; /* YouTube iframeの外側もサイトと同じ黒 */
+  background: inherit;
 }
 
 #hero-2 .hero-video iframe {
@@ -946,8 +948,7 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
   width: 100vw;
   margin-left: calc(50% - 50vw);
   padding-inline: 0;
-  /* セクション自体の背景も完全な #000 に固定 */
-  background: #000;
+  background: var(--hero2-bg);
 }
 
 #hero-2-slide > .hero {
@@ -959,22 +960,30 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
   #hero-2 .hero-media,
   #hero-2 .hero-video,
   #hero-2-slide {
-    background: #000;
+    background: var(--hero2-bg, #000);
   }
 }
 
-/* HERO2 見出し（もともとの位置指定を維持） */
+
+
 #hero-2 .hero-title {
   position: absolute !important;
   top: 48vh !important;
   left: 50% !important;
   transform: translate(-50%, 0) !important;
-  z-index: 2 !important; /* マスクよりも前面に出す */
   margin: 0 auto !important;
   padding: 0 !important;
   width: auto !important;
   max-width: 92vw !important;
   text-align: center !important;
+}
+
+/* iPad縦向き: Hero2 タイトルを小さく＆少し上に（タブレット想定: 幅600〜1400の縦向き） */
+@media (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
+  #hero-2 .hero-title {
+    font-size: clamp(22px, 4.2vw, 34px) !important;
+    top: 42vh !important; /* さらに少しだけ上に */
+  }
 }
 
 
@@ -1062,6 +1071,16 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
   }
 }
 
+/* iPad縦向き（タブレット想定: 幅600〜1400）: Hero2 のタイトルを小さく＆少し上に
+   pointer:coarse ルールより後に書いて最優先させる */
+@media (pointer:coarse) and (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
+  #hero-2 .hero-title {
+    font-size: clamp(22px, 4vw, 34px) !important;
+    top: 44vh !important;
+    transform: translate(-50%, 0) !important;
+  }
+}
+
 /* iPad縦向き: HERO文字を少しだけ上に */
 /* ※ 一部iPadはCSS幅が768未満になるため幅条件は外す */
 @media (orientation: portrait) {
@@ -1092,6 +1111,23 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
   flex-direction: column;
   justify-content: center;
   width: 100%;
+}
+
+/* iPad横向き: 「さあ、キックオフ。」セクションをさらに縮小して画面内に収める
+   （タブレット想定: 幅600〜1400の横向き） */
+@media (orientation: landscape) and (min-width: 600px) and (max-width: 1400px) {
+  #faq-slide .ju-policy {
+    transform: translateY(-6vh) scale(0.70);
+    transform-origin: center center;
+  }
+}
+
+/* iPad縦向き: 「さあ、キックオフ。」セクションも縮小して画面内に収める */
+@media (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
+  #faq-slide .ju-policy {
+    transform: translateY(-4vh) scale(0.78);
+    transform-origin: center center;
+  }
 }
 
     .order-gallery {
@@ -1338,4 +1374,59 @@ p, .gs-work-text, .gs-card-text, .ju-design__text {
 /* MOBILE cursor sanity */
 @media (hover: none), (pointer: coarse) {
   html, body, * { cursor: auto !important; }
+}
+
+/*
+  iPad Layout Override - FINAL
+  Counteract ipad-center-layout.js for specific sections to fix layout issues.
+*/
+@media (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
+
+  /*
+    1. Exempt HERO2 video section from scaling and padding.
+       This allows it to become a full-screen background video.
+  */
+  #hero-2-slide.scroll-panel {
+    display: block !important;
+    padding: 0 !important;
+  }
+
+  #hero-2-slide .hero, #hero-2-slide.scroll-panel > div {
+    transform: none !important;
+  }
+
+  /*
+    2. Exempt the Apology/Contact section's CONTENT from scaling, but allow the panel itself to be centered.
+  */
+  #contact-apology .apology-grid {
+    transform: none !important; /* Undo the script's scaling */
+  }
+
+  /*
+    3. Left-align the content within the Apology section's left column.
+  */
+  #contact-apology .apology-left .gs-container {
+    margin-left: 0 !important;
+    margin-right: auto !important; /* Forces content to left */
+    text-align: left !important;
+  }
+}
+
+/* iPad / tablet landscape: Adjust HERO title position (ULTIMATE OVERRIDE)
+   - keep it inside HERO (no fixed), just raise slightly
+   - avoid overlap with following sections while scrolling */
+@media (orientation: landscape) and (pointer: coarse) {
+  #hero {
+    align-items: center;
+    justify-items: center;
+  }
+  #hero .hero-title {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin-top: 0 !important;
+    transform: translateY(-12vh) !important; /* さらにわずかに上へ */
+    animation: none !important;
+    opacity: 1 !important;
+  }
 }

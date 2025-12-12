@@ -913,32 +913,28 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
   overflow: hidden;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  min-height: 100vh;
 }
 
 #hero-2 .hero-media {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  min-height: 100vh;
 }
 
 #hero-2 .hero-video {
   position: absolute;
   inset: 0;
   background: inherit;
-  min-height: 100vh;
 }
 
 #hero-2 .hero-video iframe {
   position: absolute;
   top: 50%;
   left: 50%;
-  /* 16:9を基準に、縦横どちらも画面をカバーするサイズをとる */
-  width: calc(100vh * 16 / 9);
-  height: 100vh;
-  min-width: 100vw;
-  min-height: 56.25vw; /* 100vw * 9/16 */
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   transform: translate(-50%, -50%);
   transform-origin: center center;
   border: 0;

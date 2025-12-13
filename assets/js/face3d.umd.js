@@ -59,6 +59,8 @@
   var impactKickDone = false;  // インパクト初速の付与フラグ
   var yTarget = 0;             // 最終到達Y（ヒーローのテキスト中心付近）
   var _lastTargetUpdate = 0;   // yTarget再計算のスロットル
+  var rafId = 0;
+  var running = true;
   function setScrollLocked(lock){
     try {
       if (lock){
@@ -328,7 +330,7 @@ function dbg(msg){}
       try{ window.removeEventListener('touchmove', touchMoveHandler, { passive: false }); }catch(_){ window.removeEventListener('touchmove', touchMoveHandler); }
     };
 
-    requestAnimationFrame(tick);
+    startLoop();
   }
 
   function onResize(){
@@ -356,8 +358,22 @@ function dbg(msg){}
 
   var _tLast = performance.now ? performance.now() : Date.now();
   var _t = 0;
+  function startLoop(){
+    if (rafId) return;
+    running = true;
+    rafId = requestAnimationFrame(tick);
+  }
+  function stopLoop(){
+    running = false;
+    if (rafId){
+      try{ cancelAnimationFrame(rafId); }catch(_){ }
+      rafId = 0;
+    }
+  }
   function tick(){
-    requestAnimationFrame(tick);
+    if (!running){ rafId = 0; return; }
+    // schedule next frame early so we can cancel it immediately on completion
+    rafId = requestAnimationFrame(tick);
     if (!renderer || !scene || !camera || !model){ renderer && renderer.render(scene, camera); return; }
     var now = performance.now ? performance.now() : Date.now();
     var dt = Math.max(0, Math.min(0.05, (now - _tLast)/1000));
@@ -406,6 +422,15 @@ function dbg(msg){}
       try{ layer.style.pointerEvents = 'none'; }catch(_){ }
       try{ layer.style.display = 'none'; }catch(_){ }
       cleanupInputs();
+      stopLoop();
+      // Release GPU resources; no visual impact because the layer is hidden at this point.
+      try{
+        if (renderer && renderer.dispose) renderer.dispose();
+        if (renderer && renderer.forceContextLoss) renderer.forceContextLoss();
+        if (renderer && renderer.domElement && renderer.domElement.parentNode) {
+          renderer.domElement.parentNode.removeChild(renderer.domElement);
+        }
+      }catch(_){ }
       return;
     }
 

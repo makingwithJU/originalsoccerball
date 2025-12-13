@@ -52,15 +52,16 @@
 
     let sectionWidth = 0;
     let tx = 0;
-    let vx = 0;
-    let isDown = false;
-    let prevX = 0;
-    let inertiaId = 0;
-    let resizeRaf = 0;
+	    let vx = 0;
+	    let isDown = false;
+	    let prevX = 0;
+	    let inertiaId = 0;
+	    let resizeRaf = 0;
+	    let renderRaf = 0;
 
-    // --- New variables for robust velocity tracking ---
-    let velHistory = [];
-    let lastMoveTimestamp = 0;
+	    // --- New variables for robust velocity tracking ---
+	    let velHistory = [];
+	    let lastMoveTimestamp = 0;
 
     const computeWidth = () => {
       const style = getComputedStyle(track);
@@ -81,9 +82,17 @@
       }
     };
 
-    const render = () => {
-      track.style.transform = `translate3d(${tx}px,0,0)`;
-    };
+	    const render = () => {
+	      track.style.transform = `translate3d(${tx}px,0,0)`;
+	    };
+	
+	    const scheduleRender = () => {
+	      if (renderRaf) return;
+	      renderRaf = requestAnimationFrame(() => {
+	        renderRaf = 0;
+	        render();
+	      });
+	    };
 
     const stopInertia = () => {
       if (inertiaId) {
@@ -112,10 +121,10 @@
       const delta = clientX - prevX;
       prevX = clientX;
       
-      // Direct dragging feel
-      tx += delta * 1.4;
-      wrap();
-      render();
+	      // Direct dragging feel
+	      tx += delta * 1.4;
+	      wrap();
+	      scheduleRender();
 
       // Record history for velocity calculation
       const now = performance.now();
@@ -265,15 +274,15 @@
       const absY = Math.abs(e.deltaY);
       if (absX === 0 || absX <= absY) return;
       const delta = e.deltaX;
-      tx -= delta;
-      wrap();
-      render();
-      vx = -delta;
-      stopInertia();
-      inertiaId = requestAnimationFrame(stepInertia);
-      e.preventDefault();
-    }, { passive: false });
-  };
+	      tx -= delta;
+	      wrap();
+	      scheduleRender();
+	      vx = -delta;
+	      stopInertia();
+	      inertiaId = requestAnimationFrame(stepInertia);
+	      e.preventDefault();
+	    }, { passive: false });
+	  };
 
   const init = () => {
     document.querySelectorAll('.ju-rail').forEach(setup);

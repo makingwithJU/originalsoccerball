@@ -5,18 +5,13 @@
   var hero = document.getElementById('hero');
   if (!layer || !hero || !window.THREE) return;
 
-  // Touch devices: avoid scroll hijack / heavy WebGL on iPad・mobile to keep scrolling smooth.
+  // Touch devices: keep 3D visible, but use lighter rendering settings.
   var isTouchDevice = false;
   try {
     isTouchDevice =
       (navigator && typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0) ||
       (!!window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   } catch(_){ }
-  if (isTouchDevice) {
-    try { layer.style.display = 'none'; } catch(_){ }
-    try { if (window.animationCompleted) window.animationCompleted(); } catch(_){ }
-    return;
-  }
 
   // 最前面固定（ヘッダ/タイトルより上。カーソルより下）
   (function pinLayerFront(){
@@ -144,8 +139,8 @@ function dbg(msg){}
     camera.position.set(0, 0, 6);
     camera.lookAt(0, 0, 0);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer = new THREE.WebGLRenderer({ antialias: !isTouchDevice, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.0 : 1.5));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
     // 黒潰れ対策: 色空間とトーンマッピング
@@ -299,46 +294,8 @@ function dbg(msg){}
     window.addEventListener('resize', function(){ onResize(); computeYStart(); computeYTarget(); });
     // 初期は最小から（0..1）
     targetP = 0.0; currP = 0.0;
-    var wheelHandler = function(e){
-      var d = Math.max(-400, Math.min(400, e.deltaY));
-      // 下スクロールで前方へ／拡大、上で戻す
-      var scrollSens = scrollSensitivityFor(targetP);
-      targetP += (d / scrollSens); // 進捗が進むほど軽く
-      if (targetP < 0) targetP = 0; if (targetP > 1) targetP = 1;
-      // 回転慣性も付与（弱め）
-      var spinSens = spinSensitivityFor(targetP);
-      spinVel += (d / spinSens);
-    };
-    // NOTE: do not preventDefault; page lock is controlled elsewhere (scroll-locked).
-    hero.addEventListener('wheel', wheelHandler, { passive: true });
-
-    // --- TOUCH SUPPORT ---
-    var lastTouchY = 0;
-    hero.addEventListener('touchstart', function(e) {
-      if (e.touches && e.touches.length > 0) {
-        lastTouchY = e.touches[0].clientY;
-      }
-    }, { passive: true });
-
-    var touchMoveHandler = function(e){
-      if (e.touches && e.touches.length > 0) {
-        var currentY = e.touches[0].clientY;
-        var d = lastTouchY - currentY; // Match wheel direction
-        lastTouchY = currentY;
-
-        var touchScrollSens = scrollSensitivityFor(targetP);
-        targetP += (d / touchScrollSens); // Wheel と同じ感度
-        if (targetP < 0) targetP = 0; if (targetP > 1) targetP = 1;
-        var touchSpinSens = spinSensitivityFor(targetP);
-        spinVel += (d / touchSpinSens); // Wheel と同じ感度
-      }
-    };
-    hero.addEventListener('touchmove', touchMoveHandler, { passive: true });
-
-    cleanupInputs = function(){
-      try{ hero.removeEventListener('wheel', wheelHandler); }catch(_){ }
-      try{ hero.removeEventListener('touchmove', touchMoveHandler); }catch(_){ }
-    };
+    // Drive progress from native scroll position (no wheel/touch hijack).
+    cleanupInputs = function(){};
 
     startLoop();
   }
@@ -384,6 +341,8 @@ function dbg(msg){}
       rafId = requestAnimationFrame(tick);
       return;
     }
+    // Follow native scroll instead of capturing wheel/touch.
+    try { targetP = progress(); } catch(_){ targetP = targetP; }
     var now = performance.now ? performance.now() : Date.now();
     var dt = Math.max(0, Math.min(0.05, (now - _tLast)/1000));
     _tLast = now; _t += dt;

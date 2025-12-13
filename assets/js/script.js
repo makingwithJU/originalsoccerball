@@ -765,8 +765,22 @@ function gooeyTextAnimation() {
     const raw = (centerScroll - startScroll) / (endScroll - startScroll);
     progress = Math.max(0, Math.min(1, raw));
   }
-    updateProgress();
-    window.addEventListener('scroll', updateProgress, { passive: true });
+    var scrollRaf = 0;
+    function onScroll(){
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(function(){
+        scrollRaf = 0;
+        updateProgress();
+      });
+    }
+    function bindScroll(){
+      updateProgress();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+    function unbindScroll(){
+      window.removeEventListener('scroll', onScroll);
+      if (scrollRaf) { try{ cancelAnimationFrame(scrollRaf); }catch(_){ } scrollRaf = 0; }
+    }
 
     // 目標位置（テキストの横）
     // 全画面キャンバス前提: 右外から入り、テキスト横（中央やや右）に着地
@@ -785,8 +799,9 @@ function gooeyTextAnimation() {
 
     camera.lookAt(0,0,0);
 
-    function render(){
-      requestAnimationFrame(render);
+    var animActive = false;
+    var animRaf = 0;
+    function renderStep(){
       if (model){
         const now = performance.now ? performance.now() : Date.now();
         if (!landingStartTime){
@@ -819,7 +834,33 @@ function gooeyTextAnimation() {
       }
       renderer.render(scene, camera);
     }
-    render();
+    function loop(){
+      if (!animActive) { animRaf = 0; return; }
+      renderStep();
+      animRaf = requestAnimationFrame(loop);
+    }
+    function startAnim(){
+      if (animActive) return;
+      animActive = true;
+      if (!animRaf) animRaf = requestAnimationFrame(loop);
+    }
+    function stopAnim(){
+      animActive = false;
+      if (animRaf) { try{ cancelAnimationFrame(animRaf); }catch(_){ } animRaf = 0; }
+    }
+
+    // Only animate while the 3D mount is near/in view to reduce scroll jank on desktop.
+    const visObserver = new IntersectionObserver((entries)=>{
+      const on = entries.some(e => e.isIntersecting);
+      if (on){
+        bindScroll();
+        startAnim();
+      } else {
+        stopAnim();
+        unbindScroll();
+      }
+    }, { threshold: 0.05, rootMargin: '200px 0px 200px 0px' });
+    visObserver.observe(mount);
 
     function beginLanding(){
       if (landingStartTime || !model) return;

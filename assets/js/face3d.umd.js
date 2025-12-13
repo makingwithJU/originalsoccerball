@@ -66,6 +66,14 @@
   var _lastTargetUpdate = 0;   // yTarget再計算のスロットル
   var rafId = 0;
   var running = true;
+  function heroIsInView(){
+    try{
+      var r = hero.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      if (!vh) return true;
+      return (r.bottom > 0 && r.top < vh);
+    }catch(_){ return true; }
+  }
   function setScrollLocked(lock){
     try {
       if (lock){
@@ -289,11 +297,21 @@ function dbg(msg){}
       document.head.appendChild(s);
     }
 
-    window.addEventListener('resize', function(){ onResize(); computeYStart(); computeYTarget(); });
+    var resizeRaf = 0;
+    window.addEventListener('resize', function(){
+      if (resizeRaf) return;
+      resizeRaf = requestAnimationFrame(function(){
+        resizeRaf = 0;
+        onResize(); computeYStart(); computeYTarget();
+      });
+    }, { passive: true });
     // 初期は最小から（0..1）
     targetP = 0.0; currP = 0.0;
     var wheelHandler = function(e){
-      if (!interactionDone) { try{ e.preventDefault(); }catch(_){ } }
+      if (interactionDone) return;
+      if (document.hidden) return;
+      if (!heroIsInView()) return;
+      try{ e.preventDefault(); }catch(_){ }
       var d = Math.max(-400, Math.min(400, e.deltaY));
       // 下スクロールで前方へ／拡大、上で戻す
       var scrollSens = scrollSensitivityFor(targetP);
@@ -314,19 +332,20 @@ function dbg(msg){}
     }, { passive: true });
 
     var touchMoveHandler = function(e){
-      if (!interactionDone){
-        try{ e.preventDefault(); }catch(_){ }
-        if (e.touches && e.touches.length > 0) {
-            var currentY = e.touches[0].clientY;
-            var d = lastTouchY - currentY; // Match wheel direction
-            lastTouchY = currentY;
+      if (interactionDone) return;
+      if (document.hidden) return;
+      if (!heroIsInView()) return;
+      try{ e.preventDefault(); }catch(_){ }
+      if (e.touches && e.touches.length > 0) {
+          var currentY = e.touches[0].clientY;
+          var d = lastTouchY - currentY; // Match wheel direction
+          lastTouchY = currentY;
 
-            var touchScrollSens = scrollSensitivityFor(targetP);
-            targetP += (d / touchScrollSens); // Wheel と同じ感度
-            if (targetP < 0) targetP = 0; if (targetP > 1) targetP = 1;
-            var touchSpinSens = spinSensitivityFor(targetP);
-            spinVel += (d / touchSpinSens); // Wheel と同じ感度
-        }
+          var touchScrollSens = scrollSensitivityFor(targetP);
+          targetP += (d / touchScrollSens); // Wheel と同じ感度
+          if (targetP < 0) targetP = 0; if (targetP > 1) targetP = 1;
+          var touchSpinSens = spinSensitivityFor(targetP);
+          spinVel += (d / touchSpinSens); // Wheel と同じ感度
       }
     };
     window.addEventListener('touchmove', touchMoveHandler, { passive: false });
@@ -379,11 +398,21 @@ function dbg(msg){}
       rafId = 0;
     }
   }
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) {
+      stopLoop();
+      return;
+    }
+    if (!interactionDone && renderer && scene && camera && model) {
+      startLoop();
+    }
+  }, { passive: true });
   function tick(){
     if (!running){ rafId = 0; return; }
     // schedule next frame early so we can cancel it immediately on completion
     rafId = requestAnimationFrame(tick);
     if (!renderer || !scene || !camera || !model){ renderer && renderer.render(scene, camera); return; }
+    if (document.hidden) return;
     var now = performance.now ? performance.now() : Date.now();
     var dt = Math.max(0, Math.min(0.05, (now - _tLast)/1000));
     _tLast = now; _t += dt;

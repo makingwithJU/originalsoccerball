@@ -936,7 +936,14 @@ function gooeyTextAnimation() {
 	    }, { passive: true });
 	  }
 	  // リサイズで高さ再計算
-	  window.addEventListener('resize', updateNoticeHeight);
+	  let noticeResizeRaf = 0;
+	  window.addEventListener('resize', function(){
+	    if (noticeResizeRaf) return;
+	    noticeResizeRaf = requestAnimationFrame(function(){
+	      noticeResizeRaf = 0;
+	      updateNoticeHeight();
+	    });
+	  }, { passive: true });
 	  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindFooterAndNoticeOnContact);
   else bindFooterAndNoticeOnContact();

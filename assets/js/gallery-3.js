@@ -195,6 +195,11 @@
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) return;
+      stopInertia();
+      vx = 0;
+    }, { passive: true });
 
     // --- MODIFIED: pointerdown event ---
     rail.addEventListener('pointerdown', (e) => {

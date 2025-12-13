@@ -982,7 +982,7 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
 @media (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
   #hero-2 .hero-title {
     font-size: clamp(22px, 4.2vw, 34px) !important;
-    top: 42vh !important; /* さらに少しだけ上に */
+    top: 52vh !important;
   }
 }
 
@@ -1076,7 +1076,7 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
 @media (pointer:coarse) and (orientation: portrait) and (min-width: 600px) and (max-width: 1400px) {
   #hero-2 .hero-title {
     font-size: clamp(22px, 4vw, 34px) !important;
-    top: 44vh !important;
+    top: 52vh !important;
     transform: translate(-50%, 0) !important;
   }
 }

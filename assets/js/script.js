@@ -929,18 +929,36 @@ function gooeyTextAnimation() {
     if (!vw || !vh) return;
     var ratio = 16 / 9;
     var width, height;
-    // まず「全体像」が切れない contain サイズを出す
-    if (vw / vh > ratio){
-      // 横に広い画面: 高さを基準に幅を決める
-      height = vh;
-      width  = vh * ratio;
+    var isTouch =
+      ('ontouchstart' in window) ||
+      (navigator.maxTouchPoints > 0) ||
+      (!!window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    var isLandscape = !!window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
+    var isTabletLike = Math.min(vw, vh) >= 600;
+    var useCover = (!isTouch) || (isTouch && isLandscape && isTabletLike);
+
+    if (!useCover) {
+      // Touch/iPad: prioritize "contain-ish" so the full frame is mostly visible (avoid aggressive cropping).
+      if (vw / vh > ratio){
+        height = vh;
+        width  = vh * ratio;
+      } else {
+        width  = vw;
+        height = vw / ratio;
+      }
     } else {
-      // 縦に長い画面: 幅を基準に高さを決める
-      width  = vw;
-      height = vw / ratio;
+      // Desktop & tablet-landscape: "cover" so the background fills edge-to-edge (avoid pillarbox black bars).
+      if (vw / vh > ratio){
+        width  = vw;
+        height = vw / ratio;
+      } else {
+        height = vh;
+        width  = vh * ratio;
+      }
     }
-  // そこからごくわずかだけ拡大して、額縁マスクの内側いっぱいに収める
-  var overscan = 1.04; // 約4%拡大（端だけ数％カット）
+
+    // Slight overscan to avoid 1px gaps from rounding / transforms.
+    var overscan = 1.04; // ~4% enlargement (crop only a few % at edges)
     width  *= overscan;
     height *= overscan;
 

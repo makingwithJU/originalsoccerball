@@ -893,37 +893,51 @@ function gooeyTextAnimation() {
     document.getElementById('contact-form-1'),
     document.getElementById('contact-apology')
   ].filter(Boolean);
-  if (targets.length){
-    const io = new IntersectionObserver((entries)=>{
-      for (const e of entries){
-        if (!e.isIntersecting) continue;
-        // 100vh級のstickyセクションでも確実に発火させる
-        onReveal(); io.disconnect(); break;
-      }
-    }, { root: null, threshold: 0, rootMargin: '-45% 0% -45% 0%' });
-    targets.forEach(t => io.observe(t));
-    // 追加の保険: ビューポート中央が対象セクション内に入ったかを手動判定
-    function checkCenter(){
-      if (revealed) return;
-      const cy = window.innerHeight * 0.5;
-      for (const t of targets){
-        const r = t.getBoundingClientRect();
-        if (r.top <= cy && r.bottom >= cy){ onReveal(); break; }
-      }
-    }
-    window.addEventListener('scroll', checkCenter, { passive: true });
-    window.addEventListener('resize', checkCenter);
-  } else {
-    // フォールバック：スクロール末尾付近で表示
-    window.addEventListener('scroll', function(){
-      if (revealed) return;
-      const max = document.documentElement.scrollHeight - innerHeight;
-      if (max > 0 && scrollY > max * 0.85) onReveal();
-    }, { passive: true });
-  }
-  // リサイズで高さ再計算
-  window.addEventListener('resize', updateNoticeHeight);
-  }
+	  if (targets.length){
+	    const io = new IntersectionObserver((entries)=>{
+	      for (const e of entries){
+	        if (!e.isIntersecting) continue;
+	        // 100vh級のstickyセクションでも確実に発火させる
+	        onReveal(); io.disconnect(); break;
+	      }
+	    }, { root: null, threshold: 0, rootMargin: '-45% 0% -45% 0%' });
+	    targets.forEach(t => io.observe(t));
+	    // 追加の保険: ビューポート中央が対象セクション内に入ったかを手動判定
+	    let checkRaf = 0;
+	    function checkCenter(){
+	      if (revealed) return;
+	      const cy = window.innerHeight * 0.5;
+	      for (const t of targets){
+	        const r = t.getBoundingClientRect();
+	        if (r.top <= cy && r.bottom >= cy){ onReveal(); break; }
+	      }
+	    }
+	    function scheduleCheck(){
+	      if (revealed) return;
+	      if (checkRaf) return;
+	      checkRaf = requestAnimationFrame(()=>{
+	        checkRaf = 0;
+	        checkCenter();
+	      });
+	    }
+	    window.addEventListener('scroll', scheduleCheck, { passive: true });
+	    window.addEventListener('resize', scheduleCheck);
+	  } else {
+	    // フォールバック：スクロール末尾付近で表示
+	    let tailRaf = 0;
+	    window.addEventListener('scroll', function(){
+	      if (revealed) return;
+	      if (tailRaf) return;
+	      tailRaf = requestAnimationFrame(()=>{
+	        tailRaf = 0;
+	        const max = document.documentElement.scrollHeight - innerHeight;
+	        if (max > 0 && scrollY > max * 0.85) onReveal();
+	      });
+	    }, { passive: true });
+	  }
+	  // リサイズで高さ再計算
+	  window.addEventListener('resize', updateNoticeHeight);
+	  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindFooterAndNoticeOnContact);
   else bindFooterAndNoticeOnContact();
 })();

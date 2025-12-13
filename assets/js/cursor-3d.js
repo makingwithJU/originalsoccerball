@@ -9,7 +9,16 @@
       'background:transparent; mix-blend-mode:difference; will-change: transform'
     ].join(';');
 
-    var ready=false, renderer, scene, camera, obj;
+	    var ready=false, renderer, scene, camera, obj;
+	    var rafId = 0;
+
+	    function loop(){
+	      if(!ready) { rafId = 0; return; }
+	      if (document.hidden) { rafId = 0; return; }
+	      rafId = requestAnimationFrame(loop);
+	      obj.rotation.y += 0.02;
+	      renderer.render(scene, camera);
+	    }
 
     function mount(){ if(!document.getElementById('cursor3d')) document.body.appendChild(host); }
     function onMove(e){ host.style.left=e.clientX+'px'; host.style.top=e.clientY+'px'; }
@@ -106,8 +115,8 @@
         obj = new THREE.LineSegments(w, new THREE.LineBasicMaterial({color:0xffffff}));
         scene.add(obj); animate();
       }
-      function animate(){ ready=true; (function loop(){ if(!ready) return; requestAnimationFrame(loop); obj.rotation.y += 0.02; renderer.render(scene, camera); })(); }
-    }
+	      function animate(){ ready=true; if(!rafId) rafId = requestAnimationFrame(loop); }
+	    }
 
     function start(){ mount(); ensureTHREE(function(){ ensureSTL(init); }); }
     // --- MODIFICATION START ---
@@ -135,7 +144,12 @@
       window.addEventListener('mousemove', showCursorOnFirstMove, {passive:true}); // Listen for first mousemove
     }
 
-    if(document.readyState!=='loading') start(); else document.addEventListener('DOMContentLoaded', start);
-    // --- MODIFICATION END
-  }catch(_){ }
-})();
+	    if(document.readyState!=='loading') start(); else document.addEventListener('DOMContentLoaded', start);
+	    document.addEventListener('visibilitychange', function(){
+	      if (!document.hidden && ready && obj && renderer && camera && scene && !rafId){
+	        rafId = requestAnimationFrame(loop);
+	      }
+	    }, { passive:true });
+	    // --- MODIFICATION END
+	  }catch(_){ }
+	})();

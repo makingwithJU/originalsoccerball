@@ -5,19 +5,6 @@
   var hero = document.getElementById('hero');
   if (!layer || !hero || !window.THREE) return;
 
-  // Touch devices: avoid scroll hijack / heavy WebGL on iPad・mobile to keep scrolling smooth.
-  var isTouchDevice = false;
-  try {
-    isTouchDevice =
-      (navigator && typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0) ||
-      (!!window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
-  } catch(_){ }
-  if (isTouchDevice) {
-    try { layer.style.display = 'none'; } catch(_){ }
-    try { if (window.animationCompleted) window.animationCompleted(); } catch(_){ }
-    return;
-  }
-
   // 最前面固定（ヘッダ/タイトルより上。カーソルより下）
   (function pinLayerFront(){
     try{
@@ -64,8 +51,6 @@
   var targetP = 0.0, currP = 0.0;
   var interactionDone = false; // 完了後にスクロール解除
   var cleanupInputs = function(){};
-  var rafId = 0;
-  var running = false;
   var yStart = 0;              // 初期Y（タイトル2行分下）
   var line2px = 0;             // 2行分ピクセル
   var lockScrollY = 0;         // ロック前のスクロール位置
@@ -300,6 +285,7 @@ function dbg(msg){}
     // 初期は最小から（0..1）
     targetP = 0.0; currP = 0.0;
     var wheelHandler = function(e){
+      if (!interactionDone) { try{ e.preventDefault(); }catch(_){ } }
       var d = Math.max(-400, Math.min(400, e.deltaY));
       // 下スクロールで前方へ／拡大、上で戻す
       var scrollSens = scrollSensitivityFor(targetP);
@@ -309,38 +295,40 @@ function dbg(msg){}
       var spinSens = spinSensitivityFor(targetP);
       spinVel += (d / spinSens);
     };
-    // NOTE: do not preventDefault; page lock is controlled elsewhere (scroll-locked).
-    hero.addEventListener('wheel', wheelHandler, { passive: true });
+    window.addEventListener('wheel', wheelHandler, { passive: false });
 
     // --- TOUCH SUPPORT ---
     var lastTouchY = 0;
-    hero.addEventListener('touchstart', function(e) {
+    window.addEventListener('touchstart', function(e) {
       if (e.touches && e.touches.length > 0) {
         lastTouchY = e.touches[0].clientY;
       }
     }, { passive: true });
 
     var touchMoveHandler = function(e){
-      if (e.touches && e.touches.length > 0) {
-        var currentY = e.touches[0].clientY;
-        var d = lastTouchY - currentY; // Match wheel direction
-        lastTouchY = currentY;
+      if (!interactionDone){
+        try{ e.preventDefault(); }catch(_){ }
+        if (e.touches && e.touches.length > 0) {
+            var currentY = e.touches[0].clientY;
+            var d = lastTouchY - currentY; // Match wheel direction
+            lastTouchY = currentY;
 
-        var touchScrollSens = scrollSensitivityFor(targetP);
-        targetP += (d / touchScrollSens); // Wheel と同じ感度
-        if (targetP < 0) targetP = 0; if (targetP > 1) targetP = 1;
-        var touchSpinSens = spinSensitivityFor(targetP);
-        spinVel += (d / touchSpinSens); // Wheel と同じ感度
+            var touchScrollSens = scrollSensitivityFor(targetP);
+            targetP += (d / touchScrollSens); // Wheel と同じ感度
+            if (targetP < 0) targetP = 0; if (targetP > 1) targetP = 1;
+            var touchSpinSens = spinSensitivityFor(targetP);
+            spinVel += (d / touchSpinSens); // Wheel と同じ感度
+        }
       }
     };
-    hero.addEventListener('touchmove', touchMoveHandler, { passive: true });
+    window.addEventListener('touchmove', touchMoveHandler, { passive: false });
 
     cleanupInputs = function(){
-      try{ hero.removeEventListener('wheel', wheelHandler); }catch(_){ }
-      try{ hero.removeEventListener('touchmove', touchMoveHandler); }catch(_){ }
+      try{ window.removeEventListener('wheel', wheelHandler, { passive: false }); }catch(_){ window.removeEventListener('wheel', wheelHandler); }
+      try{ window.removeEventListener('touchmove', touchMoveHandler, { passive: false }); }catch(_){ window.removeEventListener('touchmove', touchMoveHandler); }
     };
 
-    startLoop();
+    requestAnimationFrame(tick);
   }
 
   function onResize(){
@@ -368,22 +356,9 @@ function dbg(msg){}
 
   var _tLast = performance.now ? performance.now() : Date.now();
   var _t = 0;
-  function startLoop(){
-    if (running) return;
-    running = true;
-    rafId = requestAnimationFrame(tick);
-  }
-  function stopLoop(){
-    running = false;
-    if (rafId) { try{ cancelAnimationFrame(rafId); }catch(_){ } rafId = 0; }
-  }
   function tick(){
-    if (!running) { rafId = 0; return; }
-    if (!renderer || !scene || !camera || !model){
-      try { renderer && renderer.render(scene, camera); } catch(_){ }
-      rafId = requestAnimationFrame(tick);
-      return;
-    }
+    requestAnimationFrame(tick);
+    if (!renderer || !scene || !camera || !model){ renderer && renderer.render(scene, camera); return; }
     var now = performance.now ? performance.now() : Date.now();
     var dt = Math.max(0, Math.min(0.05, (now - _tLast)/1000));
     _tLast = now; _t += dt;
@@ -431,22 +406,12 @@ function dbg(msg){}
       try{ layer.style.pointerEvents = 'none'; }catch(_){ }
       try{ layer.style.display = 'none'; }catch(_){ }
       cleanupInputs();
-      stopLoop();
-      try{
-        if (renderer && renderer.dispose) renderer.dispose();
-        if (renderer && renderer.forceContextLoss) renderer.forceContextLoss();
-        if (renderer && renderer.domElement && renderer.domElement.parentNode) {
-          renderer.domElement.parentNode.removeChild(renderer.domElement);
-        }
-      }catch(_){ }
-      renderer = scene = camera = model = null;
       return;
     }
 
     // p終端でのフェード退場は使わない（満画面判定のみ）
 
     renderer.render(scene, camera);
-    rafId = requestAnimationFrame(tick);
   }
 
   init();

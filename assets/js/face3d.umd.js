@@ -27,6 +27,11 @@
   var renderer, scene, camera, model = null;
   var width = layer.clientWidth || window.innerWidth;
   var height = layer.clientHeight || window.innerHeight;
+  var isTouchDevice = false;
+  try{
+    isTouchDevice = (navigator && typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0) ||
+      (!!window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  }catch(_){ }
   var spinVel = 0, spin = 0; // ホイール回転の慣性
   var BASE_SCROLL_SENSITIVITY = 1400 * 4.5;    // さらに軽く
   var LATE_SCROLL_SENSITIVITY = 1400 * 2.5;    // 終盤はかなり軽く
@@ -132,7 +137,8 @@ function dbg(msg){}
     camera.lookAt(0, 0, 0);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    // iPad/iPhone: cap DPR to reduce scroll jank without changing animation timing.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.0 : 1.5));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
     // 黒潰れ対策: 色空間とトーンマッピング
@@ -358,6 +364,9 @@ function dbg(msg){}
 
   var _tLast = performance.now ? performance.now() : Date.now();
   var _t = 0;
+  // Reuse math objects to avoid per-frame allocations (no visual/behavioral change intended).
+  var _qBase = null, _qSpin = null, _qAxis = null, _qFinal = null;
+  var _eBase = null, _vSpinAxis = null, _vWobbleAxis = null;
   function startLoop(){
     if (rafId) return;
     running = true;
@@ -401,11 +410,22 @@ function dbg(msg){}
     var al = Math.max(1e-6, Math.sqrt(ax*ax+ay*ay+az*az)); ax/=al; ay/=al; az/=al;
     var angle = amp * (0.6 + 0.8*Math.sin(_t*tfast));
     // 基準（裏表反転） + 斜めスピン + うねり
-    var qBase = new THREE.Quaternion().setFromEuler(new THREE.Euler(baseRot.x, baseRot.y, baseRot.z, 'XYZ'));
-    var qSpin = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(sx, sy, sz), spin + _t*(1.8+1.3*p));
-    var qAxis = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(ax, ay, az), angle);
-    var q = qBase.clone().multiply(qSpin).multiply(qAxis);
-    model.quaternion.copy(q);
+    if (!_qBase){
+      _qBase = new THREE.Quaternion();
+      _qSpin = new THREE.Quaternion();
+      _qAxis = new THREE.Quaternion();
+      _qFinal = new THREE.Quaternion();
+      _eBase = new THREE.Euler(baseRot.x, baseRot.y, baseRot.z, 'XYZ');
+      _vSpinAxis = new THREE.Vector3();
+      _vWobbleAxis = new THREE.Vector3();
+      _qBase.setFromEuler(_eBase);
+    }
+    _vSpinAxis.set(sx, sy, sz);
+    _vWobbleAxis.set(ax, ay, az);
+    _qSpin.setFromAxisAngle(_vSpinAxis, spin + _t*(1.8+1.3*p));
+    _qAxis.setFromAxisAngle(_vWobbleAxis, angle);
+    _qFinal.copy(_qBase).multiply(_qSpin).multiply(_qAxis);
+    model.quaternion.copy(_qFinal);
 
     // スケール: 画面サイズ連動拡大（初期半径→拡大）
     var r0 = initialRadiusAt(0);

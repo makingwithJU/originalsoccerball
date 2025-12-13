@@ -1130,6 +1130,16 @@ footer.is-fixed{ position: fixed; left: 0; right: 0; bottom: var(--notice-h, 0px
   }
 }
 
+/* iPad縦: Order/Gallery を画面中央寄せ（ipad-center-layout.js が効かない場合の保険） */
+@media (pointer: coarse) and (orientation: portrait) and (min-width: 600px) and (max-width: 1700px) {
+  #order.scroll-panel,
+  #gallery.scroll-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
     .order-gallery {
       padding-top: clamp(60px, 8vw, 120px);
       padding-bottom: clamp(300px, 40vh, 500px);

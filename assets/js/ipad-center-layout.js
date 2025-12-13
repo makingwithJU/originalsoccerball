@@ -1,15 +1,16 @@
 ;(function(){
   try{
-    function isTabletLike(){
-      // UA や pointer ではなく、ビューポートの長辺・短辺からタブレットらしさを判定する
-      var w = window.innerWidth || document.documentElement.clientWidth || 0;
-      var h = window.innerHeight || document.documentElement.clientHeight || 0;
-      if (!w || !h) return false;
-      var minSide = Math.min(w, h);
-      var maxSide = Math.max(w, h);
-      // ざっくり：短辺が600px以上、長辺が1400px以下ならタブレット扱い
-      return (minSide >= 600 && maxSide <= 1400);
-    }
+	    function isTabletLike(){
+	      // UA や pointer ではなく、ビューポートの長辺・短辺からタブレットらしさを判定する
+	      var w = window.innerWidth || document.documentElement.clientWidth || 0;
+	      var h = window.innerHeight || document.documentElement.clientHeight || 0;
+	      if (!w || !h) return false;
+	      var minSide = Math.min(w, h);
+	      var maxSide = Math.max(w, h);
+	      // ざっくり：短辺が600px以上、長辺が1700px以下ならタブレット扱い
+	      // （iPadの表示倍率/ブラウザUI差で1400を超えるケースがあるため上限を緩める）
+	      return (minSide >= 600 && maxSide <= 1700);
+	    }
 
     if (!isTabletLike()) return;
 
@@ -31,9 +32,19 @@
       }
     }
 
-    function panels(){
-      return Array.prototype.slice.call(document.querySelectorAll('.scroll-panel'));
-    }
+	    function panels(){
+	      return Array.prototype.slice.call(document.querySelectorAll('.scroll-panel'));
+	    }
+	
+	    function firstMeaningfulChild(el){
+	      var child = el ? el.firstElementChild : null;
+	      while (child) {
+	        var tag = (child.tagName || '').toUpperCase();
+	        if (tag !== 'STYLE' && tag !== 'SCRIPT' && tag !== 'NOSCRIPT') return child;
+	        child = child.nextElementSibling;
+	      }
+	      return null;
+	    }
 
     function applyCentering(){
       var vh = window.innerHeight || document.documentElement.clientHeight || 0;
@@ -63,9 +74,9 @@
 
         var content;
 
-        content = panel.querySelector('.gs-container, .ju-container, .order-gallery__inner') || panel.firstElementChild;
+	        content = panel.querySelector('.gs-container, .ju-container, .order-gallery__inner') || firstMeaningfulChild(panel);
 
-        if (!content) return;
+	        if (!content) return;
 
         // 一旦リセット
         panel.style.display = '';
@@ -76,27 +87,31 @@
         content.style.transform = '';
         content.style.transformOrigin = '';
 
-        // iPad 縦向きでは Order セクションは PC 版と同じレイアウトにする
-        // （scale や上下の余白をここでは触らない）
-        if (!isLandscape && id === 'order') {
-          return;
-        }
-
         // コンテンツ高さを取得
         var rect = content.getBoundingClientRect();
         var h = rect.height;
         if (!h || !isFinite(h)) return;
 
         // セクション別のスケール設定
-        var baseScale = 0.75;
-        var minScale = 0.55;
-        if (id === 'order') {
-          baseScale = 0.9;
-          minScale = 0.8;
-        } else if (id === 'testimonial-event-shop') {
-          baseScale = 0.6;
-          minScale = 0.5;
-        } else if (!isLandscape && id === 'specs') {
+	        var baseScale = 0.75;
+	        var minScale = 0.55;
+	        if (id === 'order') {
+	          // Portrait iPad: keep original size if possible; only scale down when it would overflow.
+	          if (!isLandscape) {
+	            baseScale = 1.0;
+	            minScale = 0.85;
+	          } else {
+	            baseScale = 0.9;
+	            minScale = 0.8;
+	          }
+	        } else if (id === 'gallery') {
+	          // Gallery should stay visually consistent; keep 1.0 unless it overflows.
+	          baseScale = 1.0;
+	          minScale = 0.9;
+	        } else if (id === 'testimonial-event-shop') {
+	          baseScale = 0.6;
+	          minScale = 0.5;
+	        } else if (!isLandscape && id === 'specs') {
           // 縦向きタブレットの「素材〜」はさらに小さく（4枚が画面に収まりやすく）
           baseScale = 0.55;
           minScale = 0.50;

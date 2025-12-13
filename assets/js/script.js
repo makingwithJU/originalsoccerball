@@ -785,8 +785,11 @@ function gooeyTextAnimation() {
 
     camera.lookAt(0,0,0);
 
+    let rafId = 0;
+    let active = true;
     function render(){
-      requestAnimationFrame(render);
+      if (!active) { rafId = 0; return; }
+      rafId = requestAnimationFrame(render);
       if (model){
         const now = performance.now ? performance.now() : Date.now();
         if (!landingStartTime){
@@ -820,6 +823,21 @@ function gooeyTextAnimation() {
       renderer.render(scene, camera);
     }
     render();
+
+    // Stop the rAF loop when this section is off-screen (no visual change while hidden).
+    const vis = new IntersectionObserver((entries)=>{
+      const on = entries.some(e => e.isIntersecting);
+      if (on){
+        if (!active){
+          active = true;
+          if (!rafId) render();
+        }
+      } else {
+        active = false;
+        if (rafId){ try{ cancelAnimationFrame(rafId); }catch(_){ } rafId = 0; }
+      }
+    }, { threshold: 0.01, rootMargin: '200px 0px 200px 0px' });
+    vis.observe(mount);
 
     function beginLanding(){
       if (landingStartTime || !model) return;

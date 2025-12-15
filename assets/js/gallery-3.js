@@ -57,7 +57,6 @@
 	    let prevX = 0;
 	    let inertiaId = 0;
 	    let resizeRaf = 0;
-	    let renderRaf = 0;
 
 	    // --- New variables for robust velocity tracking ---
 	    let velHistory = [];
@@ -85,35 +84,27 @@
 	    const render = () => {
 	      track.style.transform = `translate3d(${tx}px,0,0)`;
 	    };
-	
-	    const scheduleRender = () => {
-	      if (renderRaf) return;
-	      renderRaf = requestAnimationFrame(() => {
-	        renderRaf = 0;
-	        render();
-	      });
+
+	    const stopInertia = () => {
+	      if (inertiaId) {
+	        cancelAnimationFrame(inertiaId);
+	        inertiaId = 0;
+	      }
 	    };
 
-    const stopInertia = () => {
-      if (inertiaId) {
-        cancelAnimationFrame(inertiaId);
-        inertiaId = 0;
-      }
-    };
-
-    const stepInertia = () => {
-      // Friction for inertia
-      vx *= 0.985;
-      if (Math.abs(vx) < 0.05) { // Stop if velocity is negligible
-        vx = 0;
-        inertiaId = 0;
-        return;
-      }
-      tx += vx;
-      wrap();
-      render();
-      inertiaId = requestAnimationFrame(stepInertia);
-    };
+	    const stepInertia = () => {
+	      // Friction for inertia
+	      vx *= 0.985;
+	      if (Math.abs(vx) < 0.05) { // Stop if velocity is negligible
+	        vx = 0;
+	        inertiaId = 0;
+	        return;
+	      }
+	      tx += vx;
+	      wrap();
+	      render();
+	      inertiaId = requestAnimationFrame(stepInertia);
+	    };
     
     // --- MODIFIED: pointerMove function ---
     const pointerMove = (clientX) => {
@@ -124,11 +115,11 @@
 	      // Direct dragging feel
 	      tx += delta * 1.4;
 	      wrap();
-	      scheduleRender();
+	      render();
 
-      // Record history for velocity calculation
-      const now = performance.now();
-      if (now - lastMoveTimestamp > 5) { // Throttle recording
+	      // Record history for velocity calculation
+	      const now = performance.now();
+	      if (now - lastMoveTimestamp > 5) { // Throttle recording
           velHistory.push({ x: clientX, time: now });
           if (velHistory.length > 30) { // Keep a limited history
               velHistory.shift();
@@ -273,10 +264,10 @@
       const absX = Math.abs(e.deltaX);
       const absY = Math.abs(e.deltaY);
       if (absX === 0 || absX <= absY) return;
-      const delta = e.deltaX;
+	      const delta = e.deltaX;
 	      tx -= delta;
 	      wrap();
-	      scheduleRender();
+	      render();
 	      vx = -delta;
 	      stopInertia();
 	      inertiaId = requestAnimationFrame(stepInertia);

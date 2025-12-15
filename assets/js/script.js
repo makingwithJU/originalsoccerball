@@ -473,7 +473,9 @@ function gooeyTextAnimation() {
   let cooldown = cooldownTime;
   let hold = initialHold;
   let startedMorph = false;
-  let rafId;
+  let rafId = 0;
+  let done = false;
+  let paused = false;
 
   const setMorph = (fraction) => {
     fraction = Math.max(0, Math.min(1, fraction));
@@ -512,7 +514,9 @@ function gooeyTextAnimation() {
   };
 
   const showFinal = () => {
-    cancelAnimationFrame(rafId);
+    done = true;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
     text1.textContent = 'making with JU.';
     text2.textContent = 'making with JU.';
     try { text1.removeAttribute('dir'); text2.removeAttribute('dir'); text1.removeAttribute('lang'); text2.removeAttribute('lang'); } catch(_){}
@@ -529,6 +533,15 @@ function gooeyTextAnimation() {
   };
 
   function animate() {
+    if (done) return;
+    if (document.hidden) {
+      paused = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+      return;
+    }
+    paused = false;
+    // Schedule next frame first so early returns (hold state, finalization) don't stop the loop.
     rafId = requestAnimationFrame(animate);
     const now = new Date();
     const dt = (now.getTime() - time.getTime()) / 1000;
@@ -565,7 +578,14 @@ function gooeyTextAnimation() {
       doCooldown();
     }
   }
-  animate();
+  rafId = requestAnimationFrame(animate);
+  document.addEventListener('visibilitychange', function(){
+    if (done) return;
+    if (!document.hidden && paused && !rafId) {
+      time = new Date(); // avoid large dt jump after tab resumes
+      rafId = requestAnimationFrame(animate);
+    }
+  }, { passive: true });
 }
 
 // セクションのフェードイン

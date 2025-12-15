@@ -66,13 +66,54 @@
   var _lastTargetUpdate = 0;   // yTarget再計算のスロットル
   var rafId = 0;
   var running = true;
-  function heroIsInView(){
+  var heroInView = true;
+  var inputsAttached = false;
+  var wheelHandler = null;
+  var touchStartHandler = null;
+  var touchMoveHandler = null;
+  function computeHeroInView(){
     try{
       var r = hero.getBoundingClientRect();
       var vh = window.innerHeight || document.documentElement.clientHeight || 0;
       if (!vh) return true;
       return (r.bottom > 0 && r.top < vh);
     }catch(_){ return true; }
+  }
+  function heroIsInView(){ return heroInView; }
+  function updateHeroInView(){ heroInView = computeHeroInView(); }
+  var heroInViewRaf = 0;
+  function attachInputs(){
+    if (inputsAttached) return;
+    if (!wheelHandler || !touchStartHandler || !touchMoveHandler) return;
+    try{ window.addEventListener('wheel', wheelHandler, { passive: false }); }catch(_){ window.addEventListener('wheel', wheelHandler); }
+    try{ window.addEventListener('touchstart', touchStartHandler, { passive: true }); }catch(_){ window.addEventListener('touchstart', touchStartHandler); }
+    try{ window.addEventListener('touchmove', touchMoveHandler, { passive: false }); }catch(_){ window.addEventListener('touchmove', touchMoveHandler); }
+    inputsAttached = true;
+  }
+  function detachInputs(){
+    if (!inputsAttached) return;
+    try{ window.removeEventListener('wheel', wheelHandler); }catch(_){ }
+    try{ window.removeEventListener('touchstart', touchStartHandler); }catch(_){ }
+    try{ window.removeEventListener('touchmove', touchMoveHandler); }catch(_){ }
+    inputsAttached = false;
+  }
+  function scheduleHeroInView(){
+    if (heroInViewRaf) return;
+    heroInViewRaf = requestAnimationFrame(function(){
+      heroInViewRaf = 0;
+      var prev = heroInView;
+      updateHeroInView();
+      if (heroInView === prev) return;
+      if (!heroInView) {
+        // Hero is off-screen: stop the render loop to avoid scroll jank.
+        detachInputs();
+        stopLoop();
+      } else {
+        // Hero is visible again: resume if animation hasn't finished.
+        attachInputs();
+        if (!interactionDone && !document.hidden) startLoop();
+      }
+    });
   }
   function setScrollLocked(lock){
     try {
@@ -297,17 +338,20 @@ function dbg(msg){}
       document.head.appendChild(s);
     }
 
-    var resizeRaf = 0;
-    window.addEventListener('resize', function(){
-      if (resizeRaf) return;
-      resizeRaf = requestAnimationFrame(function(){
-        resizeRaf = 0;
-        onResize(); computeYStart(); computeYTarget();
-      });
-    }, { passive: true });
+	    var resizeRaf = 0;
+	    window.addEventListener('resize', function(){
+	      if (resizeRaf) return;
+	      resizeRaf = requestAnimationFrame(function(){
+	        resizeRaf = 0;
+	        onResize(); computeYStart(); computeYTarget();
+	        updateHeroInView();
+	      });
+	    }, { passive: true });
+	    window.addEventListener('scroll', scheduleHeroInView, { passive: true });
+	    updateHeroInView();
     // 初期は最小から（0..1）
     targetP = 0.0; currP = 0.0;
-    var wheelHandler = function(e){
+    wheelHandler = function(e){
       if (interactionDone) return;
       if (document.hidden) return;
       if (!heroIsInView()) return;
@@ -321,17 +365,16 @@ function dbg(msg){}
       var spinSens = spinSensitivityFor(targetP);
       spinVel += (d / spinSens);
     };
-    window.addEventListener('wheel', wheelHandler, { passive: false });
 
     // --- TOUCH SUPPORT ---
     var lastTouchY = 0;
-    window.addEventListener('touchstart', function(e) {
+    touchStartHandler = function(e) {
       if (e.touches && e.touches.length > 0) {
         lastTouchY = e.touches[0].clientY;
       }
-    }, { passive: true });
+    };
 
-    var touchMoveHandler = function(e){
+    touchMoveHandler = function(e){
       if (interactionDone) return;
       if (document.hidden) return;
       if (!heroIsInView()) return;
@@ -348,11 +391,10 @@ function dbg(msg){}
           spinVel += (d / touchSpinSens); // Wheel と同じ感度
       }
     };
-    window.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    if (!document.hidden && heroIsInView()) attachInputs();
 
     cleanupInputs = function(){
-      try{ window.removeEventListener('wheel', wheelHandler, { passive: false }); }catch(_){ window.removeEventListener('wheel', wheelHandler); }
-      try{ window.removeEventListener('touchmove', touchMoveHandler, { passive: false }); }catch(_){ window.removeEventListener('touchmove', touchMoveHandler); }
+      detachInputs();
     };
 
     startLoop();
@@ -400,11 +442,13 @@ function dbg(msg){}
   }
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) {
+      detachInputs();
       stopLoop();
       return;
     }
-    if (!interactionDone && renderer && scene && camera && model) {
-      startLoop();
+    if (heroIsInView() && !interactionDone) {
+      attachInputs();
+      if (renderer && scene && camera && model) startLoop();
     }
   }, { passive: true });
   function tick(){

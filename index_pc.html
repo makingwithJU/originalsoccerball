@@ -2,7 +2,7 @@
 <html lang="ja"><head>
 <script>
   if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
-    location.href = 'index.html';
+    location.replace('index.html' + location.search + location.hash);
   }
 </script>
 
@@ -105,8 +105,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       "logo": "https://originalsoccerball.com/assets/icons/apple-touch-icon.webp",
       "contactPoint": {
         "@type": "ContactPoint",
-      "contactType": "sales",
-      "email": "originalsoccerball@gmail.com",
+        "contactType": "sales",
         "availableLanguage": ["ja","en"]
       },
       "sameAs": [

@@ -2,7 +2,7 @@
 <html lang="ja"><head>
 <script>
   if (!navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
-    location.href = 'index_pc.html';
+    location.replace('index_pc.html' + location.search + location.hash);
   }
 </script>
 
@@ -111,7 +111,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "sales",
-      "email": "originalsoccerball@gmail.com",
       "availableLanguage": ["ja","en"]
     }
   }

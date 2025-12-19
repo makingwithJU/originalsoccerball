@@ -64,7 +64,9 @@
           || id === 'faq-slide'
           || id === 'usage-title'
           || id === 'event-shop-title'
-          || id === 'contact-apology') {
+          || id === 'contact-apology'
+          // iPad横: Order は横幅100%で使う（センタリング縮小を無効化）
+          || (id === 'order' && isLandscape)) {
           // Reset any styles that might have been applied
           panel.style.display = '';
           panel.style.paddingTop = '';

@@ -16,11 +16,19 @@
     overflow-x: hidden;
   }
 
-  img, video, iframe, figure {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+	  img, video:not(.video-el), iframe, figure {
+	    max-width: 100%;
+	    height: auto;
+	    display: block;
+	  }
+
+	  /* HERO背景動画は常にcoverで全画面にフィット（一般videoルールの上書き） */
+	  .video-el{
+	    max-width: none !important;
+	    width: calc(100% + 20px) !important;
+	    height: calc(100% + 20px) !important;
+	    object-fit: cover !important;
+	  }
 
   .header-inner,
   .gs-container,

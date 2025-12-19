@@ -7,11 +7,19 @@
 </script>
 
 <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MBHLS3QD');</script>
+<script>
+  // Load GTM only on the production domain to avoid noisy console errors during local preview.
+  (function(){
+    var host = (location && location.hostname) ? location.hostname : '';
+    var isProd = (host === 'originalsoccerball.com' || host === 'www.originalsoccerball.com');
+    if (!isProd) return;
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MBHLS3QD');
+  })();
+</script>
 <!-- End Google Tag Manager -->
   
     <meta charset="utf-8">
@@ -2173,13 +2181,15 @@ body{ padding-right: 0; }
       if (typeof window === 'undefined') return;
       var frames = Array.prototype.slice.call(document.querySelectorAll('iframe[src*="youtube.com/embed/"]'));
       frames.forEach(function(ifr, idx){
-        try{
-          var u = new URL(ifr.src, location.href);
-          if(!u.searchParams.has('playsinline')) u.searchParams.set('playsinline','1');
-          if(!u.searchParams.has('mute')) u.searchParams.set('mute','1');
-          if(!u.searchParams.has('autoplay')) u.searchParams.set('autoplay','1');
-          ifr.src = u.toString();
-        }catch(_){}
+	        try{
+	          var u = new URL(ifr.src, location.href);
+	          if(!u.searchParams.has('playsinline')) u.searchParams.set('playsinline','1');
+	          if(!u.searchParams.has('mute')) u.searchParams.set('mute','1');
+	          if(!u.searchParams.has('autoplay')) u.searchParams.set('autoplay','1');
+	          // Avoid origin mismatch warnings from the YouTube embed API when previewing on localhost.
+	          if (location.origin && location.origin !== 'null') u.searchParams.set('origin', location.origin);
+	          ifr.src = u.toString();
+	        }catch(_){}
         var allow = new Set((ifr.getAttribute('allow')||'').split(';').map(function(s){return s.trim();}).filter(Boolean));
         ['autoplay','fullscreen','picture-in-picture'].forEach(function(a){ allow.add(a); });
         ifr.setAttribute('allow', Array.from(allow).join('; '));

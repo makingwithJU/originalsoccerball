@@ -185,9 +185,9 @@ function dbg(msg){}
     camera.position.set(0, 0, 6);
     camera.lookAt(0, 0, 0);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    // iPad/iPhone: cap DPR to reduce scroll jank without changing animation timing.
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.0 : 1.5));
+    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
+    // Cap DPR to reduce long frames (rAF handler warnings) on high-DPI devices.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.0));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
     // 黒潰れ対策: 色空間とトーンマッピング
@@ -428,6 +428,8 @@ function dbg(msg){}
   // Reuse math objects to avoid per-frame allocations (no visual/behavioral change intended).
   var _qBase = null, _qSpin = null, _qAxis = null, _qFinal = null;
   var _eBase = null, _vSpinAxis = null, _vWobbleAxis = null;
+  var _frameMinMs = 16; // ~60fps target, used to avoid bursty long frames
+  var _lastFrameNow = 0;
   function startLoop(){
     if (rafId) return;
     running = true;
@@ -458,6 +460,8 @@ function dbg(msg){}
     if (!renderer || !scene || !camera || !model){ renderer && renderer.render(scene, camera); return; }
     if (document.hidden) return;
     var now = performance.now ? performance.now() : Date.now();
+    if (_frameMinMs && (now - _lastFrameNow) < _frameMinMs) return;
+    _lastFrameNow = now;
     var dt = Math.max(0, Math.min(0.05, (now - _tLast)/1000));
     _tLast = now; _t += dt;
     // ホイール進捗をスムーズに反映

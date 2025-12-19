@@ -6,21 +6,7 @@
   }
 </script>
 
-<!-- Google Tag Manager -->
-<script>
-  // Load GTM only on the production domain to avoid noisy console errors during local preview.
-  (function(){
-    var host = (location && location.hostname) ? location.hostname : '';
-    var isProd = (host === 'originalsoccerball.com' || host === 'www.originalsoccerball.com');
-    if (!isProd) return;
-    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MBHLS3QD');
-  })();
-</script>
-<!-- End Google Tag Manager -->
+<!-- GTM removed: no tracking -->
   
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -471,10 +457,6 @@ body{ padding-right: 0; }
   
 </head>
   <body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBHLS3QD"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
     <svg id="filters" style="display: none;">
       <defs>
         <filter id="threshold" filterunits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000" color-interpolation-filters="sRGB">
@@ -2415,11 +2397,6 @@ stampballs<br>
   window.addEventListener('load', requestUpdate);
 })();
 </script>
-
-
-  <!-- <script src="./assets/js/add_design_next_strict_min.js"></script> -->
-
-
   <script src="./assets/js/order-popups.js" defer></script>
   <script src="./assets/js/lazy-images.js" defer></script>
   <script src="assets/js/cursor-kill.js" defer></script>
@@ -2563,6 +2540,32 @@ stampballs<br>
     .ju-privacy-body li{ font-size: inherit; }
   }
 </style>
+<template id="ju-privacy-template">
+  <h1>プライバシーポリシー</h1>
+  <p>本プライバシーポリシーは、オリジナルサッカーボール.com（以下「当サイト」）における、利用者情報の取扱いについて定めるものです。</p>
+
+  <h2>1. 事業者情報</h2>
+  <ul>
+    <li>名称: JUGEND</li>
+    <li>お問い合わせ: 当サイトのお問合せフォーム</li>
+  </ul>
+
+  <h2>2. 取得する情報</h2>
+  <p>当サイトは、アクセス解析（Google Analytics / Google Tag Manager 等）を利用していません。通常の閲覧において、Cookie 等を用いて利用者を識別・計測することはありません。</p>
+  <p>ただし、サーバー運用上必要な範囲で、ホスティング事業者のアクセスログに IP アドレス等が記録される場合があります。</p>
+
+  <h2>3. お問い合わせ</h2>
+  <p>当サイトのお問合せは、利用者の端末のメールソフトを起動して送信いただく形式です。送信される内容はメールとして取り扱われ、当サイト上に保管されるものではありません。</p>
+
+  <h2>4. 外部サービス</h2>
+  <p>YouTube 等の外部サービスの埋め込みコンテンツを表示する場合、利用者情報が当該事業者へ送信される可能性があります。</p>
+  <ul>
+    <li>Google のプライバシーポリシー: <a href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy?hl=ja</a></li>
+  </ul>
+
+  <h2>5. お問い合わせ</h2>
+  <p>本ポリシーに関するお問い合わせは、当サイトのお問合せフォームをご利用ください。</p>
+</template>
 <div id="ju-privacy-modal" hidden aria-hidden="true">
   <div class="ju-privacy-overlay" data-ju-privacy-close></div>
   <div class="ju-privacy-sheet" role="dialog" aria-modal="true" aria-label="プライバシーポリシー">
@@ -2581,6 +2584,7 @@ stampballs<br>
     var overlay = modal.querySelector('[data-ju-privacy-close]');
     var sheet = modal.querySelector('.ju-privacy-sheet');
     var contentEl = document.getElementById('ju-privacy-content');
+    var templateEl = document.getElementById('ju-privacy-template');
     var prevOverflow = '';
     var loaded = false;
 
@@ -2610,17 +2614,13 @@ stampballs<br>
       if (loaded) return Promise.resolve();
       loaded = true;
       if (!contentEl) return Promise.resolve();
-      return fetch('/privacy.html', { cache: 'force-cache' })
-        .then(function(r){ return r.text(); })
-        .then(function(html){
-          var doc = new DOMParser().parseFromString(html, 'text/html');
-          var card = doc.querySelector('.card') || doc.body;
-          if (!card) return;
-          var footer = card.querySelector('.footer');
-          if (footer) footer.remove();
-          contentEl.innerHTML = card.innerHTML || '';
-        })
-        .catch(function(){});
+      try{
+        if (templateEl && templateEl.content){
+          contentEl.innerHTML = '';
+          contentEl.appendChild(templateEl.content.cloneNode(true));
+        }
+      }catch(_){ }
+      return Promise.resolve();
     }
 
     function openModal(ev){

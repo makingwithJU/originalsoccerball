@@ -14,9 +14,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="robots" content="noindex,follow" />
     <link rel="canonical" href="https://originalsoccerball.com/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <meta http-equiv="refresh" content="0; url=/" />
+    <meta http-equiv="refresh" content="1; url=/" />
     <script>
-      location.replace("/");
+      // Delay redirect slightly so GTM/GA4 events (e.g. page_404) have time to send.
+      setTimeout(function () {
+        location.replace("/");
+      }, 800);
     </script>
     <style>
       body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif; background: #0b0b0b; color: #f3f3f3; }

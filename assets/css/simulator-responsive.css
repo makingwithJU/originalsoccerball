@@ -1,0 +1,70 @@
+html, body { height: 100%; min-height: 0; margin: 0; }
+body { overflow: hidden; }
+.container { width: 100%; height: 100%; max-width: 1440px; padding: clamp(8px, 1.5vw, 20px); display: flex; flex-direction: column; }
+.container .main { grid-template-columns: minmax(0, 1fr) minmax(200px, 32%) !important; align-items: stretch !important; gap: 16px; flex: 1; min-height: 0; }
+.container aside { overflow: auto; min-height: 0; overscroll-behavior: contain; }
+.main > *, .panelCard, .controlRow > * { min-width: 0; }
+/* The exported app also sets a 420px minimum inline when orientation changes. */
+.container .canvasWrap { width: 100%; height: 100% !important; max-height: 100%; min-height: 0 !important; align-self: stretch; border-radius: 0; }
+.header { flex-wrap: wrap; flex: none; margin-bottom: 12px; }
+.container .title { font-size: clamp(16px,2.4vw,28px); line-height: 1.25; margin: 0; }
+.title { overflow-wrap: anywhere; }
+.controlRow { grid-template-columns: 76px minmax(0, 1fr) 60px; }
+.controlRow input { width: 100%; min-width: 0; }
+.watermark { font-size: 11px; position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 10; white-space: normal; width: 100%; text-align: center; color: rgba(255, 255, 255, 0.45); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); user-select: none; -webkit-user-select: none; }
+@media (max-width: 640px), (max-width: 980px) and (orientation: portrait) {
+  .container .main { grid-template-columns: minmax(0, 1fr) !important; grid-auto-flow: row !important; grid-template-rows: minmax(0, 1.6fr) minmax(0, 1fr); }
+  .container .canvasWrap { height: auto; min-height: 0; }
+  .header { align-items: flex-start; }
+  .badge { white-space: nowrap; }
+  .controlRow { grid-template-columns: 76px minmax(0, 1fr) 60px; }
+}
+@media (orientation: landscape) {
+  .container { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 36%); grid-template-rows: auto minmax(0, 1fr); gap: 8px 16px; padding: 10px 16px; height: 100%; box-sizing: border-box; }
+  .container .main { display: contents !important; }
+  .container .header { grid-column: 2; grid-row: 1; margin: 0; gap: 6px; align-self: end; }
+  .container .canvasWrap { grid-column: 1; grid-row: 1 / 3; width: 100%; height: 100% !important; max-height: 100%; min-height: 0 !important; }
+  .container aside { grid-column: 2; grid-row: 2; padding: 0; min-height: 0; overflow-y: auto; }
+  .container .title { font-size: clamp(13px, 1.8vw, 20px); }
+  .container .badge { font-size: 10px; }
+}
+
+/* Desktop input devices: reserve the controls' height and fit the preview in
+   the remaining space. Touch layouts keep their existing scrolling behavior. */
+@media (hover: hover) and (pointer: fine) {
+  .container aside {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .container aside > .panelCard:first-child {
+    flex: none;
+    margin-bottom: 0 !important;
+    padding: 8px;
+  }
+  .container aside > .panelCard:last-child {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 8px;
+  }
+  .container aside > .panelCard:last-child > :not(.editorDrop) { flex-shrink: 0; }
+  .container .editorDrop {
+    flex: 1 1 0;
+    min-height: 48px;
+    padding: 8px;
+    container-type: size;
+    display: grid;
+    place-items: center;
+  }
+  .container .shapeMask {
+    width: min(100cqw, 100cqh, 340px);
+    max-width: none;
+    height: auto;
+    aspect-ratio: 1;
+  }
+  .container .controlRow { margin-top: 4px; }
+  .container .button { padding: 6px 10px; }
+}

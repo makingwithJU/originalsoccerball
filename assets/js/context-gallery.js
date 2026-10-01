@@ -14,6 +14,17 @@
   const clamp01 = value => Math.max(0, Math.min(1, value));
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = t => t * t * (3 - 2 * t);
+  // Two joined cubic segments with the same nonzero tangent at the rim.
+  // Easing both halves separately forced the camera to stop at that point.
+  function travel(start, rim, end, progress) {
+    const second = progress >= .5;
+    const t = second ? progress * 2 - 1 : progress * 2;
+    const tangent = (end - start) / 2;
+    const a = second ? rim : start, b = second ? end : rim;
+    const m0 = second ? tangent : 0, m1 = second ? 0 : tangent;
+    return (2*t*t*t-3*t*t+1)*a + (t*t*t-2*t*t+t)*m0
+      + (-2*t*t*t+3*t*t)*b + (t*t*t-t*t)*m1;
+  }
 
   async function waitForImage(image) {
     image.loading = 'eager';
@@ -192,15 +203,10 @@
       // the concave arc; it does not return to an outside, flattened band.
       const endEye = new THREE.Vector3(0, cylinderHeight * 0.9, cylinderRadius * 0.62);
       const endAim = new THREE.Vector3(0, endEye.y + Math.sin(finalPitch) * 5, endEye.z - Math.cos(finalPitch) * 5);
-      if (motion < 0.5) {
-        const t = smoothstep(motion * 2);
-        eye.set(lerp(0, cylinderRadius * 0.28, t), lerp(0, Math.max(cylinderHeight * 1.2, cylinderRadius * 0.9), t), lerp(openingZ, cylinderRadius * 1.12, t));
-        aim.set(0, lerp(openingAimY, 0, t), 0);
-      } else {
-        const t = smoothstep((motion - 0.5) * 2);
-        eye.set(lerp(cylinderRadius * 0.28, endEye.x, t), lerp(Math.max(cylinderHeight * 1.2, cylinderRadius * 0.9), endEye.y, t), lerp(cylinderRadius * 1.12, endEye.z, t));
-        aim.set(0, lerp(0, endAim.y, t), lerp(0, endAim.z, t));
-      }
+      eye.set(travel(0, cylinderRadius * .28, endEye.x, motion),
+        travel(0, Math.max(cylinderHeight * 1.2, cylinderRadius * .9), endEye.y, motion),
+        travel(openingZ, cylinderRadius * 1.12, endEye.z, motion));
+      aim.set(0, travel(openingAimY, 0, endAim.y, motion), travel(0, 0, endAim.z, motion));
       camera.fov = lerp(openingFov, finalFov, smoothstep(clamp01((motion - 0.5) * 2)));
       camera.updateProjectionMatrix();
       camera.position.copy(eye);
@@ -223,8 +229,8 @@
     function tick() {
       if (disposed) return;
       const stage = section.closest('.chapter-stage');
-      const span = Math.max(1, stage.offsetHeight - section.offsetHeight);
-      const scrollProgress = clamp01(-stage.getBoundingClientRect().top / span);
+      const scrollProgress = window.JUScenes ? window.JUScenes.progress(id)
+        : clamp01(-stage.getBoundingClientRect().top / Math.max(1, stage.offsetHeight - section.offsetHeight));
       // Keep the approved camera path, but let the reader seek both directions
       // and stop on any frame. Reserve the final 15% for the settled heading.
       const journey = clamp01(scrollProgress / 0.85);
@@ -236,7 +242,7 @@
         lastProgress = progress;
         needsRender = false;
       }
-      raf = requestAnimationFrame(tick);
+      if (!window.JUScenes) raf = requestAnimationFrame(tick);
     }
     const resizeObserver = new ResizeObserver(measure);
     resizeObserver.observe(section);
@@ -275,7 +281,8 @@
     try {
       const gallery=await createGallery(section.id);
       const rect=section.getBoundingClientRect();
-      if(gallery&&!reducedMotion.matches&&rect.bottom>-innerHeight&&rect.top<innerHeight*2){
+      const nearby = window.JUScenes ? window.JUScenes.near(section.id) : rect.bottom>-innerHeight&&rect.top<innerHeight*2;
+      if(gallery&&!reducedMotion.matches&&nearby){
         section.classList.remove('cylinder-fallback');activeGalleries.set(section.id,gallery);
       } else {gallery?.dispose();if(!gallery)section.classList.add('cylinder-fallback');}
     } finally {pendingGalleries.delete(section.id);}
@@ -298,7 +305,8 @@
     // only after its scene has fully left the viewport and prefetch margin.
     for(const section of targets){
       const rect=section.getBoundingClientRect();
-      if(rect.bottom>-innerHeight&&rect.top<innerHeight*2)activate(section);
+      const nearby = window.JUScenes ? window.JUScenes.near(section.id) : rect.bottom>-innerHeight&&rect.top<innerHeight*2;
+      if(nearby)activate(section);
       else if(activeGalleries.has(section.id)){activeGalleries.get(section.id).dispose();activeGalleries.delete(section.id);}
     }
   }
@@ -314,6 +322,7 @@
   targets.forEach(section => lifecycleObserver.observe(section));
 
   addEventListener('scroll', scheduleActivation, { passive: true });
+  document.addEventListener('jugend:chapter-visibility', scheduleActivation);
   addEventListener('resize', scheduleActivation, { passive: true });
   window.addEventListener('jugend:intro-complete', scheduleActivation);
   scheduleActivation();

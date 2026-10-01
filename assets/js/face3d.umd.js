@@ -42,6 +42,7 @@
   var heroInView = true;
   function computeHeroInView(){
     try{
+      if (window.JUScenes) return window.JUScenes.visible('hero');
       var r = hero.getBoundingClientRect();
       var vh = window.innerHeight || document.documentElement.clientHeight || 0;
       if (!vh) return true;
@@ -80,7 +81,7 @@
   function computeYStart(){
     try{
       var vhWorld = viewportWorldHeightAtZ(0);
-      // 開始位置を少しだけ下げる（画面高の1.2倍下側）
+      // Preserve the original video-relative starting position and trajectory.
       yStart = -1.2 * Math.tan(Math.PI/8) * vhWorld;
     }catch(_){ yStart = -0.8; }
     // suppress debug trace
@@ -199,6 +200,7 @@
           camera.position.set(0, 0, fitDist);
           camera.lookAt(0, 0, 0);
           computeYStart();computeYTarget();
+          startLoop();
           dbg('[face3d] onLoad fitDist='+fitDist.toFixed(2)+' meshes='+meshCount+' verts~'+vertSum+' (basic+wire)');
           // スクロールロックは使用しない（自動復旧）
         }
@@ -237,16 +239,23 @@
     }
 
     var resizeRaf = 0;
-    window.addEventListener('resize', function(){
+    function scheduleResize(){
       if (resizeRaf) return;
       resizeRaf = requestAnimationFrame(function(){
         resizeRaf = 0;
         onResize(); computeYStart(); computeYTarget();
         _frameMinMs = frameIntervalForDevice();
         updateHeroInView();
+        startLoop();
       });
-    }, { passive: true });
+    }
+    window.addEventListener('resize', scheduleResize, { passive: true });
+    // The compositor may resize HERO after the window event has already run.
+    // Observe the actual video plane so initial layout and rotation cannot lag.
+    new ResizeObserver(scheduleResize).observe(hero);
+    hero.querySelector('video').addEventListener('loadedmetadata', scheduleResize);
     window.addEventListener('scroll', scheduleHeroInView, { passive: true });
+    document.addEventListener('jugend:chapter-visibility', scheduleHeroInView);
     updateHeroInView();
     // 初期は最小から（0..1）
     targetP = 0.0; currP = 0.0;
@@ -271,7 +280,7 @@
     camera.aspect = width/height;
     camera.updateProjectionMatrix();
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4000000 / Math.max(1, width * height))));
-    renderer.setSize(width, height);
+    renderer.setSize(width, height, false);
   }
 
   function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
@@ -282,6 +291,7 @@
   var _qBase = null, _qSpin = null, _qAxis = null, _qFinal = null;
   var _eBase = null, _vSpinAxis = null, _vWobbleAxis = null;
   function frameIntervalForDevice(){
+    if (window.JUScenes) return 0;
     var coarse = false;
     try { coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches; } catch(_){}
     var tabletLike = coarse && Math.min(window.innerWidth || 0, window.innerHeight || 0) >= 600;
@@ -290,7 +300,7 @@
   var _frameMinMs = frameIntervalForDevice();
   var _lastFrameNow = 0;
   function startLoop(){
-    if (rafId) return;
+    if (rafId || document.hidden || !computeHeroInView()) return;
     running = true;
     rafId = requestAnimationFrame(tick);
   }
@@ -320,7 +330,8 @@
     var dt = Math.max(0, Math.min(0.05, (now - _tLast)/1000));
     _tLast = now; _t += dt;
     // HEROスクロール進捗をスムーズに反映
-    currP += (targetP - currP) * lerpFactorFor(targetP);
+    if (window.JUScenes) currP = targetP;
+    else currP += (targetP - currP) * (1 - Math.pow(1 - lerpFactorFor(targetP), dt * 60));
     var p = easeOutCubic(currP);
     if (!impactKickDone && p > 0.04){ spinVel += 6.0; impactKickDone = true; }
     // 位置: 下から上（yStart → yTarget）へ遷移、Zは中央
@@ -332,7 +343,10 @@
     model.position.set(0, yy, zz);
 
     // 回転: 高速・複合（クォータニオンでXYZ複雑回転 + 斜めスピン）
-    spin += spinVel; spinVel *= 0.975;
+    // Velocity is radians/second, not radians/frame. A 6-radian impact must
+    // not become a complete revolution every display frame (or depend on Hz).
+    spin += spinVel * dt;
+    spinVel *= Math.exp(-dt * 1.5);
     var amp = 0.6 + 1.2 * p; // 振れを少し控えめに
     var tfast = 2.2 + 2.4 * p; // 時間スケールも少し緩めに
     // 可変“斜め”スピン軸（YにX/Zを混ぜる）
@@ -371,14 +385,20 @@
 
     // 画面いっぱいに達した瞬間だけ消す。進捗を戻せば再表示できる。
     var frac = currentViewRadiusFrac(zz, radiusNow);
-    // Before the impact cue, neither the initial pose nor a stale frame is visible.
-    layer.style.visibility = targetP > 0 ? 'visible' : 'hidden';
+    // Show the prepared initial pose with the first film frame in the preview.
+    // The original impact cue still controls the subsequent ascent/growth.
+    var showInitial = !!window.JUScenes && document.documentElement.classList.contains('hero-media-ready');
+    var showBall = targetP > 0 || showInitial;
+    layer.style.visibility = showBall ? 'visible' : 'hidden';
     layer.style.opacity = frac >= FULL_VIEW_FRAC ? '0' : '';
 
     // p終端でのフェード退場は使わない（満画面判定のみ）
 
     // Keep scroll state reversible without drawing an invisible full-size layer.
-    if (targetP > 0 && frac < FULL_VIEW_FRAC) renderer.render(scene, camera);
+    if (showBall && frac < FULL_VIEW_FRAC) renderer.render(scene, camera);
+    // Natural rotation uses elapsed time; position/scale use scroll directly.
+    // Never keep a hidden ball rendering throughout the rest of the page.
+    if (window.JUScenes && (!showBall || frac >= FULL_VIEW_FRAC || !computeHeroInView())) stopLoop();
   }
 
   init();

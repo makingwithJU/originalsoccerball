@@ -1,0 +1,102 @@
+/* Experimental scene compositor. Native document scroll is the only input.
+   The short boundary overlap replaces the former sticky/vertical-slide stack. */
+html.spiral-scenes { scroll-behavior: auto; scroll-padding-top: 0; }
+/* One theme-aware backdrop fills the viewport, independent of chapter height. */
+html.spiral-scenes::before { content: ''; position: fixed; inset: 0; background: var(--background); z-index: 0; pointer-events: none; }
+.spiral-scenes main { isolation: auto; }
+.scene-slot { position: relative; }
+.spiral-scenes .scene-slot { pointer-events: none; }
+.spiral-scenes #hero-scroll-zone { min-height: 0; }
+.spiral-scenes .scene-slot > .chapter,
+.spiral-scenes #hero-scroll-zone > #hero {
+  position: fixed; inset: 0 0 auto; margin: 0;
+  min-height: var(--scene-height); height: auto; width: 100%;
+  background: transparent; visibility: hidden; opacity: 0;
+  pointer-events: none; z-index: 3;
+  transform-origin: 50% calc(var(--scene-height) / 2);
+}
+.spiral-scenes #hero-scroll-zone > #hero { height: var(--scene-height); }
+/* Override the ID-specific legacy sticky gallery layout, not just .chapter.
+   Otherwise its canvas sits thousands of pixels below the incoming aperture. */
+html.spiral-scenes :is(#usage-title, #event-shop-title).cylinder-target {
+  position: fixed; inset: 0 0 auto; height: var(--scene-height);
+  min-height: var(--scene-height); background: transparent;
+}
+.spiral-scenes .chapter[data-scene-visible="true"] { visibility: visible; }
+.spiral-scenes #hero-scroll-zone > #hero[data-scene-visible="true"] { visibility: visible; }
+.spiral-scenes .chapter[data-scene-interactive="true"] { pointer-events: auto; }
+.spiral-scenes .chapter[data-scene-transitioning="true"] { will-change: opacity; }
+.spiral-background { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; opacity: 0; }
+.spiral-scenes .scene-slot > .chapter > :is(.gs-container, .ju-container, .apology-grid),
+.spiral-scenes #faq-slide > #faq-accordion { transform: none; }
+.spiral-scenes #works > .gs-container,
+.spiral-scenes #specs .gs-container { max-height: none; overflow: visible; }
+.spiral-scenes .visual .ov { transform: none; clip-path: none; }
+/* Keep the explicit viewport width used by HERO's absolutely positioned
+   morphing words; a percentage inside its intrinsic grid track collapses. */
+.spiral-scenes #hero .hero-title { width: 100vw; }
+/* The film uses difference blending; the settled copy must use the theme's
+   foreground because its isolated HERO is transparent over the site backdrop. */
+html.spiral-scenes:is([data-hero-state="transition"], [data-hero-state="site"]) #hero .hero-title {
+  color: var(--foreground); mix-blend-mode: normal;
+}
+.spiral-scenes .device-shell[data-rotation-complete="false"] iframe { pointer-events: none; }
+/* Only the shell supplies perspective; nesting another projection clips it. */
+.spiral-scenes #modeling .ju-persp,
+.spiral-scenes #simulator .simu-wrapper { perspective: none; }
+/* Composite the completed 3D object before the fixed chapter is composited.
+   Without this grouping boundary Chrome can discard/slice the shell's planes
+   at large document scroll offsets, although its DOM bounds remain correct.
+   Keep preserve-3d on the shell itself so its front/back retain their depth.
+   Use the real container: .ju-persp is display:contents in some layouts. */
+.spiral-scenes #modeling > .gs-container,
+.spiral-scenes #simulator .simu-wrapper { filter: opacity(1); }
+/* Fade copy independently. Existing gallery heading/caption positioning stays
+   intact; copy appears upright after its parent scene finishes fading in. */
+.spiral-scenes [data-scene-copy] { filter: opacity(var(--scene-copy-opacity, 1)); }
+/* The legacy short-landscape rule used an 8px section inset. Keep an actual
+   reading gap below the header; long scenes already have native overflow space. */
+@media (orientation: landscape) and (max-height: 560px) {
+  html.spiral-scenes { --section-space: 1.5rem; }
+}
+.spiral-scenes #site-notice { z-index: 901; }
+/* Preserve a readable final composition above the persistent footer. */
+.spiral-scenes.footer-visible .scene-slot > .chapter:not(#hero) {
+  padding-bottom: calc(var(--section-space) + var(--footer-height, 0px));
+}
+/* The new compositor reserves footer space with padding and native reading
+   distance. Do not also apply the legacy half-footer upward translation. */
+html.spiral-scenes.footer-visible { --visual-center-shift: 0px; }
+html.spiral-scenes.footer-visible #works > .gs-container,
+html.spiral-scenes.footer-visible #specs .gs-container {
+  max-height: none;
+  overflow: visible;
+}
+/* Reading uses the document's existing overflow interval, never a nested scroller.
+   Match the legacy ID specificity so its 190px minimum cannot overflow phones. */
+.spiral-scenes #specs .gs-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.spiral-scenes #specs .gs-work-card { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 700px), (orientation: portrait) {
+  .spiral-scenes #specs .gs-grid-4 { grid-template-columns: minmax(0, 1fr); }
+  .spiral-scenes #specs .gs-work-card { max-width: 620px; width: 100%; margin-inline: auto; }
+}
+@media (orientation: landscape) and (max-height: 560px) {
+  .spiral-scenes #specs .gs-work-image-wrapper {
+    width: min(100%, max(90px, calc((var(--scene-height) - var(--header-height) - var(--persistent-bottom)) * .42)));
+    margin-inline: auto;
+  }
+}
+/* Keep reading text below an opaque header rather than visible through its logo. */
+html.spiral-scenes[data-scene-reading="true"] .site-header { background: var(--background); }
+/* This video is a viewport composition, not a tall text chapter. Reserve the
+   header/footer inside it, instead of adding padding outside a 100dvh child. */
+.spiral-scenes .scene-slot > #hero-2-slide { height: var(--scene-height); min-height: 0; padding: 0; }
+.spiral-scenes #hero-2 { height: 100%; min-height: 0; }
+.spiral-scenes #hero-2 .hero-title { padding-top: var(--header-height); padding-bottom: var(--persistent-bottom); }
+html.spiral-scenes.footer-visible .scene-slot > #hero-2-slide.chapter { padding-bottom: 0; }
+.hero-loading-status { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); left: calc(50% - 7px); z-index: 10; margin: 0; width: 14px; height: 14px; border: 1px solid #ffffff40; border-top-color: #fff; border-radius: 50%; animation: hero-loading-spin 1.2s linear infinite; }
+.hero-loading-status[hidden] { display: none; }
+@keyframes hero-loading-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .hero-loading-status { animation: none; } }
+.device-media-status { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 2; padding: .5em .8em; border: 0; border-radius: 4px; color: #fff; background: #000c; font: 12px/1.5 sans-serif; white-space: nowrap; }
+.device-media-status:disabled { pointer-events: none; }

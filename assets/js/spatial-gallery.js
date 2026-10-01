@@ -57,7 +57,7 @@
     const header = document.querySelector('.site-header');
     const top = Math.max(viewport.top, header?.getBoundingClientRect().bottom || viewport.top);
     const bottom = Math.max(top + 1, reservedFooterTop(viewport));
-    const rect = section.getBoundingClientRect();
+    const rect = window.JUScenes ? { left: 0, top: 0 } : section.getBoundingClientRect();
     return {
       left: grid.left,
       right: grid.right,
@@ -551,12 +551,13 @@
       }
 
       const stage = section.closest('.chapter-stage');
-      if (!stage) return false;
-      const scrollSpan = Math.max(1, stage.offsetHeight - section.offsetHeight);
-      const progress = clamp01(-stage.getBoundingClientRect().top / scrollSpan);
+      if (!stage && !window.JUScenes) return false;
+      const progress = window.JUScenes ? window.JUScenes.progress(id)
+        : clamp01(-stage.getBoundingClientRect().top / Math.max(1, stage.offsetHeight - section.offsetHeight));
       const journey = clamp01((progress - .08) / .82);
       const opening = progress < .08;
-      if (journey < 1 && lastTime) rotation += Math.min(50, now - lastTime) * .00012;
+      if (window.JUScenes) rotation = journey * 2.4;
+      else if (journey < 1 && lastTime) rotation += Math.min(50, now - lastTime) * .00012;
       lastTime = now;
 
       // Only ordinary landscape desktop gets the new cinematic camera path.
@@ -664,7 +665,11 @@
           sphereAngle = rotation + t * Math.PI * 1.3;
         }
       } else {
-        sphereCenter.set(settledX, settledY, 0);
+        // In the alternative compositor, give touch devices the same intact,
+        // centered opening before moving to their existing responsive layout.
+        const settle = window.JUScenes ? ease(clamp01((progress - .035) / .045)) : 1;
+        sphereCenter.set(settledX * settle, settledY * settle, 0);
+        sphereRadius = lerp(Math.min(frame.width, frame.height) * .42, layout.radius, settle);
       }
 
       let legacyTotal = 0;
@@ -827,14 +832,31 @@
       section.style.setProperty('--gallery-tile-height', `${layout.tileHeight}px`);
       section.dataset.galleryFrame = `${Math.round(frame.width)}x${Math.round(frame.height)}`;
       section.dataset.galleryPcCinematic = cinematicDesktop ? 'true' : 'false';
-      return journey < 1;
+      return !window.JUScenes && journey < 1;
     }
 
     sources.forEach(image => {
       image.addEventListener('load', schedule, { once: true });
       image.addEventListener('error', schedule, { once: true });
     });
-    return { id, section, render };
+    function release() {
+      if (!renderer) return;
+      for (const entry of entries) {
+        entry.mesh.geometry.dispose();
+        entry.mesh.material.map.dispose();
+        entry.mesh.material.dispose();
+        entry.canvas.width = entry.canvas.height = 1;
+        entry.connector.remove();
+      }
+      renderer.dispose();
+      renderer.forceContextLoss();
+      renderer.domElement.remove();
+      renderer = scene = camera = entries = null;
+      textureKey = '';
+      visualLayer.hidden = true;
+      section.classList.add('gallery-pending');
+    }
+    return { id, section, render, release };
   }
 
   function update(now) {
@@ -842,6 +864,10 @@
     if (document.hidden) return;
     let spinning = false;
     for (const gallery of galleries) {
+      if (window.JUScenes && !window.JUScenes.near(gallery.id)) {
+        gallery.release();
+        continue;
+      }
       if (gallery.section.dataset.covered !== 'true') spinning = gallery.render(now) || spinning;
     }
     if (spinning) schedule();

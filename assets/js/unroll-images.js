@@ -112,7 +112,8 @@
     }
     const parent=item.canvas.parentElement, bounds=parent.getBoundingClientRect();
     Object.assign(item.canvas.style,{
-      left:`${rect.left-bounds.left+parent.scrollLeft}px`, top:`${rect.top-bounds.top+parent.scrollTop}px`,
+      left:`${window.JUScenes ? item.img.offsetLeft : rect.left-bounds.left+parent.scrollLeft}px`,
+      top:`${window.JUScenes ? item.img.offsetTop : rect.top-bounds.top+parent.scrollTop}px`,
       width:`${rect.width}px`,height:`${rect.height}px`
     });
     renderer.setSize(width,height,false);
@@ -120,6 +121,9 @@
   function paint(item, rect, progress) {
     if (!init()) return false;
     try {
+      // Avoid redrawing identical meshes/textures on duplicate scroll events.
+      if (item.texture && item.canvas && !item.canvas.hidden && item.lastPaint === progress &&
+          item.lastWidth === rect.width && item.lastHeight === rect.height) return true;
       prepare(item,rect);
       mesh.material.uniforms.map.value=item.texture;
       mesh.material.uniforms.progress.value=progress;
@@ -130,6 +134,7 @@
       item.canvas.hidden=false;
       item.img.classList.add('unroll-source');
       item.canvas.dataset.progress=String(progress);
+      item.lastPaint=progress; item.lastWidth=rect.width; item.lastHeight=rect.height;
       return true;
     } catch (_) {
       restore(item);
@@ -145,7 +150,7 @@
       const rect = item.img.getBoundingClientRect();
       const section = item.section;
       const stage = section?.closest('.chapter-stage');
-      if (!stage || rect.bottom <= 0 || rect.top >= innerHeight || section.dataset.covered === 'true') {
+      if ((!stage && !window.JUScenes) || rect.bottom <= 0 || rect.top >= innerHeight || section.dataset.covered === 'true') {
         restore(item);
         if (item.texture) { item.texture.dispose(); item.texture = null; }
         continue;
@@ -154,8 +159,10 @@
         restore(item);
         continue;
       }
-      const span = Math.max(1, stage.offsetHeight - section.offsetHeight);
-      const chapterProgress = Math.max(0, Math.min(1, -stage.getBoundingClientRect().top / span));
+      const chapterProgress = window.JUScenes ? window.JUScenes.progress(section.id)
+        : Math.max(0, Math.min(1, -stage.getBoundingClientRect().top / Math.max(1, stage.offsetHeight - section.offsetHeight)));
+      // Always restore the correct scroll state on entry, including progress 0.
+      // Offscreen cleanup may have exposed the DOM image from the previous visit.
       const stagger = item.sectionCount > 1 ? .24 * item.order / (item.sectionCount - 1) : 0;
       // Open over 40% of the chapter; the last stagger still finishes at 72%.
       // Forward and backward scrolling share this exact mapping.
@@ -165,7 +172,7 @@
       if (progress === 1) {
         restore(item);
       } else {
-        paint(item, rect, progress);
+        paint(item, window.JUScenes ? { width: item.img.offsetWidth, height: item.img.offsetHeight } : rect, progress);
       }
     }
   }

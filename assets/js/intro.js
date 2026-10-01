@@ -32,16 +32,37 @@
     let currentProgress = 0;
     let requestedProgress = 0;
     let displayedFrame = -1;
-    let requestSerial = 0;
     let scrollRaf = 0;
     let resizeRaf = 0;
     let introReady = false;
     let firstFrameReady = false;
+    let waitingTimer = 0;
     const decoded = new Map();
     const pending = new Map();
     const failedFrames = new Set();
-    const MAX_DECODED = tier === 'phone' ? 40 : tier === 'tablet' ? 50 : 36;
+    // Bound decoded RGBA residency, not just compressed transfer size.
+    const MAX_DECODED = 18;
     const MAX_PENDING = 6;
+    const heroIsNear = () => !window.JUScenes || window.JUScenes.visible('hero') || window.JUScenes.near('hero');
+    const loadingStatus = document.createElement('p');
+    loadingStatus.className = 'hero-loading-status';
+    loadingStatus.setAttribute('role', 'status');
+    loadingStatus.setAttribute('aria-label', '映像を読み込んでいます');
+    loadingStatus.hidden = true;
+    hero.append(loadingStatus);
+    function waiting(active) {
+      if (!active) {
+        clearTimeout(waitingTimer); waitingTimer = 0;
+        loadingStatus.hidden = true;
+        hero.setAttribute('aria-busy', 'false');
+      } else if (!waitingTimer && loadingStatus.hidden) {
+        waitingTimer = setTimeout(() => {
+          waitingTimer = 0;
+          loadingStatus.hidden = false;
+          hero.setAttribute('aria-busy', 'true');
+        }, 500);
+      }
+    }
 
     if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -100,30 +121,28 @@
         canvas.width = width;
         canvas.height = height;
       }
-      if (displayedFrame >= 0) drawFrame(displayedFrame, false);
+      if (displayedFrame >= 0) drawFrame(displayedFrame);
     }
 
-    function drawCover(image) {
+    function drawCover(image, opacity = 1, clear = true) {
       if (!ctx || !image?.naturalWidth || !image?.naturalHeight) return false;
       const cw = canvas.width;
       const ch = canvas.height;
       const scale = Math.max(cw / image.naturalWidth, ch / image.naturalHeight);
       const dw = image.naturalWidth * scale;
       const dh = image.naturalHeight * scale;
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, cw, ch);
+      ctx.globalAlpha = 1;
+      if (clear) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cw, ch); }
+      ctx.globalAlpha = opacity;
       ctx.drawImage(image, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+      ctx.globalAlpha = 1;
       return true;
     }
 
     function evictDecoded(target) {
       if (decoded.size <= MAX_DECODED) return;
       const keep = new Set([displayedFrame, target]);
-      for (let d = 1; d <= 16; d++) {
-        if (target - d >= 0) keep.add(target - d);
-        if (target + d < FRAME_COUNT) keep.add(target + d);
-      }
-      for (const key of [...decoded.keys()]) {
+      for (const key of [...decoded.keys()].sort((a,b)=>Math.abs(b-target)-Math.abs(a-target))) {
         if (decoded.size <= MAX_DECODED) break;
         if (!keep.has(key)) decoded.delete(key);
       }
@@ -132,25 +151,52 @@
     function loadFrame(index, priority = 'auto') {
       index = Math.max(0, Math.min(FRAME_COUNT - 1, index));
       if (decoded.has(index)) return Promise.resolve(decoded.get(index));
-      if (pending.has(index)) return pending.get(index);
+      if (pending.has(index)) return pending.get(index).promise;
       if (failedFrames.has(index)) return Promise.reject(new Error('Unavailable HERO frame'));
       const expectedTier = tier;
+      const request = { promise: null, cancel: null };
       const promise = new Promise((resolve, reject) => {
         const image = new Image();
+        let active = true;
+        const release = () => {
+          active = false;
+          clearTimeout(timeout);
+          image.onload = image.onerror = null;
+          if (pending.get(index) === request) pending.delete(index);
+        };
+        request.cancel = () => {
+          if (!active) return;
+          release();
+          image.removeAttribute('src');
+          reject(new DOMException('Obsolete HERO request', 'AbortError'));
+        };
+        const timeout = setTimeout(() => {
+          if (!active) return;
+          release();
+          image.removeAttribute('src');
+          failedFrames.add(index);
+          reject(new Error('HERO frame request timed out'));
+          scheduleSync();
+        }, 8000);
         image.decoding = 'async';
         try { image.fetchPriority = priority; } catch (_) {}
         image.onload = async () => {
           try { await image.decode?.(); } catch (_) {}
+          if (!active) return;
+          release();
           if (expectedTier !== tier) { reject(new Error('stale hero tier')); return; }
-          pending.delete(index);
+          // A request can finish after the reader has left HERO. Do not keep
+          // decoded film frames resident throughout the remaining 22 scenes.
+          if (!heroIsNear()) { resolve(image); return; }
           decoded.set(index, image);
           evictDecoded(Math.round(clamp(requestedProgress / FILM_SCROLL_END) * (FRAME_COUNT - 1)));
           resolve(image);
           scheduleSync();
         };
         image.onerror = error => {
+          if (!active) return;
+          release();
           if (expectedTier === tier) {
-            pending.delete(index);
             failedFrames.add(index);
             scheduleSync();
           }
@@ -158,44 +204,28 @@
         };
         image.src = frameUrl(index);
       });
-      pending.set(index, promise);
+      request.promise = promise;
+      pending.set(index, request);
       return promise;
     }
 
-    function frameProgress(index) {
-      return (index / Math.max(1, FRAME_COUNT - 1)) * FILM_SCROLL_END;
-    }
-
-    function drawFrame(index, publish = true) {
+    function drawFrame(index) {
       const image = decoded.get(index);
       if (!image || !drawCover(image)) return false;
       displayedFrame = index;
       if (!firstFrameReady) {
         firstFrameReady = true;
-        canvas.style.opacity = '1';
         video.style.visibility = 'hidden';
         revealFilm();
       }
-      if (publish) render(frameProgress(index));
       return true;
     }
 
-    function findClosestDecoded(target) {
-      if (decoded.has(target)) return target;
-      let closest = -1;
-      let minDiff = Infinity;
-      for (const idx of decoded.keys()) {
-        const diff = Math.abs(idx - target);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closest = idx;
-        }
-      }
-      return closest;
-    }
-
     function prefetchAround(index) {
-      const lookahead = tier === 'phone' || tier === 'tablet' ? 14 : 8;
+      if (!heroIsNear()) return;
+      // Target + twelve ahead + four behind fit inside the 18-image budget.
+      // A larger window repeatedly evicted/reloaded its own furthest frame.
+      const lookahead = tier === 'phone' || tier === 'tablet' ? 12 : 8;
       for (let d = 1; d <= lookahead; d++) {
         if (pending.size >= MAX_PENDING - 2) break;
         const forward = index + d;
@@ -208,45 +238,37 @@
 
     function presentRequested(progress) {
       requestedProgress = clamp(progress);
-
-      // Navigation must not wait for a media request: a missing or slow final
-      // frame must never trap the page in HERO with the header hidden.
-      if (requestedProgress >= FILM_SCROLL_END) render(requestedProgress);
-      if (requestedProgress >= FILM_SCROLL_END && displayedFrame === FRAME_COUNT - 1) {
-        render(requestedProgress);
-        return;
+      // One timeline for film, type and ball. A completed image request may
+      // repaint this position, but never publish its older frame's progress.
+      render(requestedProgress);
+      if (requestedProgress >= FILM_SCROLL_END) { waiting(false); return; }
+      const fractionalFrame = requestedProgress / FILM_SCROLL_END * (FRAME_COUNT - 1);
+      const target = Math.floor(fractionalFrame);
+      const following = Math.min(FRAME_COUNT - 1, target + 1);
+      // A fast swipe/reversal must not queue behind downloads for an old pose.
+      // Cancel obsolete work, and reserve the first two slots for this frame pair.
+      for (const [index, request] of pending) {
+        if (Math.abs(index - target) > 16) request.cancel();
       }
-
-      const filmProgress = clamp(requestedProgress / FILM_SCROLL_END);
-      const target = Math.round(filmProgress * (FRAME_COUNT - 1));
-      if (target === displayedFrame) return;
-      const serial = ++requestSerial;
+      const needed = [target, following].filter(index => !decoded.has(index) && !pending.has(index) && !failedFrames.has(index));
+      for (const [index, request] of [...pending].sort((a,b)=>Math.abs(b[0]-target)-Math.abs(a[0]-target))) {
+        if (pending.size + needed.length <= MAX_PENDING) break;
+        if (index !== target && index !== following) request.cancel();
+      }
       if (decoded.has(target)) {
-        drawFrame(target, requestedProgress < FILM_SCROLL_END);
-        prefetchAround(target);
-        if (requestedProgress >= FILM_SCROLL_END && target === FRAME_COUNT - 1) render(requestedProgress);
-        return;
+        drawFrame(target);
+        if (following !== target && decoded.has(following)) drawCover(decoded.get(following), fractionalFrame - target, false);
       }
-
-      // Smooth scrub fallback: if exact target is decoding, present nearest available frame
-      // so visual scrub never drops dead or stutters during fast scroll gestures.
-      const nearest = findClosestDecoded(target);
-      if (nearest >= 0 && nearest !== displayedFrame && Math.abs(nearest - target) <= 12) {
-        drawFrame(nearest, requestedProgress < FILM_SCROLL_END);
+      const unavailable = failedFrames.has(target);
+      waiting(!decoded.has(target) && !unavailable);
+      root.dataset.heroMediaFallback = String(unavailable);
+      for (const index of [target, following]) {
+        if (pending.size < MAX_PENDING && !pending.has(index) && !decoded.has(index) && !failedFrames.has(index)) {
+          loadFrame(index, 'high').catch(() => {});
+        }
       }
-
-      if (pending.size >= MAX_PENDING && !pending.has(target)) return;
-
-      loadFrame(target, 'high').then(() => {
-        if (serial !== requestSerial) return;
-        drawFrame(target, requestedProgress < FILM_SCROLL_END);
-        prefetchAround(target);
-        if (requestedProgress >= FILM_SCROLL_END && target === FRAME_COUNT - 1) render(requestedProgress);
-      }).catch(() => {
-        if (serial !== requestSerial) return;
-        render(requestedProgress);
-        revealFilm();
-      });
+      prefetchAround(target);
+      if (unavailable) revealFilm();
     }
 
     const scrollDistance = () => Math.max(1, zone.offsetHeight - hero.offsetHeight);
@@ -254,8 +276,14 @@
 
     function syncFromScroll() {
       scrollRaf = 0;
-      const progress = clamp((scrollY - zoneTop()) / scrollDistance());
-      presentRequested(progress);
+      const progress = window.JUScenes ? window.JUScenes.progress('hero') : clamp((scrollY - zoneTop()) / scrollDistance());
+      if (heroIsNear()) presentRequested(progress);
+      else {
+        waiting(false);
+        for (const request of pending.values()) request.cancel();
+        decoded.clear();
+        render(progress);
+      }
       window.JUHeroDebug = {
         driver: 'frame-sequence-v23-original-timing',
         tier,
@@ -281,10 +309,10 @@
         if (nextTier !== tier) {
           tier = nextTier;
           decoded.clear();
+          for (const request of pending.values()) request.cancel();
           pending.clear();
           failedFrames.clear();
           displayedFrame = -1;
-          requestSerial++;
           firstFrameReady = false;
           video.style.visibility = '';
           canvas.style.opacity = '0';
@@ -294,9 +322,14 @@
       });
     }
 
-    addEventListener('scroll', scheduleSync, { passive: true });
+    addEventListener('scroll', () => { if (!window.JUScenes) scheduleSync(); }, { passive: true });
+    document.addEventListener('jugend:scroll-frame', () => {
+      cancelAnimationFrame(scrollRaf);
+      syncFromScroll();
+    });
     addEventListener('resize', handleResize, { passive: true });
     window.visualViewport?.addEventListener('resize', handleResize, { passive: true });
+    new ResizeObserver(handleResize).observe(hero);
 
     const navigation = window.performance?.getEntriesByType?.('navigation')?.[0];
     if (!navigation || navigation.type === 'navigate' || navigation.type === 'reload') scrollTo(0, 0);
@@ -304,10 +337,9 @@
     resizeCanvas();
     render(0);
     loadFrame(0, 'high').then(() => {
-      drawFrame(0, true);
-      prefetchAround(0);
       syncFromScroll();
-    }).catch(() => {
+    }).catch(error => {
+      if (error?.name === 'AbortError') return;
       revealFilm();
       video.style.visibility = '';
     });

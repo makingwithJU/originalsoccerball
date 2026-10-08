@@ -58,15 +58,6 @@
             }
             return value/3.0;
           }
-          vec3 getCosmicColor(float v){
-            vec3 cBg = vec3(0.005, 0.01, 0.06);
-            vec3 cViolet = vec3(0.12, 0.02, 0.96);
-            vec3 cCyan = vec3(0.00, 0.95, 0.98);
-            vec3 cPink = vec3(1.00, 0.12, 0.68);
-            if(v < 0.25) return mix(cBg, cViolet, v / 0.25);
-            if(v < 0.58) return mix(cViolet, cCyan, (v - 0.25) / 0.33);
-            return mix(cCyan, cPink, (v - 0.58) / 0.42);
-          }
           void main(){
             vec2 p=(uvPoint-.5)*vec2(aspect,1.0)*2.0/portalScale;
             float len=1.0-length(p)*.3;
@@ -75,10 +66,13 @@
             // Preserve the opening orientation, halve angular travel only.
             float angle=PI+PI*(nsin(t*.05)-.5);
             vec3 hex=coordToHex(p,20.0*zoom,angle);
-            float v = calc(hex,t,len);
-            vec3 rgb = getCosmicColor(v);
+            vec3 rgb;
+            rgb.r=pow(calc(hex,t,len),3.0);
+            rgb.g=pow(calc(hex,t+.03,len),3.0);
+            rgb.b=pow(calc(hex,t+.06,len),3.0);
             rgb*=.2+.8*sin(PI*len*.5);
-            vec3 color=rgb+vec3(0.0,0.01,0.05);
+            // Preserve the original blue pedestal, with a brighter RGB grade.
+            vec3 color=rgb+vec3(0.0,0.0,.2);
             float luma=dot(color,vec3(.2126,.7152,.0722));
             color=clamp(mix(vec3(luma),color,saturation)*brightness,0.0,1.0);
             // The opening shares the rainbow's coordinates. It reveals the

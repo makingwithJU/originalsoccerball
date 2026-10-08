@@ -600,21 +600,27 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
 }
 
 @media (orientation: portrait) and (max-width: 600px) {
-  /* Ensure design & policy chapters center within visual-safe-height when footer is latched */
-  html.spiral-scenes.footer-visible #design.chapter,
-  html.spiral-scenes.footer-visible #policy.chapter {
-    min-height: var(--visual-safe-height);
-    height: var(--visual-safe-height);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding-top: calc(var(--header-height) + 0.25rem);
-    padding-bottom: calc(var(--persistent-bottom) + 0.25rem);
-    box-sizing: border-box;
+  /* Unified mobile portrait typography: fine body text standardized across all sections */
+  :root {
+    --body: 0.75rem;
+    --caption: 0.6875rem;
+    --heading-gap: clamp(0.75rem, 2svh, 1.25rem);
+  }
+  body {
+    font-size: var(--body);
+    line-height: 1.55;
+  }
+  .gs-card-text, .gs-work-text, .gs-info-text, .ju-design__text, .ju-acc__text, #contact-apology p {
+    font-size: var(--body);
+    line-height: 1.55;
   }
 
   /* #design section layout */
+  #design.chapter {
+    padding-top: calc(var(--header-height) + 0.5rem);
+    padding-bottom: 1rem;
+    box-sizing: border-box;
+  }
   #design .ju-container {
     width: 100%;
     display: flex;
@@ -627,7 +633,7 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.5rem, 1.6svh, 1rem);
+    gap: clamp(0.6rem, 1.8svh, 1rem);
     width: 100%;
   }
   #design .ju-design__stack {
@@ -642,8 +648,8 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     font-size: clamp(1.05rem, 2.2svh, 1.25rem);
   }
   #design .ju-design__text {
-    font-size: clamp(0.75rem, 1.6svh, 0.85rem);
-    line-height: 1.45;
+    font-size: var(--body);
+    line-height: 1.55;
   }
   #design .ju-design__image {
     display: flex;
@@ -653,14 +659,20 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
   }
   #design .ju-design__image img {
     height: auto;
-    max-height: clamp(120px, 18svh, 175px);
+    max-height: clamp(180px, 28svh, 240px);
     max-width: min(100%, 360px);
     object-fit: contain;
     display: block;
     margin-inline: auto;
+    transition: max-height 0.3s ease;
   }
 
   /* #policy section layout */
+  #policy.chapter {
+    padding-top: calc(var(--header-height) + 0.5rem);
+    padding-bottom: 1rem;
+    box-sizing: border-box;
+  }
   #policy .ju-container {
     width: 100%;
     display: flex;
@@ -677,7 +689,7 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(0.35rem, 1svh, 0.7rem);
+    gap: clamp(0.45rem, 1.4svh, 0.85rem);
     width: 100%;
   }
   #policy .ju-policy__wrap > aside {
@@ -693,26 +705,60 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     width: auto;
   }
   #policy .ju-policy__img {
-    height: clamp(65px, 10.5svh, 100px) !important;
+    height: clamp(140px, 22svh, 180px) !important;
     width: auto;
     max-width: 100%;
     object-fit: contain;
     display: block;
     margin-inline: auto;
+    transition: height 0.3s ease;
   }
   #policy .ju-acc {
     width: 100%;
     max-width: 440px;
+    max-height: clamp(200px, 32svh, 260px);
+    overflow-y: auto;
   }
   #policy summary {
-    min-height: 32px;
-    padding: 0.2rem 0;
-    font-size: 0.85rem;
+    min-height: 30px;
+    padding: 0.15rem 0;
+    font-size: 0.8125rem;
+  }
+
+  /* When persistent footer is latched: symmetrically trim top/bottom padding,
+     tighten line gaps, and restrict image reduction to 90% (barely noticeable change) */
+  html.spiral-scenes.footer-visible #design.chapter,
+  html.spiral-scenes.footer-visible #policy.chapter {
+    min-height: var(--visual-safe-height);
+    height: var(--visual-safe-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: calc(var(--header-height) + 0.25rem);
+    padding-bottom: calc(var(--persistent-bottom) + 0.25rem);
+    box-sizing: border-box;
+  }
+  html.spiral-scenes.footer-visible #design .ju-design__row {
+    gap: clamp(0.35rem, 1svh, 0.65rem);
+  }
+  html.spiral-scenes.footer-visible #design .ju-design__stack {
+    gap: clamp(0.2rem, 0.6svh, 0.45rem);
+  }
+  html.spiral-scenes.footer-visible #design .ju-design__image img {
+    max-height: clamp(160px, 25svh, 216px);
+  }
+  html.spiral-scenes.footer-visible #policy .ju-policy__wrap {
+    gap: clamp(0.3rem, 0.8svh, 0.55rem);
+  }
+  html.spiral-scenes.footer-visible #policy .ju-policy__img {
+    height: clamp(126px, 19.8svh, 162px) !important;
   }
   html.spiral-scenes.footer-visible #policy .ju-acc {
-    max-height: clamp(180px, 32svh, 240px);
+    max-height: clamp(160px, 26svh, 220px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
 }
+
 

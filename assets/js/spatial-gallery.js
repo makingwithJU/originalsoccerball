@@ -75,7 +75,7 @@
     const portrait = frame.portrait;
     const tablet = matchMedia(TABLET_QUERY).matches;
     const isTouchMobile = matchMedia('(hover: none) and (pointer: coarse) and (max-width: 760px)').matches;
-    const captionReserve = tablet ? (portrait ? 112 : 96) : (isTouchMobile ? 86 : (portrait ? 62 : 74));
+    const captionReserve = tablet ? (portrait ? 112 : 96) : (portrait ? 44 : (isTouchMobile ? 86 : 74));
     const desktop = matchMedia('(min-width: 1100px) and (pointer: fine)').matches;
 
     if (portrait && tablet) {
@@ -100,26 +100,26 @@
     }
 
     if (portrait) {
-      // Portrait keeps the stacked composition. The sphere/card dimensions are
-      // intentionally conservative so the mobile layout remains readable.
-      const radius = Math.max(72, Math.min(170, frame.width * .34, frame.height * .225));
-      const headingBand = clamp(frame.width * .12, 46, 68);
-      const sphereX = frame.width * .50;
-      const sphereY = clamp(frame.height * .30, radius * .82, frame.height - radius * .78);
+      // Mobile portrait: compact sphere placed higher up, heading placed at top,
+      // maximizing space for prominent single card with 1-line caption.
+      const radius = clamp(Math.min(frame.width * 0.27, frame.height * 0.16), 66, 112);
+      const headingBand = clamp(frame.width * 0.09, 32, 48);
+      const sphereX = frame.width * 0.50;
+      const sphereY = clamp(frame.height * 0.20, radius + 6, frame.height * 0.27);
       const sphereBottom = sphereY + radius;
-      const rowTopMin = sphereBottom + headingBand + 20;
-      const availableBelow = Math.max(96, frame.height - rowTopMin - captionReserve - EDGE);
-      const tileHeight = Math.max(110, Math.min(360, frame.width * .78, frame.height * .40, availableBelow));
-      const rowY = Math.min(
-        frame.height - captionReserve - EDGE - tileHeight / 2,
-        rowTopMin + tileHeight / 2
-      );
+      // Heading is placed at top, so card can sit right below upper sphere with subtle overlap
+      const rowTopMin = sphereY + radius * 0.50;
+      const availableBelow = Math.max(140, frame.height - rowTopMin - captionReserve - EDGE);
+      const tileHeight = clamp(Math.min(frame.width * 0.86, frame.height * 0.44, availableBelow), 180, 340);
+      const minRowY = rowTopMin + tileHeight / 2;
+      const maxRowY = frame.height - captionReserve - EDGE - tileHeight / 2;
+      const rowY = maxRowY >= minRowY ? (minRowY + maxRowY) / 2 : maxRowY;
       return {
         portrait,
         radius,
         sphereX,
         sphereY,
-        rowX: frame.width * .50,
+        rowX: frame.width * 0.50,
         rowY,
         tileHeight,
         headingBand,
@@ -452,7 +452,13 @@
       heading.style.transform = 'none';
       heading.style.textAlign = 'center';
       if (layout.portrait) {
-        heading.style.top = `${frame.localTop + layout.sphereY + layout.radius + 12}px`;
+        if (layout.tablet) {
+          heading.style.top = `${frame.localTop + layout.sphereY + layout.radius + 12}px`;
+        } else {
+          // Mobile portrait: position heading near the top of the safe section
+          const topOffset = clamp(frame.height * 0.02, 8, 20);
+          heading.style.top = `${frame.localTop + topOffset}px`;
+        }
       } else if (layout.desktop) {
         heading.style.left = '50%';
         heading.style.width = `${frame.width}px`;

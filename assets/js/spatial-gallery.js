@@ -79,20 +79,19 @@
     const desktop = matchMedia('(min-width: 1100px) and (pointer: fine)').matches;
 
     if (portrait && tablet) {
-      // Tablet portrait: fit the complete sphere + released card + caption inside
-      // the measured header/footer safe frame. This branch does not change
-      // phone portrait or any desktop layout.
-      const radius = clamp(Math.min(frame.width * .285, frame.height * .19), 108, 170);
-      const headingBand = clamp(frame.width * .10, 42, 58);
+      // Tablet portrait: adopt the clean mobile-portrait layout pattern
+      // (heading at top, compact upper sphere, large released card + caption below)
+      // optimized for tablet portrait screen aspect ratio.
+      const radius = clamp(Math.min(frame.width * .22, frame.height * .16), 110, 160);
+      const headingBand = clamp(frame.width * .07, 36, 52);
       const sphereX = frame.width * .50;
-      const sphereY = clamp(frame.height * .255, radius + EDGE, frame.height - radius - EDGE);
-      const sphereBottom = sphereY + radius;
-      const rowTopMin = sphereBottom + headingBand + 14;
-      const availableBelow = Math.max(120, frame.height - rowTopMin - captionReserve - EDGE);
-      const tileHeight = clamp(Math.min(frame.width * .62, frame.height * .34, availableBelow), 150, 300);
+      const sphereY = clamp(frame.height * .21, radius + 12, frame.height * .28);
+      const rowTopMin = sphereY + radius * 0.45;
+      const availableBelow = Math.max(200, frame.height - rowTopMin - captionReserve - EDGE);
+      const tileHeight = clamp(Math.min(frame.width * .72, frame.height * .44, availableBelow), 260, 420);
       const minRowY = rowTopMin + tileHeight / 2;
       const maxRowY = frame.height - captionReserve - EDGE - tileHeight / 2;
-      const rowY = maxRowY >= minRowY ? clamp((minRowY + maxRowY) / 2, minRowY, maxRowY) : frame.height * .68;
+      const rowY = maxRowY >= minRowY ? (minRowY + maxRowY) / 2 : maxRowY;
       return {
         portrait, tablet: true, radius, sphereX, sphereY,
         rowX: frame.width * .50, rowY, tileHeight, headingBand, captionReserve,
@@ -452,13 +451,9 @@
       heading.style.transform = 'none';
       heading.style.textAlign = 'center';
       if (layout.portrait) {
-        if (layout.tablet) {
-          heading.style.top = `${frame.localTop + layout.sphereY + layout.radius + 12}px`;
-        } else {
-          // Mobile portrait: position heading near the top of the safe section
-          const topOffset = clamp(frame.height * 0.02, 8, 20);
-          heading.style.top = `${frame.localTop + topOffset}px`;
-        }
+        // Mobile & Tablet portrait: position heading cleanly at the top of the safe section
+        const topOffset = layout.tablet ? clamp(frame.height * 0.025, 12, 28) : clamp(frame.height * 0.02, 8, 20);
+        heading.style.top = `${frame.localTop + topOffset}px`;
       } else if (layout.desktop) {
         heading.style.left = '50%';
         heading.style.width = `${frame.width}px`;

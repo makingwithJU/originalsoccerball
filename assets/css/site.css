@@ -616,10 +616,18 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     line-height: 1.5;
   }
 
-  /* Unified 大見出し across all sections */
-  h2, .gs-heading, .gs-overline, .order-gallery__title, #ju-policy-title, #originalballmaking-title {
+  /* Unified 大見出し across all sections (excluding small eyebrow text like 「サッカーボールを通じて」) */
+  h2:not(.eyebrow), .gs-heading, .gs-overline:not(.eyebrow), .order-gallery__title, #ju-policy-title, #originalballmaking-title {
     font-size: var(--heading) !important;
     line-height: 1.22;
+  }
+  .eyebrow, .ju-title-small {
+    font-size: var(--caption) !important;
+    line-height: 1.5;
+    letter-spacing: .04em;
+    margin-bottom: 0.5rem;
+    color: var(--secondary);
+    font-weight: 500;
   }
 
   /* Unified 小見出し across all sections */

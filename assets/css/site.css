@@ -128,15 +128,33 @@ picture { display: contents; }
 #works .gs-work-image-wrapper { width: min(100%, calc(26 * var(--scene-unit))); margin-inline: auto; }
 #design .ju-design__image img { width: auto; max-width: 100%; max-height: max(100px, calc(var(--scene-height, 100svh) - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space))); margin-inline: auto; }
 #design-intro .ju-design__image img { width: auto; max-width: 100%; max-height: 38svh; margin-inline: auto; }
-.accordion-item { border-top: 1px solid var(--line); }
+.accordion-item { border-top: 1px solid var(--line); transition: background-color 0.2s ease; }
 .accordion-item:last-child { border-bottom: 1px solid var(--line); }
-summary { display: flex; align-items: baseline; gap: 1rem; min-height: 44px; padding: .7rem 0; font-size: var(--control); line-height: 1.45; list-style: none; }
+summary {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  min-height: 44px;
+  padding: .7rem 0;
+  font-size: var(--control);
+  line-height: 1.45;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
 summary::-webkit-details-marker { display: none; }
 
 summary .ttl { flex: 1; }
 summary .sign::after { content: '+'; }
 details[open] summary .sign::after { content: '−'; }
-.ju-acc__panel { padding: 0 0 1.5rem; }
+.ju-acc__panel {
+  padding: 0 0 1.5rem;
+  animation: ju-acc-expand 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes ju-acc-expand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .ju-acc__text, .ju-acc__text.text-xs { font-size: var(--body); line-height: 1.75; }
 .ju-header { margin-bottom: var(--heading-gap); }
 .ju-title-big { display: block; }

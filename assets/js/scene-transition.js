@@ -222,18 +222,28 @@
     // Stable CSS viewport height: mobile toolbar collapse cannot alter the track.
     if (!unit || preserve === true) unit = probe.offsetHeight;
     updateViewport();
+
+    // PC detection: fine pointer and NOT a coarse touch device
+    const isCoarseTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const isPC = !isCoarseTouch && matchMedia('(pointer: fine)').matches;
+
     let start = 0;
     for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
       scene.start = start;
       const sceneUnits = scene.section.id === 'specs' && scene.section.dataset.specLayout === 'grid' ? 3.5 : units[scene.section.id] ?? 1.6;
-      scene.animation = sceneUnits * pace.animation * unit;
+
+      // PC only: scale scroll distance to 2/3 (1.5x speed) for all scenes after HERO. HERO is strictly preserved.
+      const pcFactor = (isPC && scene.section.id !== 'hero') ? (2 / 3) : 1;
+
+      scene.animation = (sceneUnits * pace.animation * unit) * pcFactor;
       const bottom = footerLatched ? parseFloat(getComputedStyle(root).getPropertyValue('--footer-height')) || 0 : 0;
       scene.overflow = fixedScenes.has(scene.section.id) ? 0 : Math.max(0, scene.section.scrollHeight - innerHeight + bottom);
-      scene.readPace = 1.8;
+      // On PC, readPace is 1.1 for responsive 1:1 scroll feel; mobile/tablet retains 1.8
+      scene.readPace = isPC ? 1.1 : 1.8;
       scene.readSpan = scene.overflow * scene.readPace;
-      scene.hold = pace.hold * unit;
-      scene.transition = i === scenes.length - 1 ? 0 : pace.transition * unit;
+      scene.hold = (pace.hold * unit) * pcFactor;
+      scene.transition = (i === scenes.length - 1 ? 0 : pace.transition * unit) * pcFactor;
       scene.end = start + scene.animation + scene.readSpan + scene.hold + scene.transition;
       scene.slot.style.height = `${scene.end - start + (i === scenes.length - 1 ? unit : 0)}px`;
       start = scene.end;
@@ -292,8 +302,37 @@
   // A fixed-height chapter does not resize when a details panel expands.
   document.addEventListener('toggle', event => {
     if (!event.target.matches('details') || !event.target.closest('.chapter')) return;
+    const details = event.target;
+    const chapter = details.closest('.chapter');
+    const scene = byId.get(chapter?.id);
+
     cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(() => measure('offset'));
+    suppressObserverUntil = performance.now() + 350;
+    measure('offset');
+
+    if (details.open && scene) {
+      const readingStart = scene.start + scene.animation;
+      // If user opened an accordion while in animation/entry phase, smoothly glide to reading start so scrolling is immediate
+      if (scrollY < readingStart) {
+        window.scrollTo({ top: readingStart, behavior: 'smooth' });
+      } else {
+        // If already in reading phase, gently align newly opened details into viewport if overflowing bottom
+        requestAnimationFrame(() => {
+          const rect = details.getBoundingClientRect();
+          const viewH = window.innerHeight;
+          if (rect.bottom > viewH - 40 && rect.top > 80) {
+            const shift = Math.min(rect.bottom - (viewH - 40), rect.top - 90);
+            if (shift > 0) {
+              const maxScroll = scene.start + scene.animation + scene.readSpan;
+              const targetY = Math.min(maxScroll, scrollY + shift * (scene.readPace || 1));
+              if (targetY > scrollY) {
+                window.scrollTo({ top: targetY, behavior: 'smooth' });
+              }
+            }
+          }
+        });
+      }
+    }
   }, true);
   // Cancel only an outward gesture at the document boundary. Internal scroll
   // areas (including the simulator) keep their own input and momentum.

@@ -189,8 +189,11 @@
       // Keep the same horizontal view into the arc on portrait and wide screens.
       finalFov = 2 * Math.atan(Math.tan(Math.PI / 5) / camera.aspect) * 180 / Math.PI;
       const isTouchMobilePortrait = coarsePointer.matches && (width / height < 1);
+      const isMobileLandscape = coarsePointer.matches && (width / height >= 1) && height <= 500;
       const isFooter = document.documentElement.classList.contains('footer-visible');
-      const bottom = isTouchMobilePortrait && isFooter ? 0.45 : (width / height < 1 ? 0.39 : 0.35);
+      const bottom = isTouchMobilePortrait && isFooter ? 0.46
+        : isMobileLandscape ? 0.48
+        : (width / height < 1 ? 0.39 : 0.35);
       const elevation = cylinderHeight * 0.9;
       const angleToRim = Math.atan2(-cylinderHeight / 2 - elevation, cylinderRadius * 1.62);
       finalPitch = angleToRim - Math.atan((1 - bottom * 2) * Math.tan(finalFov * Math.PI / 360));

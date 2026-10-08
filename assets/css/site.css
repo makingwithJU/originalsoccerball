@@ -494,7 +494,7 @@ html, body { scroll-snap-type: none; }
    visual composition. Scene timeline lengths stay unchanged. */
 html.footer-visible {
   --persistent-bottom: var(--footer-height, 0px);
-  --visual-safe-height: max(1px, calc(100svh - var(--footer-height, 0px)));
+  --visual-safe-height: max(1px, calc(var(--scene-height, 100dvh) - var(--footer-height, 0px)));
 }
 
 /* The compositor normally fixes chapters to the full viewport. After the
@@ -504,6 +504,15 @@ html.spiral-scenes.footer-visible .scene-slot > .chapter:not(#hero) {
   min-height: var(--visual-safe-height);
   height: auto;
   padding-bottom: var(--section-space);
+}
+
+/* 3D WebGL galleries must retain full viewport coverage so that their
+   spherical and cylindrical geometry is never clipped at the bottom. */
+html.spiral-scenes.footer-visible .scene-slot > :is(#usage-title, #event-shop-title).cylinder-target,
+html.spiral-scenes.footer-visible .scene-slot > :is(#order, #gallery).gallery-enhanced {
+  min-height: var(--scene-height);
+  height: var(--scene-height);
+  padding-bottom: 0;
 }
 
 /* ID rules with their own viewport heights need the same safe frame. */

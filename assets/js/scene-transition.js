@@ -95,9 +95,8 @@
     section.inert = !interactive || !visible;
     section.setAttribute('aria-hidden', String(!visible));
     section.style.opacity = String(opacity);
-    // The full-viewport shader owns the aperture. Never mask section-sized
-    // rectangles or their WebGL descendants: that cuts the mobile backdrop.
-    section.style.transform = `translateY(${-read}px)`;
+    const vvOffset = window.visualViewport ? Math.round(window.visualViewport.offsetTop) : 0;
+    section.style.transform = `translateY(${vvOffset - read}px)`;
     // Clip reading content to the safe frame even while its document offset moves.
     if (!fixedScenes.has(section.id)) {
       const header = document.querySelector('.site-header').offsetHeight;
@@ -183,8 +182,11 @@
   function schedule() { if (!frame) frame = requestAnimationFrame(draw); }
   function updateViewport() {
     // Visual coverage follows the live viewport; scroll distances remain stable.
-    const h = window.visualViewport ? Math.round(window.visualViewport.height) : innerHeight;
+    const vv = window.visualViewport;
+    const h = vv ? Math.round(vv.height) : innerHeight;
+    const offsetTop = vv ? Math.round(vv.offsetTop) : 0;
     root.style.setProperty('--scene-height', `${h}px`);
+    root.style.setProperty('--viewport-offset-y', `${offsetTop}px`);
   }
 
   function measure(preserve = false) {
@@ -312,7 +314,12 @@
     }
     if (event.cancelable) event.preventDefault();
   }, { passive: false });
-  addEventListener('touchend', () => { touchY = null; }, { passive: true });
+  addEventListener('touchend', () => {
+    touchY = null;
+    if (window.visualViewport && window.visualViewport.offsetTop !== 0) {
+      window.scrollTo(window.scrollX, window.scrollY);
+    }
+  }, { passive: true });
   addEventListener('scroll', schedule, { passive: true });
   let settleTimer = 0;
   addEventListener('resize', () => {
@@ -327,6 +334,10 @@
     }, 220);
   }, { passive: true });
   window.visualViewport?.addEventListener('resize', () => {
+    suppressObserverUntil = performance.now() + 500;
+    updateViewport(); schedule();
+  }, { passive: true });
+  window.visualViewport?.addEventListener('scroll', () => {
     suppressObserverUntil = performance.now() + 500;
     updateViewport(); schedule();
   }, { passive: true });

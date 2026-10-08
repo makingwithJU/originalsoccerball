@@ -60,10 +60,14 @@
 <meta name="theme-color" content="#111111">
 <meta name="color-scheme" content="light dark">
   <!-- Preload specs images for immediate display without lazy loading -->
-  <link rel="preload" as="image" href="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" media="(min-width: 601px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/mobile/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" media="(max-width: 600px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" media="(min-width: 601px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/mobile/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" media="(max-width: 600px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" media="(min-width: 601px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/mobile/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" media="(max-width: 600px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" media="(min-width: 601px)" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/mobile/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" media="(max-width: 600px)" fetchpriority="high">
   <!-- ==================== 1. STYLESHEETS ==================== -->
   <link rel="stylesheet" href="./assets/css/site.css?v=oct07-1">
   <link rel="stylesheet" href="./assets/css/spatial-gallery.css?v=oct06-2">
@@ -199,7 +203,7 @@
     <div class="gs-grid-4 pf-grid">
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/fullcolorballs_n42_upscayl_2x_remacri-4x.webp" alt="fullcolorballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="976" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/fullcolorballs_n42_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/fullcolorballs_n42_upscayl_2x_remacri-4x.webp" alt="fullcolorballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="976" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">fullcolorballs</h3>
@@ -208,7 +212,7 @@
       </div>
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/photo-1660926655132-b6f25f755-h_mebj4naw.webp" alt="silkscreenballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1660926655132-b6f25f755-h_mebj4naw.webp"><img loading="lazy" src="./assets/images/photo-1660926655132-b6f25f755-h_mebj4naw.webp" alt="silkscreenballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">silkscreenballs</h3>
@@ -217,7 +221,7 @@
       </div>
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj5g1n.webp" alt="stampballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="976" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj5g1n.webp"><img loading="lazy" src="./assets/images/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj5g1n.webp" alt="stampballs" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="976" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">stampballs</h3>
@@ -226,7 +230,7 @@
       </div>
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj7m72.webp" alt="other" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj7m72.webp"><img loading="lazy" src="./assets/images/ORANGERIBBONFDJKtFskAWICzipbg-h_mebj7m72.webp" alt="other" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">other</h3>
@@ -270,7 +274,7 @@
       <div class="rail" aria-label="制作実績・28作品" data-rail="order">
       <div class="gs-work-card rail-item" data-item-id="order-01" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/kaleidoBGlVZvXFUrNkybEvZiHrIf-h_mecraszk.webp" alt="kaleidoscope ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1708" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/kaleidoBGlVZvXFUrNkybEvZiHrIf-h_mecraszk.webp"><img loading="lazy" src="./assets/images/kaleidoBGlVZvXFUrNkybEvZiHrIf-h_mecraszk.webp" alt="kaleidoscope ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1708" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">kaleidoscope ball 01</h3>
@@ -279,7 +283,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-02" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/photo-1634114441919-7636abb21-h_mecr9gwy.webp" alt="kaleidoscope ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1708" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1634114441919-7636abb21-h_mecr9gwy.webp"><img loading="lazy" src="./assets/images/photo-1634114441919-7636abb21-h_mecr9gwy.webp" alt="kaleidoscope ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1708" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">kaleidoscope ball 02</h3>
@@ -288,7 +292,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-03" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/hachinosuJmtsrMPKesPxnqySGgDwTRm_upscayl_2x_remacri-4x.webp" alt="Bee ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/hachinosuJmtsrMPKesPxnqySGgDwTRm_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/hachinosuJmtsrMPKesPxnqySGgDwTRm_upscayl_2x_remacri-4x.webp" alt="Bee ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Bee ball</h3>
@@ -297,7 +301,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-04" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/photo-1634114441919-7636abb21-h_mecrcdfi.webp" alt="Face ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1000" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1634114441919-7636abb21-h_mecrcdfi.webp"><img loading="lazy" src="./assets/images/photo-1634114441919-7636abb21-h_mecrcdfi.webp" alt="Face ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1280" height="1000" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Face ball</h3>
@@ -306,7 +310,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-05" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/photo-1660926655800-3d11219f3-h_mecr7sx7.webp" alt="escher ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1708" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1660926655800-3d11219f3-h_mecr7sx7.webp"><img loading="lazy" src="./assets/images/photo-1660926655800-3d11219f3-h_mecr7sx7.webp" alt="escher ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1708" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">escher ball</h3>
@@ -315,7 +319,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-06" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/halloweenYbCbhNivXEmqXscxtMDVxcK_upscayl_2x_ultrasharp-4x.webp" alt="Halloween ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1120" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/halloweenYbCbhNivXEmqXscxtMDVxcK_upscayl_2x_ultrasharp-4x.webp"><img loading="lazy" src="./assets/images/halloweenYbCbhNivXEmqXscxtMDVxcK_upscayl_2x_ultrasharp-4x.webp" alt="Halloween ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1120" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Halloween ball</h3>
@@ -333,7 +337,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-08" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/fullcolorballs_n42_upscayl_2x-h_mecroqg4.webp" alt="Blue marble ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="616" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/fullcolorballs_n42_upscayl_2x-h_mecroqg4.webp"><img loading="lazy" src="./assets/images/fullcolorballs_n42_upscayl_2x-h_mecroqg4.webp" alt="Blue marble ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1400" height="616" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Blue marble ball</h3>
@@ -342,7 +346,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-09" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/making_upscayl_2x_remacri-4x-h_mecrm36y.webp" alt="Fun ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1152" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/making_upscayl_2x_remacri-4x-h_mecrm36y.webp"><img loading="lazy" src="./assets/images/making_upscayl_2x_remacri-4x-h_mecrm36y.webp" alt="Fun ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1152" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Fun ball 01</h3>
@@ -351,7 +355,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-10" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/IMGconvertXAKKKsgcyzuDiQuUQgSSNl_upscayl_2x_remacri-4x.webp" alt="Fun ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1192" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/IMGconvertXAKKKsgcyzuDiQuUQgSSNl_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/IMGconvertXAKKKsgcyzuDiQuUQgSSNl_upscayl_2x_remacri-4x.webp" alt="Fun ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1192" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Fun ball 02</h3>
@@ -360,7 +364,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-11" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/IMGMalYBtLllcEszPgcyLBPjLCzXL-h_mecrywga.webp" alt="Funball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="435" height="435" data-framing="preserve">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/IMGMalYBtLllcEszPgcyLBPjLCzXL-h_mecrywga.webp"><img loading="lazy" src="./assets/images/IMGMalYBtLllcEszPgcyLBPjLCzXL-h_mecrywga.webp" alt="Funball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="435" height="435" data-framing="preserve"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Funball 03</h3>
@@ -369,7 +373,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-12" data-product-line="silkscreenballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/englandzvqRYSSgpIqrYAglFTDfsJyit_upscayl_2x_remacri-4x.webp" alt="England ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/englandzvqRYSSgpIqrYAglFTDfsJyit_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/englandzvqRYSSgpIqrYAglFTDfsJyit_upscayl_2x_remacri-4x.webp" alt="England ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">England ball</h3>
@@ -378,7 +382,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-13" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/bloomfKRYLVtZERGvXMEKHNMIEsHeMrY_upscayl_2x_ultramix-balanced-4x.webp" alt="Brand ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/bloomfKRYLVtZERGvXMEKHNMIEsHeMrY_upscayl_2x_ultramix-balanced-4x.webp"><img loading="lazy" src="./assets/images/bloomfKRYLVtZERGvXMEKHNMIEsHeMrY_upscayl_2x_ultramix-balanced-4x.webp" alt="Brand ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Brand ball 01</h3>
@@ -387,7 +391,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-14" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/swaggerOVjNHUZuQYTivElDfAWVlQdXz_upscayl_2x_remacri-4x.webp" alt="Brand ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/swaggerOVjNHUZuQYTivElDfAWVlQdXz_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/swaggerOVjNHUZuQYTivElDfAWVlQdXz_upscayl_2x_remacri-4x.webp" alt="Brand ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Brand ball 02</h3>
@@ -396,7 +400,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-15" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/grandemfjWkMzYempFbsMiWZEmppsiOj_upscayl_2x_remacri-4x.webp" alt="Brand ball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/grandemfjWkMzYempFbsMiWZEmppsiOj_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/grandemfjWkMzYempFbsMiWZEmppsiOj_upscayl_2x_remacri-4x.webp" alt="Brand ball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Brand ball 03</h3>
@@ -405,7 +409,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-16" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/grandeBRazlQSOWrYRiaUIaRKPWPofGr_upscayl_2x_remacri-4x.webp" alt="Brand ball 04" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/grandeBRazlQSOWrYRiaUIaRKPWPofGr_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/grandeBRazlQSOWrYRiaUIaRKPWPofGr_upscayl_2x_remacri-4x.webp" alt="Brand ball 04" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Brand ball 04</h3>
@@ -414,7 +418,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-17" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/fbtsSmPgjwRldEnVMmwkMgZlflevEjoq_upscayl_2x_remacri-4x.webp" alt="Wedding ball 04" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/fbtsSmPgjwRldEnVMmwkMgZlflevEjoq_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/fbtsSmPgjwRldEnVMmwkMgZlflevEjoq_upscayl_2x_remacri-4x.webp" alt="Wedding ball 04" class="gs-work-image" decoding="async" fetchpriority="low" width="1200" height="1200" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Wedding ball 04</h3>
@@ -423,7 +427,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-18" data-product-line="silkscreenballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/numbXAvsutcfqoeVtQkhyhKjlgjsHoer_upscayl_2x_remacri-4x.webp" alt="rainy conditions Hi-vis ball" class="gs-work-image" decoding="async" fetchpriority="low" width="800" height="752" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/numbXAvsutcfqoeVtQkhyhKjlgjsHoer_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/numbXAvsutcfqoeVtQkhyhKjlgjsHoer_upscayl_2x_remacri-4x.webp" alt="rainy conditions Hi-vis ball" class="gs-work-image" decoding="async" fetchpriority="low" width="800" height="752" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">rainy conditions Hi-vis ball</h3>
@@ -432,7 +436,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-19" data-product-line="originalballmaking">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/c140-ball-card.webp" alt="C140 ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1450" height="1450" data-framing="preserve">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/c140-ball-card.webp"><img loading="lazy" src="./assets/images/c140-ball-card.webp" alt="C140 ball" class="gs-work-image" decoding="async" fetchpriority="low" width="1450" height="1450" data-framing="preserve"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">C140 ball</h3>
@@ -441,7 +445,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-20" data-product-line="originalballmaking">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/denimihxGypmJgYLJJPeJlBoJdQQegFL_upscayl_2x_remacri-4x.webp" alt="Denim ball" class="gs-work-image" decoding="async" fetchpriority="low" width="984" height="892" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/denimihxGypmJgYLJJPeJlBoJdQQegFL_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/denimihxGypmJgYLJJPeJlBoJdQQegFL_upscayl_2x_remacri-4x.webp" alt="Denim ball" class="gs-work-image" decoding="async" fetchpriority="low" width="984" height="892" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Denim ball</h3>
@@ -450,7 +454,7 @@
       </div>
       <div class="gs-work-card rail-item" data-popup="fullcolorballs" data-group="fullcolorballs" data-item-id="order-21" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/tiger-shot.webp" alt="Tiger shot" class="gs-work-image" decoding="async" fetchpriority="low" width="1896" height="1848" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/tiger-shot.webp"><img loading="lazy" src="./assets/images/tiger-shot.webp" alt="Tiger shot" class="gs-work-image" decoding="async" fetchpriority="low" width="1896" height="1848" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Tiger shot</h3>
@@ -459,7 +463,7 @@
       </div>
       <div class="gs-work-card rail-item" data-popup="fullcolorballs" data-group="fullcolorballs" data-item-id="order-22" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/IMG_2403_upscayl_2x_remacri-4x.webp" alt="Blue marble ball v2" class="gs-work-image" decoding="async" fetchpriority="low" width="3947" height="3878" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/IMG_2403_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/IMG_2403_upscayl_2x_remacri-4x.webp" alt="Blue marble ball v2" class="gs-work-image" decoding="async" fetchpriority="low" width="3947" height="3878" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Blue marble ball v2</h3>
@@ -468,7 +472,7 @@
       </div>
       <div class="gs-work-card rail-item" data-popup="fullcolorballs" data-group="fullcolorballs" data-item-id="order-23" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/mascotsize-ball.webp" alt="Blue marble ball mascot" class="gs-work-image" decoding="async" fetchpriority="low" width="1840" height="1744" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/mascotsize-ball.webp"><img loading="lazy" src="./assets/images/mascotsize-ball.webp" alt="Blue marble ball mascot" class="gs-work-image" decoding="async" fetchpriority="low" width="1840" height="1744" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Blue marble ball mascot</h3>
@@ -477,7 +481,7 @@
       </div>
       <div class="gs-work-card rail-item" data-popup="other" data-group="other" data-item-id="order-24" data-product-line="other">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/leatherbag_upscayl_2x_remacri-4x.webp" alt="Leather ball bag" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/leatherbag_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/leatherbag_upscayl_2x_remacri-4x.webp" alt="Leather ball bag" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Leather ball bag</h3>
@@ -486,7 +490,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-25" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/team-ball-01.webp" alt="Team ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1968" height="1848" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/team-ball-01.webp"><img loading="lazy" src="./assets/images/team-ball-01.webp" alt="Team ball 01" class="gs-work-image" decoding="async" fetchpriority="low" width="1968" height="1848" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Team ball 01</h3>
@@ -495,7 +499,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-26" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/team-ball-02.webp" alt="Team ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1776" height="1776" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/team-ball-02.webp"><img loading="lazy" src="./assets/images/team-ball-02.webp" alt="Team ball 02" class="gs-work-image" decoding="async" fetchpriority="low" width="1776" height="1776" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Team ball 02</h3>
@@ -504,7 +508,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-27" data-product-line="fullcolorballs">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/team-ball03.webp" alt="Team ball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="1928" height="1760" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/team-ball03.webp"><img loading="lazy" src="./assets/images/team-ball03.webp" alt="Team ball 03" class="gs-work-image" decoding="async" fetchpriority="low" width="1928" height="1760" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Team ball 03</h3>
@@ -513,7 +517,7 @@
       </div>
       <div class="gs-work-card rail-item" data-item-id="order-28" data-product-line="other">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/uniform_upscayl_2x_remacri-4x.webp" alt="Equipment" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/uniform_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/uniform_upscayl_2x_remacri-4x.webp" alt="Equipment" class="gs-work-image" decoding="async" fetchpriority="low" width="1404" height="980" data-framing="product"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">Equipment</h3>
@@ -540,7 +544,7 @@
             </div>
             <div class="ju-design__col">
               <figure class="ju-design__image">
-                <img src="./assets/images/jugend-about.webp" alt="JUGENDのデザインに関するイメージ" loading="lazy" class="about-image" decoding="async" fetchpriority="low" width="475" height="368">
+                <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/jugend-about.webp"><img src="./assets/images/jugend-about.webp" alt="JUGENDのデザインに関するイメージ" loading="lazy" class="about-image" decoding="async" fetchpriority="low" width="475" height="368"></picture>
               </figure>
             </div>
           </div>
@@ -549,21 +553,21 @@
   
   <div class="ju-rail">
     <div class="rail" aria-label="グラフィック作品" data-rail="gallery">
-      <figure class="rail-item" data-item-id="gallery-01"><img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_meb7kk6w.webp" alt="photo-1520363909542-9f69145ab-h_meb7kk6w" decoding="async" fetchpriority="low" width="1436" height="2048"></figure>
-      <figure class="rail-item" data-item-id="gallery-02"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_meb7l9ua.webp" alt="photo-1553778263-73a83bab9b0c-h_meb7l9ua" decoding="async" fetchpriority="low" width="1600" height="3368"></figure>
-      <figure class="rail-item" data-item-id="gallery-03"><img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_meb9zel3.webp" alt="photo-1521731978332-9e9e714bd-h_meb9zel3" decoding="async" fetchpriority="low" width="1280" height="1816"></figure>
-      <figure class="rail-item" data-item-id="gallery-04"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_meb9n8gk.webp" alt="photo-1553778263-73a83bab9b0c-h_meb9n8gk" decoding="async" fetchpriority="low" width="1800" height="2332"></figure>
-      <figure class="rail-item" data-item-id="gallery-05"><img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_mebk0ebj.webp" alt="photo-1520363909542-9f69145ab-h_mebk0ebj" decoding="async" fetchpriority="low" width="2380" height="3368"></figure>
-      <figure class="rail-item" data-item-id="gallery-06"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk12d8.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk12d8" decoding="async" fetchpriority="low" width="1264" height="1752"></figure>
-      <figure class="rail-item" data-item-id="gallery-07"><img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_mebk3suo.webp" alt="photo-1521731978332-9e9e714bd-h_mebk3suo" decoding="async" fetchpriority="low" width="1816" height="2544"></figure>
-      <figure class="rail-item" data-item-id="gallery-08"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk4q7k" decoding="async" fetchpriority="low" width="1400" height="1980"></figure>
-      <figure class="rail-item" data-item-id="gallery-09"><img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_mebk6lfo.webp" alt="photo-1520363909542-9f69145ab-h_mebk6lfo" decoding="async" fetchpriority="low" width="1400" height="1208"></figure>
-      <figure class="rail-item" data-item-id="gallery-10"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk7tud" decoding="async" fetchpriority="low" width="1400" height="1220"></figure>
-      <figure class="rail-item" data-item-id="gallery-11"><img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_meclgp61.webp" alt="photo-1521731978332-9e9e714bd-h_meclgp61" decoding="async" fetchpriority="low" width="1200" height="1652"></figure>
-      <figure class="rail-item" data-item-id="gallery-12"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp" alt="photo-1553778263-73a83bab9b0c-h_mebka1dg" decoding="async" fetchpriority="low" width="1160" height="1596"></figure>
-      <figure class="rail-item" data-item-id="gallery-13"><img loading="lazy" src="./assets/images/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp" alt="kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1200" height="808"></figure>
-      <figure class="rail-item" data-item-id="gallery-14"><img loading="lazy" src="./assets/images/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp" alt="munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1600" height="1256"></figure>
-      <figure class="rail-item" data-item-id="gallery-15"><img loading="lazy" src="./assets/images/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp" alt="everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1800" height="2424"></figure>
+      <figure class="rail-item" data-item-id="gallery-01"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1520363909542-9f69145ab-h_meb7kk6w.webp"><img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_meb7kk6w.webp" alt="photo-1520363909542-9f69145ab-h_meb7kk6w" decoding="async" fetchpriority="low" width="1436" height="2048"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-02"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_meb7l9ua.webp"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_meb7l9ua.webp" alt="photo-1553778263-73a83bab9b0c-h_meb7l9ua" decoding="async" fetchpriority="low" width="1600" height="3368"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-03"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1521731978332-9e9e714bd-h_meb9zel3.webp"><img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_meb9zel3.webp" alt="photo-1521731978332-9e9e714bd-h_meb9zel3" decoding="async" fetchpriority="low" width="1280" height="1816"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-04"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_meb9n8gk.webp"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_meb9n8gk.webp" alt="photo-1553778263-73a83bab9b0c-h_meb9n8gk" decoding="async" fetchpriority="low" width="1800" height="2332"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-05"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1520363909542-9f69145ab-h_mebk0ebj.webp"><img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_mebk0ebj.webp" alt="photo-1520363909542-9f69145ab-h_mebk0ebj" decoding="async" fetchpriority="low" width="2380" height="3368"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-06"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk12d8.webp"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk12d8.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk12d8" decoding="async" fetchpriority="low" width="1264" height="1752"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-07"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1521731978332-9e9e714bd-h_mebk3suo.webp"><img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_mebk3suo.webp" alt="photo-1521731978332-9e9e714bd-h_mebk3suo" decoding="async" fetchpriority="low" width="1816" height="2544"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-08"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk4q7k" decoding="async" fetchpriority="low" width="1400" height="1980"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-09"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1520363909542-9f69145ab-h_mebk6lfo.webp"><img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_mebk6lfo.webp" alt="photo-1520363909542-9f69145ab-h_mebk6lfo" decoding="async" fetchpriority="low" width="1400" height="1208"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-10"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp" alt="photo-1553778263-73a83bab9b0c-h_mebk7tud" decoding="async" fetchpriority="low" width="1400" height="1220"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-11"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1521731978332-9e9e714bd-h_meclgp61.webp"><img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_meclgp61.webp" alt="photo-1521731978332-9e9e714bd-h_meclgp61" decoding="async" fetchpriority="low" width="1200" height="1652"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-12"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp"><img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp" alt="photo-1553778263-73a83bab9b0c-h_mebka1dg" decoding="async" fetchpriority="low" width="1160" height="1596"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-13"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp" alt="kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1200" height="808"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-14"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp" alt="munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1600" height="1256"></picture></figure>
+      <figure class="rail-item" data-item-id="gallery-15"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp" alt="everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x" decoding="async" fetchpriority="low" width="1800" height="2424"></picture></figure>
     </div>
   </div>
   </section><section id="policy" class="ju-policy chapter" aria-labelledby="ju-policy-title">
@@ -577,7 +581,7 @@
     <div class="ju-policy__wrap">
       <aside>
         
-        <figure><picture><source type="image/webp" srcset="./assets/images/policy.webp"><img loading="lazy" class="ju-policy__img" src="./assets/images/policy.webp" alt="JUGEND policy image" decoding="async" fetchpriority="low" width="1500" height="2000"></picture></figure>
+        <figure><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/policy.webp"><source type="image/webp" srcset="./assets/images/policy.webp"><img loading="lazy" class="ju-policy__img" src="./assets/images/policy.webp" alt="JUGEND policy image" decoding="async" fetchpriority="low" width="1500" height="2000"></picture></figure>
       </aside>
 
       <div class="ju-acc" role="region" aria-labelledby="ju-policy-title">
@@ -689,9 +693,9 @@
   <section id="usage-example-slider" class="ju-g-full">
     <div class="coverflow-container">
       <div class="rail" aria-label="使用例" data-rail="usage-title">
-        <figure class="rail-item" data-item-id="usage-title-01"><img loading="lazy" src="./assets/images/SxfiXYsLujRAJhVkIvqeRfWiGyRMj-h_mebju1kd.webp" alt="チャリティ 01" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900"></figure>
-        <figure class="rail-item" data-item-id="usage-title-02"><img loading="lazy" src="./assets/images/SxfiXYsLujRAJhVkIvqeRfWiGyRMjEYw_upscayl_2x_ultrasharp-4x.webp" alt="チャリティ 02" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900"></figure>
-        <figure class="rail-item" data-item-id="usage-title-03"><img loading="lazy" src="./assets/images/SxHHuuseliklSaGFDpJKNrEjISnvsXUU_upscayl_2x_ultrasharp-4x.webp" alt="チャリティ 03" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900"></figure>
+        <figure class="rail-item" data-item-id="usage-title-01"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/SxfiXYsLujRAJhVkIvqeRfWiGyRMj-h_mebju1kd.webp"><img loading="lazy" src="./assets/images/SxfiXYsLujRAJhVkIvqeRfWiGyRMj-h_mebju1kd.webp" alt="チャリティ 01" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900"></picture></figure>
+        <figure class="rail-item" data-item-id="usage-title-02"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/SxfiXYsLujRAJhVkIvqeRfWiGyRMjEYw_upscayl_2x_ultrasharp-4x.webp"><img loading="lazy" src="./assets/images/SxfiXYsLujRAJhVkIvqeRfWiGyRMjEYw_upscayl_2x_ultrasharp-4x.webp" alt="チャリティ 02" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900"></picture></figure>
+        <figure class="rail-item" data-item-id="usage-title-03"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/SxHHuuseliklSaGFDpJKNrEjISnvsXUU_upscayl_2x_ultrasharp-4x.webp"><img loading="lazy" src="./assets/images/SxHHuuseliklSaGFDpJKNrEjISnvsXUU_upscayl_2x_ultrasharp-4x.webp" alt="チャリティ 03" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="900"></picture></figure>
       </div>
     </div>
     
@@ -704,14 +708,14 @@
   <section id="event-shop-slider" class="ju-g-full">
     <div class="coverflow-container">
       <div class="rail" aria-label="イベント・ショップ" data-rail="event-shop-title">
-        <figure class="rail-item" data-item-id="event-shop-title-01"><img loading="lazy" src="./assets/images/ORANGERIBBONFDJKtFskAWICzipbgnlN_upscayl_2x_remacri-4x.webp" alt="オレンジリボン" class="coverflow-slide" decoding="async" fetchpriority="low" width="1364" height="1864"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-02"><img loading="lazy" src="./assets/images/eNFogjXkeMALURSfSubjMzisXCDWteub_upscayl_2x_remacri-4x.webp" alt="eNFOG" class="coverflow-slide" decoding="async" fetchpriority="low" width="2000" height="1500"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-03"><img loading="lazy" src="./assets/images/bloomfKRYLVtZERGvXMEKHNMIEsHe-h_mecrganp.webp" alt="bloom" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-04"><img loading="lazy" src="./assets/images/dragonballcAOmdSyQtQdBkuDJhJsluE_upscayl_2x_ultramix-balanced-4x.webp" alt="dragonball" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-05"><img loading="lazy" src="./assets/images/inazumaylJUVLEXzqBjWCkaZBFtlJYsF_upscayl_2x_remacri-4x.webp" alt="inazuma" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-06"><img loading="lazy" src="./assets/images/ultimoYxWgSivaRIyqSmMfzZKJuSLcgc_upscayl_2x_ultrasharp-4x.webp" alt="ultimo" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-07"><img loading="lazy" src="./assets/images/zozoQNyoYGKkBStPaUZlraVoqyQtQDZn_upscayl_2x_remacri-4x.webp" alt="zozo" class="coverflow-slide" decoding="async" fetchpriority="low" width="1104" height="860"></figure>
-        <figure class="rail-item" data-item-id="event-shop-title-08"><img loading="lazy" src="./assets/images/photo-1551958219-acbc608c6377-h_mebafizs.webp" alt="adidas" class="coverflow-slide" decoding="async" fetchpriority="low" width="2000" height="1500"></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-01"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/ORANGERIBBONFDJKtFskAWICzipbgnlN_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/ORANGERIBBONFDJKtFskAWICzipbgnlN_upscayl_2x_remacri-4x.webp" alt="オレンジリボン" class="coverflow-slide" decoding="async" fetchpriority="low" width="1364" height="1864"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-02"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/eNFogjXkeMALURSfSubjMzisXCDWteub_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/eNFogjXkeMALURSfSubjMzisXCDWteub_upscayl_2x_remacri-4x.webp" alt="eNFOG" class="coverflow-slide" decoding="async" fetchpriority="low" width="2000" height="1500"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-03"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/bloomfKRYLVtZERGvXMEKHNMIEsHe-h_mecrganp.webp"><img loading="lazy" src="./assets/images/bloomfKRYLVtZERGvXMEKHNMIEsHe-h_mecrganp.webp" alt="bloom" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-04"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/dragonballcAOmdSyQtQdBkuDJhJsluE_upscayl_2x_ultramix-balanced-4x.webp"><img loading="lazy" src="./assets/images/dragonballcAOmdSyQtQdBkuDJhJsluE_upscayl_2x_ultramix-balanced-4x.webp" alt="dragonball" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-05"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/inazumaylJUVLEXzqBjWCkaZBFtlJYsF_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/inazumaylJUVLEXzqBjWCkaZBFtlJYsF_upscayl_2x_remacri-4x.webp" alt="inazuma" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-06"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/ultimoYxWgSivaRIyqSmMfzZKJuSLcgc_upscayl_2x_ultrasharp-4x.webp"><img loading="lazy" src="./assets/images/ultimoYxWgSivaRIyqSmMfzZKJuSLcgc_upscayl_2x_ultrasharp-4x.webp" alt="ultimo" class="coverflow-slide" decoding="async" fetchpriority="low" width="1200" height="1200"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-07"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/zozoQNyoYGKkBStPaUZlraVoqyQtQDZn_upscayl_2x_remacri-4x.webp"><img loading="lazy" src="./assets/images/zozoQNyoYGKkBStPaUZlraVoqyQtQDZn_upscayl_2x_remacri-4x.webp" alt="zozo" class="coverflow-slide" decoding="async" fetchpriority="low" width="1104" height="860"></picture></figure>
+        <figure class="rail-item" data-item-id="event-shop-title-08"><picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1551958219-acbc608c6377-h_mebafizs.webp"><img loading="lazy" src="./assets/images/photo-1551958219-acbc608c6377-h_mebafizs.webp" alt="adidas" class="coverflow-slide" decoding="async" fetchpriority="low" width="2000" height="1500"></picture></figure>
       </div>
     </div>
     
@@ -732,7 +736,7 @@
       <h2 class="gs-overline"><span class="visual-title-line">パネル数・</span><wbr><span class="visual-title-line">ロット相談可</span></h2>
     </div>
     <figure class="ov">
-      <img src="./assets/images/originalballmaking-1800x980.webp" alt="パネル数・ロット相談可" loading="lazy" decoding="async" fetchpriority="low" width="1800" height="980">
+      <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/originalballmaking-1800x980.webp"><img src="./assets/images/originalballmaking-1800x980.webp" alt="パネル数・ロット相談可" loading="lazy" decoding="async" fetchpriority="low" width="1800" height="980"></picture>
     </figure>
   </div>
 </section><section id="specs" class="gs-section specs chapter">
@@ -742,7 +746,7 @@
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="eager" src="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" alt="素材" class="gs-work-image" decoding="sync" fetchpriority="high" width="1063" height="596" data-framing="spec">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp"><img loading="eager" src="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" alt="素材" class="gs-work-image" decoding="sync" fetchpriority="high" width="1063" height="596" data-framing="spec"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">素材</h3>
@@ -756,7 +760,7 @@
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="eager" src="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" alt="印刷品質" class="gs-work-image" decoding="sync" fetchpriority="high" width="1600" height="1136" data-framing="spec">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp"><img loading="eager" src="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" alt="印刷品質" class="gs-work-image" decoding="sync" fetchpriority="high" width="1600" height="1136" data-framing="spec"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">印刷品質</h3>
@@ -770,7 +774,7 @@
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="eager" src="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" alt="サイズ / パネル" class="gs-work-image" decoding="sync" fetchpriority="high" width="1600" height="1200" data-framing="spec">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp"><img loading="eager" src="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" alt="サイズ / パネル" class="gs-work-image" decoding="sync" fetchpriority="high" width="1600" height="1200" data-framing="spec"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">サイズ / パネル</h3>
@@ -784,7 +788,7 @@
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="eager" src="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" alt="最小ロット" class="gs-work-image" decoding="sync" fetchpriority="high" width="1312" height="652" data-framing="spec">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1589487391730-58f20eb2c-h_meba3h8m.webp"><img loading="eager" src="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" alt="最小ロット" class="gs-work-image" decoding="sync" fetchpriority="high" width="1312" height="652" data-framing="spec"></picture>
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">最小ロット</h3>
@@ -804,7 +808,7 @@
       <h2 class="gs-overline"><span class="visual-title-line">プリントを超えた</span><span class="visual-title-line">オーダーメイド。</span></h2>
     </div>
     <figure class="ov">
-      <img src="./assets/images/originalballmaking-1200x900.webp" alt="プリントを超えたオーダーメイド" width="1200" height="900" loading="lazy" decoding="async" class="ju-wide-image" fetchpriority="low">
+      <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/originalballmaking-1200x900.webp"><img src="./assets/images/originalballmaking-1200x900.webp" alt="プリントを超えたオーダーメイド" width="1200" height="900" loading="lazy" decoding="async" class="ju-wide-image" fetchpriority="low"></picture>
     </figure>
   </div>
  </section><section id="design-intro" class="ju-design craft chapter">
@@ -813,7 +817,7 @@
     <div class="ju-design__row">
       <div class="ju-design__col">
         <figure class="ju-design__image">
-          <img loading="lazy" src="./assets/images/photo-1663270010598-f288e7801-h_mebi86k2.webp" alt="Original Ball Making" decoding="async" fetchpriority="low" width="505" height="758">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1663270010598-f288e7801-h_mebi86k2.webp"><img loading="lazy" src="./assets/images/photo-1663270010598-f288e7801-h_mebi86k2.webp" alt="Original Ball Making" decoding="async" fetchpriority="low" width="505" height="758"></picture>
         </figure>
       </div>
       <div class="ju-design__col">
@@ -830,7 +834,7 @@
       
       <div class="ju-design__col">
         <figure class="ju-design__image">
-          <img loading="lazy" src="./assets/images/craft-needle-1400x1052.webp" alt="職人の縫製道具と刺繍" width="1400" height="1052" decoding="async" fetchpriority="low">
+          <picture><source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/craft-needle-1400x1052.webp"><img loading="lazy" src="./assets/images/craft-needle-1400x1052.webp" alt="職人の縫製道具と刺繍" width="1400" height="1052" decoding="async" fetchpriority="low"></picture>
         </figure>
       </div>
     </div>

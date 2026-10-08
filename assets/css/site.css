@@ -101,6 +101,7 @@ html[data-hero-state="hero"] .site-header { visibility: hidden; }
 .gs-card-icon-wrapper { display: block; font-size: 2rem; line-height: 1; color: inherit; margin-bottom: 1rem; }
 .gs-card-title, .gs-info-title { margin-bottom: .75rem; }
 .story .gs-card-text br { display: none; }
+picture { display: contents; }
 .gs-work-image-wrapper { aspect-ratio: 1; margin-bottom: 1rem; overflow: hidden; }
 .gs-work-image { width: 100%; height: 100%; object-fit: cover; object-position: center; aspect-ratio: 1; }
 .gs-work-image-wrapper--funball03 { display: grid; place-items: center; }

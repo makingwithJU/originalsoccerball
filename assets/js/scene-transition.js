@@ -183,7 +183,8 @@
   function schedule() { if (!frame) frame = requestAnimationFrame(draw); }
   function updateViewport() {
     // Visual coverage follows the live viewport; scroll distances remain stable.
-    root.style.setProperty('--scene-height', `${innerHeight}px`);
+    const h = window.visualViewport ? Math.round(window.visualViewport.height) : innerHeight;
+    root.style.setProperty('--scene-height', `${h}px`);
   }
 
   function measure(preserve = false) {

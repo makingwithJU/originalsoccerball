@@ -68,8 +68,8 @@
       }, 750 * 2 ** (attempt - 1)));
     }
     // Bound decoded RGBA residency, not just compressed transfer size.
-    const MAX_DECODED = 18;
-    const MAX_PENDING = 6;
+    const maxDecoded = () => (tier === 'desktop' ? 48 : 18);
+    const maxPending = () => (tier === 'desktop' ? 10 : 6);
     const heroIsNear = () => !window.JUScenes || window.JUScenes.visible('hero') || window.JUScenes.near('hero');
     const loadingStatus = document.createElement('p');
     loadingStatus.className = 'hero-loading-status';
@@ -167,10 +167,10 @@
     }
 
     function evictDecoded(target) {
-      if (decoded.size <= MAX_DECODED) return;
+      if (decoded.size <= maxDecoded()) return;
       const keep = new Set([displayedFrame, target]);
       for (const key of [...decoded.keys()].sort((a,b)=>Math.abs(b-target)-Math.abs(a-target))) {
-        if (decoded.size <= MAX_DECODED) break;
+        if (decoded.size <= maxDecoded()) break;
         if (!keep.has(key)) decoded.delete(key);
       }
     }
@@ -250,15 +250,15 @@
 
     function prefetchAround(index) {
       if (!heroIsNear()) return;
-      // Target + twelve ahead + four behind fit inside the 18-image budget.
-      // A larger window repeatedly evicted/reloaded its own furthest frame.
-      const lookahead = tier === 'phone' || tier === 'tablet' ? 12 : 8;
+      // Target + lookahead ahead + lookback behind fit inside the decoded budget.
+      const lookahead = tier === 'desktop' ? 24 : (tier === 'phone' || tier === 'tablet' ? 12 : 8);
+      const lookback = tier === 'desktop' ? 8 : 4;
       for (let d = 1; d <= lookahead; d++) {
-        if (pending.size >= MAX_PENDING - 2) break;
+        if (pending.size >= maxPending() - 2) break;
         const forward = index + d;
         const backward = index - d;
-        if (forward < FRAME_COUNT) loadFrame(forward, d <= 4 ? 'high' : 'low').catch(() => {});
-        if (backward >= 0 && d <= 4 && pending.size < MAX_PENDING - 2) loadFrame(backward, 'low').catch(() => {});
+        if (forward < FRAME_COUNT) loadFrame(forward, d <= (tier === 'desktop' ? 8 : 4) ? 'high' : 'low').catch(() => {});
+        if (backward >= 0 && d <= lookback && pending.size < maxPending() - 2) loadFrame(backward, 'low').catch(() => {});
       }
       evictDecoded(index);
     }
@@ -279,7 +279,7 @@
       }
       const needed = [target, following].filter(index => !decoded.has(index) && !pending.has(index) && !failedFrames.has(index));
       for (const [index, request] of [...pending].sort((a,b)=>Math.abs(b[0]-target)-Math.abs(a[0]-target))) {
-        if (pending.size + needed.length <= MAX_PENDING) break;
+        if (pending.size + needed.length <= maxPending()) break;
         if (index !== target && index !== following) request.cancel();
       }
       if (decoded.has(target)) {
@@ -300,7 +300,7 @@
       waiting(!decoded.has(target) && !unavailable && displayedFrame < 0);
       root.dataset.heroMediaFallback = String(unavailable);
       for (const index of [target, following]) {
-        if (pending.size < MAX_PENDING && !pending.has(index) && !decoded.has(index) && !failedFrames.has(index)) {
+        if (pending.size < maxPending() && !pending.has(index) && !decoded.has(index) && !failedFrames.has(index)) {
           loadFrame(index, 'high').catch(() => {});
         }
       }
@@ -378,10 +378,35 @@
     const navigation = window.performance?.getEntriesByType?.('navigation')?.[0];
     if (!navigation || navigation.type === 'navigate' || navigation.type === 'reload') scrollTo(0, 0);
 
+    function warmHttpCache() {
+      let nextIndex = 1;
+      function fetchBatch(deadline) {
+        while (nextIndex < FRAME_COUNT && ((deadline && deadline.timeRemaining && deadline.timeRemaining() > 5) || !deadline)) {
+          const url = frameUrl(nextIndex);
+          fetch(url, { priority: 'low', cache: 'force-cache' }).catch(() => {});
+          nextIndex++;
+          if (!deadline && nextIndex % 4 === 0) break;
+        }
+        if (nextIndex < FRAME_COUNT) {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(fetchBatch, { timeout: 2000 });
+          } else {
+            setTimeout(fetchBatch, 100);
+          }
+        }
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(fetchBatch, { timeout: 3000 });
+      } else {
+        setTimeout(fetchBatch, 1000);
+      }
+    }
+
     resizeCanvas();
     render(0);
     loadFrame(0, 'high').then(() => {
       syncFromScroll();
+      warmHttpCache();
     }).catch(error => {
       if (error?.name === 'AbortError') return;
       revealFilm();

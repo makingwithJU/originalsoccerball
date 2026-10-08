@@ -312,7 +312,6 @@ html.theme-invert .site-header { color: #111; background: transparent; border-bo
   .craft .ju-design__row { grid-template-columns: 1fr; }
   #works .gs-grid-4 { grid-template-columns: repeat(2,minmax(0,1fr)); }
   #works .gs-work-title { font-size: var(--title); overflow-wrap: anywhere; }
-  #works .gs-work-image-wrapper { width: min(100%, calc((100svh - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space) - 2.32 * var(--heading) - var(--heading-gap) - 220px) / 2)); }
   #policy .ju-policy__img { height: 20svh; }
   #policy .ju-policy__wrap { gap: var(--gap); }
   #design-intro .ju-design__row { grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--gap); }
@@ -602,17 +601,40 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
 @media (orientation: portrait) and (max-width: 600px) {
   /* Unified mobile portrait typography: fine body text standardized across all sections */
   :root {
-    --body: 0.75rem;
-    --caption: 0.6875rem;
-    --heading-gap: clamp(0.75rem, 2svh, 1.25rem);
+    --heading: clamp(1.35rem, 5.8vw, 1.55rem); /* Unified 大見出し (~22.6px on 390px viewport) */
+    --title: 0.9375rem;                       /* Unified 小見出し (15px) */
+    --body: 0.6875rem;                        /* Fine body text (11px) */
+    --caption: 0.625rem;                      /* Captions (10px) */
+    --heading-gap: clamp(0.75rem, 2svh, 1.15rem);
   }
   body {
     font-size: var(--body);
-    line-height: 1.55;
+    line-height: 1.5;
   }
   .gs-card-text, .gs-work-text, .gs-info-text, .ju-design__text, .ju-acc__text, #contact-apology p {
     font-size: var(--body);
-    line-height: 1.55;
+    line-height: 1.5;
+  }
+
+  /* Unified 大見出し across all sections */
+  h2, .gs-heading, .gs-overline, .order-gallery__title, #ju-policy-title, #originalballmaking-title {
+    font-size: var(--heading) !important;
+    line-height: 1.22;
+  }
+
+  /* Unified 小見出し across all sections */
+  h3, h4, .gs-work-title, .ju-design__eyebrow, .gs-card-title, .gs-feature-title {
+    font-size: var(--title) !important;
+    line-height: 1.35;
+  }
+
+  /* #works (平面〜) section image scaling: 
+     Pre-footer width 122px. When footer is visible, strictly guarantee 90% scale (110px). */
+  html:not(.footer-visible) #works .gs-work-image-wrapper {
+    width: 122px !important;
+  }
+  html.footer-visible #works .gs-work-image-wrapper {
+    width: 110px !important; /* Exactly 90% scaling */
   }
 
   /* #design section layout */
@@ -633,23 +655,22 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.6rem, 1.8svh, 1rem);
+    gap: clamp(0.5rem, 1.5svh, 0.85rem);
     width: 100%;
   }
   #design .ju-design__stack {
     display: flex;
     flex-direction: column;
-    gap: clamp(0.35rem, 1.2svh, 0.75rem);
+    gap: clamp(0.3rem, 1svh, 0.6rem);
     width: 100%;
     text-align: left;
   }
   #design .ju-design__eyebrow {
-    margin-bottom: clamp(0.15rem, 0.5svh, 0.3rem);
-    font-size: clamp(1.05rem, 2.2svh, 1.25rem);
+    margin-bottom: clamp(0.12rem, 0.4svh, 0.25rem);
   }
   #design .ju-design__text {
     font-size: var(--body);
-    line-height: 1.55;
+    line-height: 1.5;
   }
   #design .ju-design__image {
     display: flex;
@@ -657,14 +678,20 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     width: 100%;
     margin: 0;
   }
-  #design .ju-design__image img {
+  html:not(.footer-visible) #design .ju-design__image img {
     height: auto;
-    max-height: clamp(180px, 28svh, 240px);
-    max-width: min(100%, 360px);
+    max-height: clamp(230px, 34svh, 290px) !important;
+    max-width: min(100%, 380px);
     object-fit: contain;
     display: block;
     margin-inline: auto;
-    transition: max-height 0.3s ease;
+  }
+  #design .ju-design__image img {
+    height: auto;
+    max-width: min(100%, 380px);
+    object-fit: contain;
+    display: block;
+    margin-inline: auto;
   }
 
   /* #policy section layout */
@@ -682,7 +709,6 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
   }
   #ju-policy-title {
     margin-bottom: clamp(0.3rem, 1svh, 0.6rem);
-    font-size: clamp(1.2rem, 3svh, 1.55rem);
     text-align: center;
   }
   #policy .ju-policy__wrap {
@@ -704,31 +730,37 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     justify-content: center;
     width: auto;
   }
-  #policy .ju-policy__img {
-    height: clamp(140px, 22svh, 180px) !important;
+  html:not(.footer-visible) #policy .ju-policy__img {
+    height: clamp(170px, 25svh, 215px) !important;
     width: auto;
     max-width: 100%;
     object-fit: contain;
     display: block;
     margin-inline: auto;
-    transition: height 0.3s ease;
+  }
+  #policy .ju-policy__img {
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    margin-inline: auto;
   }
   #policy .ju-acc {
     width: 100%;
     max-width: 440px;
-    max-height: clamp(200px, 32svh, 260px);
+    max-height: clamp(190px, 30svh, 250px);
     overflow-y: auto;
   }
   #policy summary {
-    min-height: 30px;
-    padding: 0.15rem 0;
+    min-height: 28px;
+    padding: 0.12rem 0;
     font-size: 0.8125rem;
   }
 
   /* When persistent footer is latched: symmetrically trim top/bottom padding,
      tighten line gaps, and restrict image reduction to 90% (barely noticeable change) */
-  html.spiral-scenes.footer-visible #design.chapter,
-  html.spiral-scenes.footer-visible #policy.chapter {
+  html.footer-visible #design.chapter,
+  html.footer-visible #policy.chapter {
     min-height: var(--visual-safe-height);
     height: var(--visual-safe-height);
     display: flex;
@@ -739,23 +771,23 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     padding-bottom: calc(var(--persistent-bottom) + 0.25rem);
     box-sizing: border-box;
   }
-  html.spiral-scenes.footer-visible #design .ju-design__row {
-    gap: clamp(0.35rem, 1svh, 0.65rem);
-  }
-  html.spiral-scenes.footer-visible #design .ju-design__stack {
-    gap: clamp(0.2rem, 0.6svh, 0.45rem);
-  }
-  html.spiral-scenes.footer-visible #design .ju-design__image img {
-    max-height: clamp(160px, 25svh, 216px);
-  }
-  html.spiral-scenes.footer-visible #policy .ju-policy__wrap {
+  html.footer-visible #design .ju-design__row {
     gap: clamp(0.3rem, 0.8svh, 0.55rem);
   }
-  html.spiral-scenes.footer-visible #policy .ju-policy__img {
-    height: clamp(126px, 19.8svh, 162px) !important;
+  html.footer-visible #design .ju-design__stack {
+    gap: clamp(0.18rem, 0.5svh, 0.38rem);
   }
-  html.spiral-scenes.footer-visible #policy .ju-acc {
-    max-height: clamp(160px, 26svh, 220px);
+  html.footer-visible #design .ju-design__image img {
+    max-height: clamp(207px, 30.6svh, 261px) !important; /* Exactly 90% of 230px-290px */
+  }
+  html.footer-visible #policy .ju-policy__wrap {
+    gap: clamp(0.25rem, 0.7svh, 0.45rem);
+  }
+  html.footer-visible #policy .ju-policy__img {
+    height: clamp(153px, 22.5svh, 193.5px) !important; /* Exactly 90% of 170px-215px */
+  }
+  html.footer-visible #policy .ju-acc {
+    max-height: clamp(150px, 24svh, 210px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }

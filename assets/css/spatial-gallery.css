@@ -163,34 +163,40 @@
 
 @media (orientation: portrait) and (max-width: 600px) {
   #order.gallery-enhanced .order-gallery__title {
-    font-size: clamp(1.4rem, 4.4vw, 1.85rem);
+    font-size: var(--heading) !important;
+    color: #fff !important;
     letter-spacing: -0.03em;
     padding: 0 var(--gutter);
   }
   #order.gallery-enhanced .gs-work-content {
     padding-top: 0.25rem;
+    width: 100%;
+    max-width: 96vw;
+    margin-inline: auto;
   }
   #order.gallery-enhanced .gs-work-title {
-    font-size: clamp(0.85rem, 2.6vw, 0.95rem);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: min(92vw, 340px);
+    font-size: var(--title) !important;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: 96vw;
     margin-inline: auto;
+    line-height: 1.25;
   }
   #order.gallery-enhanced .gs-work-text {
-    font-size: 0.75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: min(92vw, 340px);
+    font-size: var(--body) !important;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: 96vw;
     margin-inline: auto;
     margin-top: 0.15rem;
+    line-height: 1.4;
   }
   #order.gallery-enhanced .ju-line-badge {
-    margin-top: 0.15rem;
+    margin-top: 0.2rem;
     padding: 2px 7px;
-    font-size: 0.65rem;
+    font-size: var(--caption);
     line-height: 1.1;
   }
 }

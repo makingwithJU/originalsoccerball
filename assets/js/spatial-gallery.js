@@ -75,7 +75,7 @@
     const portrait = frame.portrait;
     const tablet = matchMedia(TABLET_QUERY).matches;
     const isTouchMobile = matchMedia('(hover: none) and (pointer: coarse) and (max-width: 760px)').matches;
-    const captionReserve = tablet ? (portrait ? 112 : 96) : (portrait ? 44 : (isTouchMobile ? 86 : 74));
+    const captionReserve = tablet ? (portrait ? 112 : 96) : (portrait ? 58 : (isTouchMobile ? 86 : 74));
     const desktop = matchMedia('(min-width: 1100px) and (pointer: fine)').matches;
 
     if (portrait && tablet) {

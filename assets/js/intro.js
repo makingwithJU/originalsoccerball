@@ -94,19 +94,17 @@
     if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-    video.autoplay = false;
-    video.loop = false;
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = 'none';
-    video.pause();
+    if (video) {
+      video.style.display = 'none';
+      video.setAttribute('aria-hidden', 'true');
+    }
 
     const canvas = document.createElement('canvas');
     canvas.id = 'hero-sequence-canvas-v23';
     canvas.setAttribute('aria-hidden', 'true');
     Object.assign(canvas.style, {
       position: 'absolute', inset: '0', width: '100%', height: '100%',
-      display: 'block', pointerEvents: 'none', opacity: '0',
+      display: 'block', pointerEvents: 'none', opacity: '1',
     });
     media.append(canvas);
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
@@ -242,7 +240,6 @@
       displayedFrame = index;
       if (!firstFrameReady) {
         firstFrameReady = true;
-        video.style.visibility = 'hidden';
         revealFilm();
       }
       return true;
@@ -358,8 +355,7 @@
           retryTimers.clear(); retries.clear(); failedFrames.clear();
           displayedFrame = -1;
           firstFrameReady = false;
-          video.style.visibility = '';
-          canvas.style.opacity = '0';
+          canvas.style.opacity = '1';
         }
         resizeCanvas();
         syncFromScroll();
@@ -410,7 +406,6 @@
     }).catch(error => {
       if (error?.name === 'AbortError') return;
       revealFilm();
-      video.style.visibility = '';
     });
   }
 

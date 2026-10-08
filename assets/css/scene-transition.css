@@ -60,18 +60,6 @@ html.spiral-scenes:is([data-hero-state="transition"], [data-hero-state="site"]) 
   html.spiral-scenes { --section-space: 1.5rem; }
 }
 .spiral-scenes #site-notice { z-index: 901; }
-/* Preserve a readable final composition above the persistent footer. */
-.spiral-scenes.footer-visible .scene-slot > .chapter:not(#hero) {
-  padding-bottom: calc(var(--section-space) + var(--footer-height, 0px));
-}
-/* The new compositor reserves footer space with padding and native reading
-   distance. Do not also apply the legacy half-footer upward translation. */
-html.spiral-scenes.footer-visible { --visual-center-shift: 0px; }
-html.spiral-scenes.footer-visible #works > .gs-container,
-html.spiral-scenes.footer-visible #specs .gs-container {
-  max-height: none;
-  overflow: visible;
-}
 /* Reading uses the document's existing overflow interval, never a nested scroller.
    Match the legacy ID specificity so its 190px minimum cannot overflow phones. */
 .spiral-scenes #specs .gs-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -86,17 +74,155 @@ html.spiral-scenes.footer-visible #specs .gs-container {
     margin-inline: auto;
   }
 }
-/* Keep reading text below an opaque header rather than visible through its logo. */
-html.spiral-scenes[data-scene-reading="true"] .site-header { background: var(--background); }
+/* Long reading chapters use the page timeline, not a nested fast scroller. */
+.spiral-scenes #specs .gs-container,
+.spiral-scenes #policy .ju-acc,
+.spiral-scenes #originalballmaking-accordion .ju-acc,
+.spiral-scenes #faq-accordion .ju-acc {
+  max-height: none; overflow: visible; overscroll-behavior: auto;
+}
 /* This video is a viewport composition, not a tall text chapter. Reserve the
    header/footer inside it, instead of adding padding outside a 100dvh child. */
 .spiral-scenes .scene-slot > #hero-2-slide { height: var(--scene-height); min-height: 0; padding: 0; }
-.spiral-scenes #hero-2 { height: 100%; min-height: 0; }
+.spiral-scenes #hero-2 { position: absolute; inset: 0; height: var(--scene-height); min-height: 0; }
 .spiral-scenes #hero-2 .hero-title { padding-top: var(--header-height); padding-bottom: var(--persistent-bottom); }
 html.spiral-scenes.footer-visible .scene-slot > #hero-2-slide.chapter { padding-bottom: 0; }
 .hero-loading-status { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); left: calc(50% - 7px); z-index: 10; margin: 0; width: 14px; height: 14px; border: 1px solid #ffffff40; border-top-color: #fff; border-radius: 50%; animation: hero-loading-spin 1.2s linear infinite; }
 .hero-loading-status[hidden] { display: none; }
 @keyframes hero-loading-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .hero-loading-status { animation: none; } }
-.device-media-status { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 2; padding: .5em .8em; border: 0; border-radius: 4px; color: #fff; background: #000c; font: 12px/1.5 sans-serif; white-space: nowrap; }
+.device-media-status { pointer-events: auto; position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 2; padding: .5em .8em; border: 0; border-radius: 4px; color: #fff; background: #000c; font: 12px/1.5 sans-serif; white-space: nowrap; }
 .device-media-status:disabled { pointer-events: none; }
+
+/* Modeling YouTube is presentation-only; pointer gestures remain with the site. */
+.spiral-scenes #modeling .device-shell iframe { pointer-events: none; }
+
+/* Footer latch: preserve the established HERO 2 layout and footer/header
+   rules. Only its background media keeps full viewport coverage so the
+   transparent legal footer does not reveal the root black backdrop. */
+html.spiral-scenes.footer-visible #hero-2 {
+  overflow: visible;
+}
+html.spiral-scenes.footer-visible #hero-2 .hero-media {
+  height: var(--scene-height);
+  bottom: auto;
+}
+
+/* YouTube presentation stays hidden until media.js has primed the real first frame. */
+.ju-yt { opacity: 0; }
+.ju-yt[data-primed="true"] { opacity: 1; }
+
+
+/* Touch HERO stability: mobile browser chrome changes the live visual viewport
+   while a swipe is in progress. Keep the HERO's composition on the stable large
+   viewport so its centred media/title never jumps vertically for one frame. */
+@media (any-pointer: coarse) {
+  html.spiral-scenes #hero-scroll-zone > #hero {
+    height: 100lvh;
+    min-height: 100lvh;
+    transform-origin: 50% 50lvh;
+  }
+}
+
+/* Keep rubber-band motion from moving the fixed stage on touch browsers. */
+html.spiral-scenes, html.spiral-scenes body { overscroll-behavior-y: none; }
+.ju-yt { pointer-events: none; }
+
+.hero-media-retry { pointer-events: auto; position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 12; }
+.hero-media-retry[hidden] { display: none; }
+
+/* The stage stays viewport-wide; only text observes the notch safe area. */
+@media (max-width: 600px) and (orientation: portrait) {
+  html.spiral-scenes #contact-apology.chapter {
+    justify-content: flex-start;
+    padding-top: calc(var(--header-height) + 8px);
+    padding-bottom: 8px;
+  }
+  #contact-apology .apology-grid { gap: 10px; }
+  #contact-apology :is(h2,h3) { font-size: 18px; line-height: 1.25; margin: 0 0 6px; }
+  #contact-apology .gs-card-text { font-size: 12px; line-height: 1.5; }
+  #contact-apology .dragArea { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  #contact-apology .form-group { margin: 0; }
+  #contact-apology .form-group:nth-child(n+3), #contact-apology button { grid-column: 1 / -1; }
+  #contact-apology input { height: 40px; min-height: 40px; padding: 8px; font-size: 16px; }
+  #contact-apology textarea { height: 64px; min-height: 64px; padding: 8px; font-size: 16px; }
+  #contact-apology button { min-height: 40px; padding: 6px 10px; }
+}
+
+/* Keep the final contact composition centred when it fits in one mobile frame.
+   The compact form sizing above remains unchanged. */
+@media (max-width: 600px) and (orientation: portrait) {
+  html.spiral-scenes #contact-apology.chapter {
+    justify-content: center;
+    padding-top: calc(var(--header-height) + 8px);
+    padding-bottom: calc(var(--persistent-bottom) + 8px);
+  }
+}
+
+/* HERO 2 uses the same composition frame before and after the one-way footer
+   latch. The transparent footer overlays the film; it must not resize/recenter
+   the video or its title when the user scrolls back. */
+html.spiral-scenes.footer-visible .scene-slot > #hero-2-slide.chapter {
+  min-height: var(--scene-height);
+  height: var(--scene-height);
+}
+.spiral-scenes #hero-2 .hero-title,
+html.spiral-scenes.footer-visible #hero-2 .hero-title {
+  padding-top: var(--header-height);
+  padding-bottom: 0;
+}
+
+/* Presentation videos never own navigation/taps. A transparent site-owned hit
+   surface keeps swipe gestures on the document even on composited mobile
+   iframes. */
+.spiral-scenes #hero-2 .hero-video,
+.spiral-scenes #modeling .ju-media { pointer-events: auto; }
+.spiral-scenes #hero-2 .hero-video::after,
+.spiral-scenes #modeling .ju-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  pointer-events: auto;
+  touch-action: pan-y pinch-zoom;
+  background: transparent;
+}
+.spiral-scenes #hero-2 .hero-video iframe,
+.spiral-scenes #modeling .ju-media iframe,
+iframe.ju-yt { pointer-events: none !important; }
+
+/* Front-layer touch guard to ensure swipes never trigger YouTube links */
+#hero-2::before,
+#modeling .ju-media::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2 !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  touch-action: pan-y pinch-zoom !important;
+}
+#hero-2 iframe,
+#modeling iframe,
+iframe.ju-yt {
+  pointer-events: none !important;
+}
+
+/* True vertical centering for #design on mobile touch devices (balances header and footer) */
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) and (max-width: 820px) {
+  html.spiral-scenes #design.chapter {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    padding-top: calc(var(--header-height, 68px) + 8px) !important;
+    padding-bottom: max(var(--safe-bottom, 0px), 8px) !important;
+    padding-inline: var(--gutter) !important;
+  }
+  html.spiral-scenes.footer-visible #design.chapter {
+    padding-bottom: calc(var(--footer-height, 84px) + 8px) !important;
+  }
+}

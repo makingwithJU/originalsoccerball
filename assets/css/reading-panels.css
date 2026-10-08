@@ -1,0 +1,16 @@
+/* Long accordion copy participates in the chapter's native document timeline.
+   Opening a detail expands the chapter; scene-transition.js measures that real
+   overflow and scrolls through it 1:1. No nested fast scroller or snap. */
+html.spiral-scenes #policy .ju-acc,
+html.spiral-scenes #originalballmaking-accordion .ju-acc,
+html.spiral-scenes #faq-accordion .ju-acc,
+html.spiral-scenes.footer-visible #policy .ju-acc,
+html.spiral-scenes.footer-visible #originalballmaking-accordion .ju-acc,
+html.spiral-scenes.footer-visible #faq-accordion .ju-acc {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  overscroll-behavior: auto !important;
+  touch-action: auto !important;
+  scrollbar-gutter: auto !important;
+}

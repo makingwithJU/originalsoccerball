@@ -188,7 +188,9 @@
       openingAimY = (profile.center - 0.5) * 2 * openingZ * tanFov;
       // Keep the same horizontal view into the arc on portrait and wide screens.
       finalFov = 2 * Math.atan(Math.tan(Math.PI / 5) / camera.aspect) * 180 / Math.PI;
-      const bottom = width / height < 1 ? 0.39 : 0.35;
+      const isTouchMobilePortrait = coarsePointer.matches && (width / height < 1);
+      const isFooter = document.documentElement.classList.contains('footer-visible');
+      const bottom = isTouchMobilePortrait && isFooter ? 0.45 : (width / height < 1 ? 0.39 : 0.35);
       const elevation = cylinderHeight * 0.9;
       const angleToRim = Math.atan2(-cylinderHeight / 2 - elevation, cylinderRadius * 1.62);
       finalPitch = angleToRim - Math.atan((1 - bottom * 2) * Math.tan(finalFov * Math.PI / 360));
@@ -320,6 +322,7 @@
     threshold: 0.01
   });
   targets.forEach(section => lifecycleObserver.observe(section));
+
 
   addEventListener('scroll', scheduleActivation, { passive: true });
   document.addEventListener('jugend:chapter-visibility', scheduleActivation);

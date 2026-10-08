@@ -39,8 +39,8 @@
     const local = y - scene.start;
     return {
       animation: scene.animation > 0 ? clamp(local / scene.animation) : 1,
-      read: Math.max(0, Math.min(scene.overflow, local - scene.animation)),
-      transition: scene.transition > 0 ? clamp((local - scene.animation - scene.overflow - scene.hold) / scene.transition) : 0,
+      read: Math.max(0, Math.min(scene.overflow, (local - scene.animation) / (scene.readPace || 1))),
+      transition: scene.transition > 0 ? clamp((local - scene.animation - (scene.readSpan ?? scene.overflow) - scene.hold) / scene.transition) : 0,
     };
   }
   const api = { clamp, ease, transition, portal, state };

@@ -48,6 +48,7 @@ a { color: inherit; text-underline-offset: .25em; }
 button { min-height: 44px; padding: .65rem 1rem; border: 1px solid var(--line); color: var(--foreground); background: var(--surface); }
 button:disabled { opacity: .4; cursor: default; }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+@media (pointer: coarse) { :focus-visible { outline: none; } }
 img, video { display: block; max-width: 100%; }
 img { height: auto; }
 iframe { width: 100%; border: 0; }
@@ -124,7 +125,7 @@ html[data-hero-state="hero"] .site-header { visibility: hidden; }
 .ju-policy__img { width: 100%; }
 #policy .ju-policy__img { width: auto; max-width: 100%; height: min(52svh, 560px); object-fit: contain; margin-inline: auto; }
 #works .gs-work-image-wrapper { width: min(100%, calc(26 * var(--scene-unit))); margin-inline: auto; }
-#design .ju-design__image img { width: auto; max-width: 100%; max-height: calc(45 * var(--scene-unit)); margin-inline: auto; }
+#design .ju-design__image img { width: auto; max-width: 100%; max-height: max(100px, calc(var(--scene-height, 100svh) - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space))); margin-inline: auto; }
 #design-intro .ju-design__image img { width: auto; max-width: 100%; max-height: 38svh; margin-inline: auto; }
 .accordion-item { border-top: 1px solid var(--line); }
 .accordion-item:last-child { border-bottom: 1px solid var(--line); }
@@ -156,7 +157,7 @@ details[open] summary .sign::after { content: '−'; }
 .simu-ctrl-bar { display: flex; justify-content: flex-end; max-width: 1180px; margin: 0 auto 0.4rem; position: relative; z-index: 5; }
 @media (max-width:520px) { :root { --device-padding: 6px; } .device-shell { padding: 6px; border-radius: 20px; } .device-shell .ju-media, .device-shell .simu-frame { border-radius: 14px; } }
 
-.gs-info-card { border-top: 1px solid var(--line); padding-top: 1.5rem; }
+.gs-info-card { border-top: 0; padding-top: 1.5rem; }
 .visual { padding-inline: 0; }
 .visual > .gs-container { width: 100%; }
 .visual .ttl-wrap { padding-inline: var(--gutter); }
@@ -192,7 +193,7 @@ details[open] summary .sign::after { content: '−'; }
 .specs ul { padding-left: 1.25rem; color: var(--secondary); }
 #specs .gs-container { max-height: calc(100svh - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space)); overflow: auto; }
 #specs .gs-grid-4 { grid-template-columns: repeat(4,minmax(190px,1fr)); }
-#specs .gs-work-card { border-top: 1px solid var(--line); padding-top: 1rem; }
+#specs .gs-work-card { border-top: 0; padding-top: 1rem; }
 #specs .gs-work-text { font-size: var(--body); }
 .craft .ju-design__row { grid-template-columns: 1fr 1.3fr 1fr; gap: var(--gap); }
 .apology-grid { gap: clamp(2rem,6vw,6rem); }
@@ -206,7 +207,7 @@ textarea { min-height: 160px; resize: vertical; }
 #site-notice .marquee { display: flex; width: max-content; white-space: nowrap; animation: notice-flow 22s linear infinite; }
 #site-notice .row { flex: none; }
 @keyframes notice-flow { to { transform: translateX(-50%); } }
-footer { position: fixed; inset: auto 0 var(--notice-height,44px); z-index: 900; padding: .75rem max(var(--gutter), var(--safe-right)) .75rem max(var(--gutter), var(--safe-left)); background: rgba(0,0,0,.75); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 0; text-align: center; color: #f5f5f5; font-size: var(--caption); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+footer { position: fixed; inset: auto 0 var(--notice-height,44px); z-index: 900; padding: .75rem max(var(--gutter), var(--safe-right)) .75rem max(var(--gutter), var(--safe-left)); background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border: 0; text-align: center; color: #f5f5f5; font-size: var(--caption); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
 .footer-visible footer, .footer-visible #site-notice { opacity: 1; pointer-events: auto; }
 #contact-apology { padding-bottom: calc(var(--section-space) + var(--footer-height, 140px)); }
 footer .text-xs { font-size: var(--legal); }
@@ -261,12 +262,12 @@ dialog::backdrop { background: #000c; }
 #testimonial-event-shop .gs-card { max-width: 60rem; margin-inline: auto; }
 #testimonial-event-shop .gs-card-title { font-size: var(--title); }
 html.theme-invert { color-scheme: light; --background: #fff; --foreground: #111; --secondary: #49494d; --line: #aaa; --surface: #f3f3f3; }
-html.theme-invert footer { color: var(--foreground); background: rgba(255, 255, 255, 0.88); border-top: 1px solid rgba(0, 0, 0, 0.08); }
+html.theme-invert footer { color: var(--foreground); background: transparent; border-top: 0; -webkit-backdrop-filter: none; backdrop-filter: none; }
 html.theme-invert .ju-footer-privacy-link { color: var(--secondary); }
 html.theme-invert .ju-footer-privacy-link:hover { color: var(--foreground); }
-html.theme-invert .site-header { color: #111; background: rgba(255,255,255,.78); border-bottom: 1px solid rgba(0,0,0,.08); }
+html.theme-invert .site-header { color: #111; background: transparent; border-bottom: 1px solid rgba(0,0,0,.08); -webkit-backdrop-filter: none; backdrop-filter: none; }
 
-.site-header { z-index: 1000; color: #f5f5f5; background: rgba(0,0,0,.42); border-bottom: 1px solid #ffffff14; -webkit-backdrop-filter: blur(10px) saturate(120%); backdrop-filter: blur(10px) saturate(120%); }
+.site-header { z-index: 1000; color: #f5f5f5; background: transparent; border-bottom: 1px solid #ffffff14; -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 .theme-toggle, .simu-toggle { position: relative; width: 44px; height: 44px; min-height: 44px; flex: none; border: 0; padding: 0; background: transparent; color: inherit; opacity: .8; cursor: pointer; }
 .theme-toggle::before, .simu-toggle::before { content: ''; position: absolute; inset: 21px 6px; background: currentColor; opacity: .4; }
@@ -445,16 +446,6 @@ html, body { scroll-snap-type: none; }
 
 
 
-/* Temporary motion-build mode. The production slow timings remain intact in
-   stages.js; this only shortens traversal while the animation system is under
-   construction. Remove this override by flipping SLOW_SCROLL_ENABLED to true. */
-html[data-motion-build="fast"] #hero-scroll-zone {
-  /* Stable viewport units prevent browser toolbar changes from resizing the
-     HERO scroll track. This is longer than the former 1100dvh range. */
-  height: 1600svh;
-  min-height: 0;
-}
-
 /* Solid rounded handset: sixteen depth slices close the curved side wall.
    Keep opacity at one and overflow visible to preserve the 3D descendants. */
 .device-shell { transform-style: preserve-3d; overflow: visible; }
@@ -497,54 +488,102 @@ html[data-motion-build="fast"] #hero-scroll-zone {
   will-change: transform, clip-path;
 }
 
-/* Footer-safe visual geometry.
-   The footer remains a one-way fixed overlay. These rules move/fit only the
-   visual contents; they never alter .chapter/.chapter-stage dimensions,
-   --persistent-bottom, or the scroll spans measured by stages.js. */
+/* Persistent footer safe area.
+   Once the footer is latched, reserve its real measured height only in the
+   visual composition. Scene timeline lengths stay unchanged. */
 html.footer-visible {
-  --visual-bottom-inset: var(--footer-height, 0px);
-  --visual-safe-height: max(1px, calc(100svh - var(--header-height) - var(--visual-bottom-inset)));
-  --visual-center-shift: calc(var(--visual-bottom-inset) / -2);
+  --persistent-bottom: var(--footer-height, 0px);
+  --visual-safe-height: max(1px, calc(100svh - var(--footer-height, 0px)));
 }
 
-html.footer-visible .chapter:not(#hero):not(#hero-2-slide):not(#order):not(#gallery):not(#usage-title):not(#event-shop-title):not(#contact-apology) > :is(.gs-container, .ju-container, .apology-grid),
-html.footer-visible #faq-slide > #faq-accordion {
-  transform: translate3d(0, var(--visual-center-shift), 0);
+/* The compositor normally fixes chapters to the full viewport. After the
+   one-way footer latch, stop the visual scene above the footer/notice instead
+   of letting content continue underneath it. */
+html.spiral-scenes.footer-visible .scene-slot > .chapter:not(#hero) {
+  min-height: var(--visual-safe-height);
+  height: auto;
+  padding-bottom: var(--section-space);
 }
 
-/* Components that deliberately use almost the full viewport get a visual-only
-   height cap after the footer latches. These caps do not change chapter height. */
-html.footer-visible #simulator .simu-frame iframe {
-  height: min(720px, max(120px, calc(var(--visual-safe-height) - 60px - 2 * var(--device-padding))));
-}
-html.footer-visible #specs .gs-container {
-  max-height: max(1px, calc(var(--visual-safe-height) - 2 * var(--section-space)));
-}
-html.footer-visible #works > .gs-container {
-  max-height: var(--visual-safe-height);
-  overflow-y: auto;
-  /* Allow page scrolling once this inner reading area reaches either edge. */
-  overscroll-behavior-y: auto;
+/* ID rules with their own viewport heights need the same safe frame. */
+html.spiral-scenes.footer-visible #simulator.chapter,
+html.spiral-scenes.footer-visible #hero-2-slide.chapter {
+  min-height: var(--visual-safe-height);
+  height: var(--visual-safe-height);
 }
 
-@media (orientation: landscape) {
-  html.footer-visible .visual > .gs-container {
-    height: max(1px, calc(var(--visual-safe-height) - 2 * var(--section-space)));
-  }
+/* Keep long reading chapters on the page timeline. Their content may exceed
+   one visual frame by design, but it must never be hidden underneath footer. */
+html.spiral-scenes.footer-visible #works > .gs-container,
+html.spiral-scenes.footer-visible #specs .gs-container,
+html.spiral-scenes.footer-visible #policy .ju-acc,
+html.spiral-scenes.footer-visible #originalballmaking-accordion .ju-acc,
+html.spiral-scenes.footer-visible #faq-accordion .ju-acc {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+/* Device/video sizes already reference --persistent-bottom. Explicit caps
+   prevent their shells from exceeding the reduced visual frame on short UI
+   viewports without altering the public layout before the footer is reached. */
+html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
+  height: min(720px, max(120px, calc(100svh - var(--header-height) - var(--persistent-bottom) - 100px - 2 * var(--device-padding))));
 }
 
 @media (orientation: portrait) {
-  html.footer-visible #modeling .ju-card {
-    width: min(100%, 280px, max(120px, calc((var(--visual-safe-height) - 2 * var(--section-space) - 1.16 * var(--heading) - 1.4 * var(--title) - 116px) / 2.05)));
+  html.spiral-scenes.footer-visible #modeling .ju-card {
+    width: min(100%, 280px, max(120px, calc((100svh - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space) - 1.16 * var(--heading) - 1.4 * var(--title) - 116px) / 2.05)));
   }
 }
 
 @media (orientation: landscape) and (max-height: 560px) {
-  html.footer-visible #policy .ju-policy__img {
-    height: min(calc(45 * var(--scene-unit)), max(96px, calc(var(--visual-safe-height) - 72px)));
+  html.spiral-scenes.footer-visible #modeling .ju-card {
+    width: min(100%, max(220px, calc((100svh - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space)) * 2.05)));
   }
+}
 
-  html.footer-visible #modeling .ju-card {
-    width: min(100%, max(240px, calc((var(--visual-safe-height) - 2 * var(--section-space)) * 2.05)));
+/* Final footer-latched fit guards for wide/short viewports. These apply only
+   after the one-way footer is visible, so the public pre-latch composition is
+   unchanged. */
+@media (orientation: landscape) and (min-aspect-ratio: 3/2) and (max-aspect-ratio: 13/4) and (min-height: 561px) {
+  html.spiral-scenes.footer-visible #modeling .ju-card {
+    width: min(100%, max(220px, calc((100svh - var(--header-height) - var(--persistent-bottom) - 2 * var(--section-space) - 140px) * 2.05)), 980px);
   }
+}
+@media (min-width: 900px) {
+  html.spiral-scenes.footer-visible #specs > .gs-container {
+    transform: scale(.97);
+    transform-origin: center center;
+  }
+}
+
+/* Works: only the established phone-width horizontal presentation moves copy
+   to the image's right. Desktop and normal tablet layouts stay untouched. */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) and (max-height: 560px) {
+  #works .gs-work-card {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    align-items: center;
+    gap: .75rem;
+  }
+  #works .gs-work-image-wrapper {
+    width: 100%;
+    margin: 0;
+  }
+  #works .gs-work-content { align-self: center; }
+}
+
+/* Current-layout refinements (Oct 2026): keep established desktop/tablet
+   compositions, only correct the portrait Policy alignment. */
+@media (orientation: portrait) and (max-width: 760px) {
+  #policy .ju-policy__wrap > aside {
+    width: min(100%, 440px);
+    max-width: 440px;
+    justify-self: center;
+    margin-inline: auto;
+  }
+  #policy .ju-policy__wrap > aside figure,
+  #policy .ju-policy__wrap > aside picture { width: 100%; }
+  #policy .ju-policy__img { display: block; margin-inline: auto; }
 }

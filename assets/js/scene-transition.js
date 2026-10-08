@@ -6,8 +6,8 @@
   const { clamp, ease, state, transition } = window.JUSceneMath;
   const scenes = [];
   const byId = new Map();
-  const units = { hero: 18, order: 32, gallery: 26, 'usage-title': 16, 'event-shop-title': 16,
-    works: 3.5, design: 3, policy: 3, 'design-intro': 3, modeling: 6, simulator: 6 };
+  const units = { hero: 18, order: 84, gallery: 66, specs: 16, 'usage-title': 16, 'event-shop-title': 16,
+    works: 3.5, design: 3, policy: 4.5, 'design-intro': 3, modeling: 6, simulator: 6 };
   // Distances, not scroll locks. Relative to the first preview, internal motion
   // takes 2.1x the scrolling distance. Keep chapter pacing independent of the
   // long decorative interlude (44 screens) and upright-copy intervals.
@@ -17,7 +17,9 @@
   const entryLead = { order: .035, gallery: .035,
     works: .16, design: .16, policy: .16, 'design-intro': .16 };
   const linkedScenes = new Set(['modeling', 'simulator', 'usage-title', 'event-shop-title']);
+  const fixedScenes = new Set(['hero', 'order', 'gallery', 'specs', 'design', 'modeling', 'simulator', 'usage-title', 'event-shop-title', 'hero-2-slide']);
   let frame = 0, resizeFrame = 0, unit = 0, lastWidth = innerWidth;
+  let suppressObserverUntil = 0;
   let lastScene = null, lastLocal = 0;
   let footerLatched = false;
   let renderedY = 0;
@@ -31,7 +33,7 @@
       // Prewarm incoming resources before the aperture opens, including the
       // now-longer interlude. Distant scenes release their rendering resources.
       const y = renderedY ?? scrollY;
-      return !!s && y > s.start - unit * pace.transition * .36 && y < s.end + unit;
+      return !!s && y > s.start - unit * pace.transition * .70 && y < s.end + unit;
     },
     go(id) {
       const s = byId.get(id);
@@ -42,8 +44,8 @@
         scrollTo({ top: Math.ceil(s.start), behavior: 'auto' });
       }
     },
-    snapshot() { return scenes.map(({ section, start, end, animation, overflow, hold, transition: span, progress, visible }) =>
-      ({ id: section.id, start, end, animation, overflow, hold, transition: span, progress, visible })); },
+    snapshot() { return scenes.map(({ section, start, end, animation, overflow, readSpan, hold, transition: span, progress, visible }) =>
+      ({ id: section.id, start, end, animation, overflow, readSpan, hold, transition: span, progress, visible })); },
   };
 
   function measureDevices() {
@@ -96,6 +98,13 @@
     // The full-viewport shader owns the aperture. Never mask section-sized
     // rectangles or their WebGL descendants: that cuts the mobile backdrop.
     section.style.transform = `translateY(${-read}px)`;
+    // Clip reading content to the safe frame even while its document offset moves.
+    if (!fixedScenes.has(section.id)) {
+      const header = document.querySelector('.site-header').offsetHeight;
+      const bottom = footerLatched ? parseFloat(getComputedStyle(root).getPropertyValue('--footer-height')) || 0 : 0;
+      const clipBottom = Math.max(0, section.offsetHeight - read - innerHeight + bottom);
+      section.style.clipPath = `inset(${header + read}px 0 ${clipBottom}px 0)`;
+    }
     section.style.setProperty('--chapter-progress', scene.progress);
     const local = renderedY - scene.start;
     const enterCopy = section.id === 'hero' ? 1 : .08 + .92 * ease((local / unit - pace.copyDelay) / pace.copyReveal);
@@ -150,13 +159,19 @@
       scene.motionOverlap = scene === next && scene.progress > 0;
       scene.copyOverlap = scene === next ? .08 * ease((s.transition - .94) / .06) : scene === current ? 1 : 0;
       if (scene === current) paint(scene, blend.outgoingOpacity, s.read, !next || blend.spiralOpacity < .25 && s.transition < .5, !!next);
-      else if (scene === next) paint(scene, blend.incomingOpacity, 0, false, true);
+      else if (scene === next) {
+        const portalInteractive = linkedScenes.has(scene.section.id) && blend.incomingOpacity >= .5;
+        paint(scene, blend.incomingOpacity, 0, portalInteractive, true);
+      }
       else if (scene.visible !== false) paint(scene, 0, 0, false, false);
     }
     if (!footerLatched && current.section.id === 'contact-apology') {
       footerLatched = true;
+      // Footer geometry is visual-only. Suppress ResizeObserver remeasurement so
+      // backward scrolling keeps the exact same scene timeline/progress.
+      suppressObserverUntil = performance.now() + 800;
       root.classList.add('footer-visible');
-      measureDevices();
+      requestAnimationFrame(() => measure('offset'));
     }
     root.dataset.scene = current.section.id;
     root.dataset.scenePhase = next ? 'transition' : s.animation < 1 ? 'animation' : 'hold';
@@ -181,6 +196,7 @@
         scene.slot.style.height = '';
         scene.section.style.opacity = '';
         scene.section.style.transform = '';
+        scene.section.style.clipPath = '';
         scene.section.style.maskImage = '';
         scene.section.style.webkitMaskImage = '';
         scene.section.style.backgroundColor = '';
@@ -199,19 +215,23 @@
       return;
     }
     root.classList.add('spiral-scenes');
-    const anchor = preserve && lastScene ? { scene: lastScene, local: lastLocal } : null;
+    const anchor = preserve && lastScene ? { scene: lastScene, local: lastLocal, offset: Math.max(0, scrollY - lastScene.start) } : null;
     // Stable CSS viewport height: mobile toolbar collapse cannot alter the track.
-    if (!unit || preserve) unit = probe.offsetHeight;
+    if (!unit || preserve === true) unit = probe.offsetHeight;
     updateViewport();
     let start = 0;
     for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
       scene.start = start;
-      scene.animation = (units[scene.section.id] ?? 1.6) * pace.animation * unit;
-      scene.overflow = Math.max(0, scene.section.offsetHeight - innerHeight);
+      const sceneUnits = scene.section.id === 'specs' && scene.section.dataset.specLayout === 'grid' ? 3.5 : units[scene.section.id] ?? 1.6;
+      scene.animation = sceneUnits * pace.animation * unit;
+      const bottom = footerLatched ? parseFloat(getComputedStyle(root).getPropertyValue('--footer-height')) || 0 : 0;
+      scene.overflow = fixedScenes.has(scene.section.id) ? 0 : Math.max(0, scene.section.scrollHeight - innerHeight + bottom);
+      scene.readPace = 1.8;
+      scene.readSpan = scene.overflow * scene.readPace;
       scene.hold = pace.hold * unit;
       scene.transition = i === scenes.length - 1 ? 0 : pace.transition * unit;
-      scene.end = start + scene.animation + scene.overflow + scene.hold + scene.transition;
+      scene.end = start + scene.animation + scene.readSpan + scene.hold + scene.transition;
       scene.slot.style.height = `${scene.end - start + (i === scenes.length - 1 ? unit : 0)}px`;
       start = scene.end;
       const previous = scenes[i - 1];
@@ -220,7 +240,12 @@
       scene.motionStart = previous ? previous.end - previous.transition * (1 - t) : scene.start;
     }
     measureDevices();
-    if (anchor) scrollTo(0, anchor.scene.start + anchor.local * (anchor.scene.end - anchor.scene.start));
+    if (anchor) {
+      const y = preserve === 'offset'
+        ? anchor.scene.start + Math.min(anchor.offset, anchor.scene.end - anchor.scene.start)
+        : anchor.scene.start + anchor.local * (anchor.scene.end - anchor.scene.start);
+      scrollTo(0, y);
+    }
     draw();
   }
 
@@ -251,19 +276,64 @@
   root.dataset.motionBuild = 'spiral';
   measure();
   const observer = new ResizeObserver(() => {
-    if (!resizeFrame) resizeFrame = requestAnimationFrame(() => measure(false));
+    // Browser UI show/hide and orientation generate ResizeObserver bursts for
+    // viewport-sized chapters. Ignore those; explicit resize handling below
+    // owns viewport changes. Content expansion (details) still remeasures.
+    if (performance.now() < suppressObserverUntil) return;
+    if (!resizeFrame) resizeFrame = requestAnimationFrame(() => measure('offset'));
   });
-  scenes.forEach(scene => observer.observe(scene.section));
+  scenes.forEach(scene => {
+    observer.observe(scene.section);
+    if (!fixedScenes.has(scene.section.id)) for (const child of scene.section.children) observer.observe(child);
+  });
+  // A fixed-height chapter does not resize when a details panel expands.
+  document.addEventListener('toggle', event => {
+    if (!event.target.matches('details') || !event.target.closest('.chapter')) return;
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => measure('offset'));
+  }, true);
+  // Cancel only an outward gesture at the document boundary. Internal scroll
+  // areas (including the simulator) keep their own input and momentum.
+  let touchY = null;
+  addEventListener('touchstart', event => {
+    touchY = event.touches.length === 1 ? event.touches[0].clientY : null;
+  }, { passive: true });
+  addEventListener('touchmove', event => {
+    if (touchY === null || event.touches.length !== 1 || reduced.matches) return;
+    const nextY = event.touches[0].clientY, delta = touchY - nextY;
+    touchY = nextY;
+    const max = Math.max(0, root.scrollHeight - innerHeight);
+    if (!(delta < 0 && scrollY <= 1 || delta > 0 && scrollY >= max - 1)) return;
+    for (const node of event.composedPath()) {
+      if (!(node instanceof Element) || node === root || node === document.body) continue;
+      if (!/(auto|scroll)/.test(getComputedStyle(node).overflowY)) continue;
+      if (delta > 0 && node.scrollTop + node.clientHeight < node.scrollHeight - 1 || delta < 0 && node.scrollTop > 0) return;
+    }
+    if (event.cancelable) event.preventDefault();
+  }, { passive: false });
+  addEventListener('touchend', () => { touchY = null; }, { passive: true });
   addEventListener('scroll', schedule, { passive: true });
+  let settleTimer = 0;
   addEventListener('resize', () => {
     updateViewport();
-    if (innerWidth === lastWidth) { measureDevices(); schedule(); return; }
+    suppressObserverUntil = performance.now() + 500;
+    if (innerWidth === lastWidth) { schedule(); return; }
     lastWidth = innerWidth;
-    cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(() => measure(true));
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => measure(true));
+    }, 220);
   }, { passive: true });
-  window.visualViewport?.addEventListener('resize', () => { updateViewport(); schedule(); }, { passive: true });
-  document.fonts?.ready.then(() => measure(false));
+  window.visualViewport?.addEventListener('resize', () => {
+    suppressObserverUntil = performance.now() + 500;
+    updateViewport(); schedule();
+  }, { passive: true });
+  document.addEventListener('jugend:layout', () => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => measure('offset'));
+  });
+  document.fonts?.ready.then(() => measure('offset'));
   reduced.addEventListener('change', () => measure(false));
   document.addEventListener('click', event => {
     const anchor = event.target.closest('a[href^="#"]');

@@ -74,7 +74,8 @@
   function layoutFor(frame) {
     const portrait = frame.portrait;
     const tablet = matchMedia(TABLET_QUERY).matches;
-    const captionReserve = tablet ? (portrait ? 112 : 96) : (portrait ? 62 : 74);
+    const isTouchMobile = matchMedia('(hover: none) and (pointer: coarse) and (max-width: 760px)').matches;
+    const captionReserve = tablet ? (portrait ? 112 : 96) : (isTouchMobile ? 86 : (portrait ? 62 : 74));
     const desktop = matchMedia('(min-width: 1100px) and (pointer: fine)').matches;
 
     if (portrait && tablet) {
@@ -623,8 +624,8 @@
       let sequencePhase = 'legacy';
 
       if (cinematicDesktop) {
-        const introEnd = .22;
-        const focusEnd = .88;
+        const introEnd = .16;
+        const focusEnd = .92;
         if (journey < introEnd) {
           sequencePhase = 'planet-orbit-out';
           const t = ease(clamp01(journey / introEnd));
@@ -673,15 +674,11 @@
       }
 
       let legacyTotal = 0;
-
-
       let legacyCursor = 0;
       let legacyCenter = 0;
       if (!cinematicDesktop) {
         legacyTotal = journey * items.length;
-        const whole = Math.floor(legacyTotal);
-        const fraction = legacyTotal - whole;
-        legacyCursor = Math.max(0, Math.min(items.length - 1, whole - 1 + ease(clamp01((fraction - .62) / .38))));
+        legacyCursor = Math.max(0, Math.min(items.length - 1, legacyTotal - 1));
         const ci = Math.floor(legacyCursor);
         const nc = centers[ci + 1] ?? centers[ci] ?? 0;
         legacyCenter = (centers[ci] ?? 0) + (nc - (centers[ci] ?? 0)) * (legacyCursor - ci);
@@ -703,8 +700,8 @@
           // before the next work begins.
           lineOpacity = CONNECTOR_OPACITY;
           if (index === activeIndex && sequencePhase === 'focus-return') {
-            const departEnd = .28;
-            const holdEnd = .62;
+            const departEnd = .18;
+            const holdEnd = .82;
             let pulse = 0;
             let pathT = 0;
             let reverse = false;
@@ -740,7 +737,7 @@
             width = lerp(base.baseWidth, display.width * targetDepthScale, pulse);
             height = lerp(base.baseHeight, display.height * targetDepthScale, pulse);
             lineOpacity = CONNECTOR_OPACITY;
-            showCaption = pulse > .86;
+            showCaption = pulse > .62;
           }
           applyPlane(entry, tempPosition, tempQuat, width, height);
           setLine(entry, sphereCenter, tempPosition, lineOpacity, frame);
@@ -856,7 +853,12 @@
       visualLayer.hidden = true;
       section.classList.add('gallery-pending');
     }
-    return { id, section, render, release };
+    function prepare(now) {
+      // Compile and upload while the opaque portal still covers this chapter.
+      // Do not wait for its first visible aperture frame to allocate 28 textures.
+      if (!renderer) render(now);
+    }
+    return { id, section, render, release, prepare };
   }
 
   function update(now) {
@@ -869,6 +871,7 @@
         continue;
       }
       if (gallery.section.dataset.covered !== 'true') spinning = gallery.render(now) || spinning;
+      else gallery.prepare(now);
     }
     if (spinning) schedule();
   }

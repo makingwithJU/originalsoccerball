@@ -59,47 +59,53 @@
     </script>
 <meta name="theme-color" content="#111111">
 <meta name="color-scheme" content="light dark">
+  <!-- Preload specs images for immediate display without lazy loading -->
+  <link rel="preload" as="image" href="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" fetchpriority="high">
   <!-- ==================== 1. STYLESHEETS ==================== -->
-  <link rel="stylesheet" href="./assets/css/site.css?v=36">
-  <link rel="stylesheet" href="./assets/css/spatial-gallery.css?v=34">
-  <link rel="stylesheet" href="./assets/css/scene-transition.css?v=15">
+  <link rel="stylesheet" href="./assets/css/site.css?v=oct07-1">
+  <link rel="stylesheet" href="./assets/css/spatial-gallery.css?v=oct06-2">
+  <link rel="stylesheet" href="./assets/css/scene-transition.css?v=oct07-25">
+  <link rel="stylesheet" href="./assets/css/specs-slider.css?v=oct07-4">
+  <link rel="stylesheet" href="./assets/css/reading-panels.css?v=oct06-2">
 
   <!-- ==================== 2. VENDOR LIBRARIES ==================== -->
   <!-- Three.js & Loaders (3D Rendering Engine) -->
   <script src="./assets/libs/three-0.128.0.min.js" defer></script>
   <script src="./assets/libs/GLTFLoader.js" defer></script>
   <script src="./assets/libs/STLLoader.js" defer></script>
-  <!-- GSAP & ScrollTrigger (Animation Engine) -->
-  <script src="./assets/libs/gsap/gsap.min.js" defer></script>
-  <script src="./assets/libs/gsap/ScrollTrigger.min.js" defer></script>
 
   <!-- ==================== 3. 3D & CORE MOTION ENGINES ==================== -->
   <!-- 3D Ball Renderer (Three.js + GLTFLoader) -->
-  <script src="./assets/js/face3d.umd.js?v=42" defer></script>
+  <script src="./assets/js/face3d.umd.js?v=oct06-2" defer></script>
   <!-- 3D Wireframe Cursor (Three.js + STLLoader) -->
-  <script src="./assets/js/cursor-3d.js" defer></script>
-  <!-- Hero Section Scroll & Video Scrubber (GSAP) -->
-  <script src="./assets/js/intro.js?v=39" defer></script>
+  <script src="./assets/js/cursor-3d.js?v=oct06-2" defer></script>
+  <!-- Hero frame-sequence scrubber -->
+  <script src="./assets/js/intro.js?v=oct07-5" defer></script>
   <!-- Hero Typography Morphing -->
-  <script src="./assets/js/hero-title.js?v=36" defer></script>
+  <script src="./assets/js/hero-title.js?v=oct06-2" defer></script>
   <!-- Experimental native-scroll scene compositor -->
-  <script src="./assets/js/scene-progress.js?v=14" defer></script>
-  <script src="./assets/js/spiral-background.js?v=11" defer></script>
-  <script src="./assets/js/scene-transition.js?v=14" defer></script>
-  <script src="./assets/js/unroll-images.js?v=38" defer></script>
+  <script src="./assets/js/scene-progress.js?v=oct06-2" defer></script>
+  <script src="./assets/js/spiral-background.js?v=oct06-2" defer></script>
+  <script src="./assets/js/scene-transition.js?v=oct07-15" defer></script>
+  <script src="./assets/js/simulator-interaction.js?v=oct06-2" defer></script>
+  <script src="./assets/js/specs-slider.js?v=oct07-4" defer></script>
+  <script src="./assets/js/unroll-images.js?v=oct06-2" defer></script>
   <!-- 3D Orbit Carousel Gallery -->
-  <script src="./assets/js/spatial-gallery.js?v=35" defer></script>
-  <script src="./assets/js/context-gallery.js?v=28" defer></script>
+  <script src="./assets/js/spatial-gallery.js?v=oct07-9" defer></script>
+  <script src="./assets/js/context-gallery.js?v=oct07-3" defer></script>
 
   <!-- ==================== 4. UI & INTERACTION SCRIPTS ==================== -->
   <!-- Theme Switcher: each visit starts dark. -->
-  <script src="./assets/js/theme.js" defer></script>
+  <script src="./assets/js/theme.js?v=oct06-2" defer></script>
   <!-- Media & Lazy Video Loader -->
-  <script src="./assets/js/media.js?v=35" defer></script>
+  <script src="./assets/js/media.js?v=oct07-3" defer></script>
   <!-- General UI Interactions (Modals, Forms, Badges) -->
-  <script src="./assets/js/interactions.js" defer></script>
+  <script src="./assets/js/interactions.js?v=oct06-2" defer></script>
 
-  <link rel="stylesheet" href="./assets/css/drafting.css">
+  <link rel="stylesheet" href="./assets/css/drafting.css?v=oct06-2">
 </head>
 <body><svg id="filters" style="display: none;">
       <defs>
@@ -136,7 +142,7 @@
     <section class="hero chapter" id="hero">
         <div class="hero-media">
           <div class="hero-video">
-     <video id="hero-video" class="video-el" data-src-default="./assets/media/hero-seek.mp4" data-src-tablet="./assets/media/hero-seek-tablet.mp4" data-src-phone="./assets/media/hero-seek-phone.mp4" poster="./assets/media/hero-poster.jpg" muted="" playsinline="" webkit-playsinline="" preload="none"></video>
+     <video id="hero-video" class="video-el" poster="./assets/media/hero-poster.jpg" muted="" playsinline="" webkit-playsinline="" preload="none"></video>
           </div>
           <!-- 3D Face Layer -->
           <div id="face3d-layer" class="face3d-layer" aria-hidden="true"></div>
@@ -629,7 +635,7 @@
         </div>
         <div class="ju-card device-shell">
           <div class="ju-media">
-            <iframe class="ju-yt" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" title="3DCG modeling" data-src="https://www.youtube.com/embed/cU7YvQI-vPo?loop=1&amp;playlist=cU7YvQI-vPo&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;controls=0&amp;rel=0&amp;showinfo=0&amp;enablejsapi=1"></iframe>
+            <iframe class="ju-yt" sandbox="allow-scripts allow-same-origin" loading="lazy" allow="autoplay; fullscreen 'none'; picture-in-picture 'none'; presentation 'none'" referrerpolicy="strict-origin-when-cross-origin" title="3DCG modeling" data-src="https://www.youtube.com/embed/cU7YvQI-vPo?loop=1&amp;playlist=cU7YvQI-vPo&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;controls=0&amp;rel=0&amp;showinfo=0&amp;enablejsapi=1"></iframe>
           </div>
         </div>
       </div>
@@ -649,7 +655,7 @@
     <div class="simu-wrapper" id="simu-collapse-target">
       <div class="simu-card device-shell">
         <div class="simu-frame">
-          <iframe id="simulatorIframe" title="fullcolorballs simulator" loading="lazy" allow="fullscreen" src="./simulator/index.html"></iframe>
+          <iframe id="simulatorIframe" title="fullcolorballs simulator" loading="lazy" allow="fullscreen" src="./simulator/index.html?v=3"></iframe>
         </div>
       </div>
     </div>
@@ -732,88 +738,61 @@
 </section><section id="specs" class="gs-section specs chapter">
   <div class="gs-container">
     
-    <div class="gs-grid-4">
+    <div class="gs-grid-4 specs-slider-track" aria-label="仕様スライド">
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" alt="素材" class="gs-work-image" decoding="async" fetchpriority="low" width="1063" height="596" data-framing="spec">
+          <img loading="eager" src="./assets/images/photo-1715545226118-dc42faf8d-h_mebn3nk6.webp" alt="素材" class="gs-work-image" decoding="sync" fetchpriority="high" width="1063" height="596" data-framing="spec">
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">素材</h3>
-          <p class="gs-work-text text-s">fullcolorballs<br>
-・人工皮革<br>
-<br>
-silkscreenballs<br>
-・PU / PVC 人工皮革<br>
-<br>
-stampballs<br>
-・PVC 人工皮革</p>
+          <div class="spec-caption-groups gs-work-text text-s">
+            <div class="spec-caption-group"><strong>fullcolorballs</strong><span>・人工皮革</span></div>
+            <div class="spec-caption-group"><strong>silkscreenballs</strong><span>・PU / PVC 人工皮革</span></div>
+            <div class="spec-caption-group"><strong>stampballs</strong><span>・PVC 人工皮革</span></div>
+          </div>
         </div>
       </div>
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" alt="印刷品質" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1136" data-framing="spec">
+          <img loading="eager" src="./assets/images/silktpusxSCwHUCpbKBrYWWzKCCcEImF_upscayl_2x_ultrasharp-4x.webp" alt="印刷品質" class="gs-work-image" decoding="sync" fetchpriority="high" width="1600" height="1136" data-framing="spec">
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">印刷品質</h3>
-          <p class="gs-work-text text-s">fullcolorballs<br>
-・フルカラーオンデマンド印刷<br>
-・4c（※特色不可）<br>
-・ワンポイント〜全面<br>
-・強度☆☆☆<br>
-<br>
-silkscreenballs<br>
-・PANTONEシルクスクリーン印刷<br>
-・特色1c〜<br>
-・ワンポイント〜全面（※デザインにより）<br>
-・強度☆☆☆☆☆<br>
-<br>
-stampballs<br>
-・フルカラーオンデマンドシート転写<br>
-・4c（※特色不可）<br>
-・パネル内ワンポイント<br>
-・強度☆</p>
+          <div class="spec-caption-groups gs-work-text text-s">
+            <div class="spec-caption-group"><strong>fullcolorballs</strong><span>・フルカラーオンデマンド印刷</span><span>・4c（※特色不可）</span><span>・ワンポイント〜全面</span><span>・強度☆☆☆</span></div>
+            <div class="spec-caption-group"><strong>silkscreenballs</strong><span>・PANTONEシルクスクリーン印刷</span><span>・特色1c〜</span><span>・ワンポイント〜全面（※デザインにより）</span><span>・強度☆☆☆☆☆</span></div>
+            <div class="spec-caption-group"><strong>stampballs</strong><span>・フルカラーオンデマンドシート転写</span><span>・4c（※特色不可）</span><span>・パネル内ワンポイント</span><span>・強度☆</span></div>
+          </div>
         </div>
       </div>
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" alt="サイズ / パネル" class="gs-work-image" decoding="async" fetchpriority="low" width="1600" height="1200" data-framing="spec">
+          <img loading="eager" src="./assets/images/silktpuJqcrmVNpzsVnXLaXBQKmawYuO_upscayl_2x_ultrasharp-4x.webp" alt="サイズ / パネル" class="gs-work-image" decoding="sync" fetchpriority="high" width="1600" height="1200" data-framing="spec">
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">サイズ / パネル</h3>
-          <p class="gs-work-text text-s">fullcolorballs<br>
-・5号球 / 4号球 / 3号球 / マスコット<br>
-・32パネル<br>
-・手縫い<br>
-<br>
-silkscreenballs<br>
-・5号球 / 4号球 / 3号球 / 2号球 / 1号球 / フットサル / ブラインド<br>
-・32パネル<br>
-・手縫い<br>
-<br>
-stampballs<br>
-・5号球<br>
-・32パネル<br>
-・手縫い</p>
+          <div class="spec-caption-groups gs-work-text text-s">
+            <div class="spec-caption-group"><strong>fullcolorballs</strong><span>・5号球 / 4号球 / 3号球 / マスコット</span><span>・32パネル</span><span>・手縫い</span></div>
+            <div class="spec-caption-group"><strong>silkscreenballs</strong><span>・5号球 / 4号球 / 3号球 / 2号球 / 1号球 / フットサル / ブラインド</span><span>・32パネル</span><span>・手縫い</span></div>
+            <div class="spec-caption-group"><strong>stampballs</strong><span>・5号球</span><span>・32パネル</span><span>・手縫い</span></div>
+          </div>
         </div>
       </div>
       
       <div class="gs-work-card">
         <div class="gs-work-image-wrapper">
-          <img loading="lazy" src="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" alt="最小ロット" class="gs-work-image" decoding="async" fetchpriority="low" width="1312" height="652" data-framing="spec">
+          <img loading="eager" src="./assets/images/photo-1589487391730-58f20eb2c-h_meba3h8m.webp" alt="最小ロット" class="gs-work-image" decoding="sync" fetchpriority="high" width="1312" height="652" data-framing="spec">
         </div>
         <div class="gs-work-content">
           <h3 class="gs-work-title text-m">最小ロット</h3>
-          <p class="gs-work-text text-s">fullcolorballs<br>
-・1個〜<br>
-<br>
-silkscreenballs<br>
-・100個〜<br>
-<br>
-stampballs<br>
-・1個〜</p>
+          <div class="spec-caption-groups gs-work-text text-s">
+            <div class="spec-caption-group"><strong>fullcolorballs</strong><span>・1個〜</span></div>
+            <div class="spec-caption-group"><strong>silkscreenballs</strong><span>・100個〜</span></div>
+            <div class="spec-caption-group"><strong>stampballs</strong><span>・1個〜</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -924,7 +903,7 @@ stampballs<br>
           <div id="hero-2" class="hero">
             <div class="hero-media">
               <div class="hero-video">
-                <iframe class="ju-yt" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" title="You’ll never walk alone" data-src="https://www.youtube.com/embed/lOEVeKGXO3U?loop=1&amp;playlist=lOEVeKGXO3U&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;controls=0&amp;rel=0&amp;showinfo=0&amp;enablejsapi=1"></iframe>
+                <iframe class="ju-yt" sandbox="allow-scripts allow-same-origin" loading="lazy" allow="autoplay; fullscreen 'none'; picture-in-picture 'none'; presentation 'none'" referrerpolicy="strict-origin-when-cross-origin" title="You’ll never walk alone" data-src="https://www.youtube.com/embed/lOEVeKGXO3U?loop=1&amp;playlist=lOEVeKGXO3U&amp;autoplay=1&amp;mute=1&amp;playsinline=1&amp;controls=0&amp;rel=0&amp;showinfo=0&amp;enablejsapi=1"></iframe>
               </div>
             </div>
             <h2 class="hero-title">You'll never walk alone.</h2>

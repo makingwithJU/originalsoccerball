@@ -40,6 +40,33 @@
     const decoded = new Map();
     const pending = new Map();
     const failedFrames = new Set();
+    const retries = new Map();
+    const retryTimers = new Map();
+    const retryButton = document.createElement('button');
+    retryButton.type = 'button';
+    retryButton.className = 'hero-media-retry';
+    retryButton.textContent = '映像を再読み込み';
+    retryButton.hidden = true;
+    hero.append(retryButton);
+    retryButton.addEventListener('click', () => {
+      for (const timer of retryTimers.values()) clearTimeout(timer);
+      retryTimers.clear(); retries.clear(); failedFrames.clear();
+      retryButton.hidden = true;
+      scheduleSync();
+    });
+    function markFailed(index) {
+      failedFrames.add(index);
+      const attempt = (retries.get(index) || 0) + 1;
+      retries.set(index, attempt);
+      if (attempt > 3) return;
+      const expectedTier = tier;
+      retryTimers.set(index, setTimeout(() => {
+        retryTimers.delete(index);
+        if (expectedTier !== tier) return;
+        failedFrames.delete(index);
+        if (heroIsNear()) scheduleSync();
+      }, 750 * 2 ** (attempt - 1)));
+    }
     // Bound decoded RGBA residency, not just compressed transfer size.
     const MAX_DECODED = 18;
     const MAX_PENDING = 6;
@@ -85,7 +112,7 @@
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
     function frameUrl(index) {
-      return `./assets/media/hero-frames-v23/${tier}/frame_${String(index + 1).padStart(3, '0')}.webp`;
+      return `./assets/media/hero-frames-v24/${tier}/frame_${String(index + 1).padStart(3, '0')}.webp`;
     }
 
     function revealFilm() {
@@ -174,7 +201,7 @@
           if (!active) return;
           release();
           image.removeAttribute('src');
-          failedFrames.add(index);
+          markFailed(index);
           reject(new Error('HERO frame request timed out'));
           scheduleSync();
         }, 8000);
@@ -197,7 +224,7 @@
           if (!active) return;
           release();
           if (expectedTier === tier) {
-            failedFrames.add(index);
+            markFailed(index);
             scheduleSync();
           }
           reject(error);
@@ -241,8 +268,8 @@
       // One timeline for film, type and ball. A completed image request may
       // repaint this position, but never publish its older frame's progress.
       render(requestedProgress);
-      if (requestedProgress >= FILM_SCROLL_END) { waiting(false); return; }
-      const fractionalFrame = requestedProgress / FILM_SCROLL_END * (FRAME_COUNT - 1);
+      const filmProgress = Math.min(requestedProgress, FILM_SCROLL_END);
+      const fractionalFrame = filmProgress / FILM_SCROLL_END * (FRAME_COUNT - 1);
       const target = Math.floor(fractionalFrame);
       const following = Math.min(FRAME_COUNT - 1, target + 1);
       // A fast swipe/reversal must not queue behind downloads for an old pose.
@@ -258,9 +285,19 @@
       if (decoded.has(target)) {
         drawFrame(target);
         if (following !== target && decoded.has(following)) drawCover(decoded.get(following), fractionalFrame - target, false);
+      } else {
+        // During fast swipes/reversals keep motion continuous with the closest
+        // already-decoded neighbouring frame; never snap back to frame 0.
+        let nearest = -1, distance = Infinity;
+        for (const index of decoded.keys()) {
+          const d = Math.abs(index - target);
+          if (d <= 10 && d < distance) { nearest = index; distance = d; }
+        }
+        if (nearest >= 0) drawFrame(nearest);
       }
       const unavailable = failedFrames.has(target);
-      waiting(!decoded.has(target) && !unavailable);
+      retryButton.hidden = !unavailable;
+      waiting(!decoded.has(target) && !unavailable && displayedFrame < 0);
       root.dataset.heroMediaFallback = String(unavailable);
       for (const index of [target, following]) {
         if (pending.size < MAX_PENDING && !pending.has(index) && !decoded.has(index) && !failedFrames.has(index)) {
@@ -285,7 +322,7 @@
         render(progress);
       }
       window.JUHeroDebug = {
-        driver: 'frame-sequence-v23-original-timing',
+        driver: 'frame-sequence-v24-original-timing',
         tier,
         requestedProgress: progress,
         presentedProgress: currentProgress,
@@ -311,7 +348,8 @@
           decoded.clear();
           for (const request of pending.values()) request.cancel();
           pending.clear();
-          failedFrames.clear();
+          for (const timer of retryTimers.values()) clearTimeout(timer);
+          retryTimers.clear(); retries.clear(); failedFrames.clear();
           displayedFrame = -1;
           firstFrameReady = false;
           video.style.visibility = '';

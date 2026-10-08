@@ -180,10 +180,12 @@
   for (const item of items) item.img.addEventListener('load',schedule);
   const resize=new ResizeObserver(schedule);
   for (const item of items) resize.observe(item.img);
-  document.addEventListener('jugend:chapter-motion',schedule);
-  addEventListener('scroll',schedule,{passive:true});
+  // One render request per compositor frame. The previous combination of
+  // chapter-motion + native scroll + cancel-and-draw could hide/show the source
+  // and canvas twice in one visual frame, producing a visible flash.
+  if (window.JUScenes) document.addEventListener('jugend:scroll-frame', schedule);
+  else addEventListener('scroll', schedule, {passive:true});
   addEventListener('resize',schedule,{passive:true});
   reduced.addEventListener('change',schedule);
   schedule();
-  document.addEventListener('jugend:scroll-frame',()=>{cancelAnimationFrame(frame);frame=0;draw();});
 })();

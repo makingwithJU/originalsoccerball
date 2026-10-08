@@ -36,7 +36,9 @@ body { overflow: hidden; }
     display: flex;
     flex-direction: column;
     gap: 8px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
   }
   .container aside > .panelCard:first-child {
     flex: none;
@@ -46,14 +48,14 @@ body { overflow: hidden; }
   .container aside > .panelCard:last-child {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
+    flex: 1 0 auto;
+    min-height: min-content;
     padding: 8px;
   }
   .container aside > .panelCard:last-child > :not(.editorDrop) { flex-shrink: 0; }
   .container .editorDrop {
     flex: 1 1 0;
-    min-height: 48px;
+    min-height: 100px;
     padding: 8px;
     container-type: size;
     display: grid;
@@ -67,4 +69,33 @@ body { overflow: hidden; }
   }
   .container .controlRow { margin-top: 4px; }
   .container .button { padding: 6px 10px; }
+}
+
+/* Touch-capable devices always keep the console as the scroll owner, even when
+   iPadOS/Chrome reports a fine pointer because a trackpad/mouse is present.
+   Desktop layout is untouched because .sim-touch is only set when the device
+   itself exposes touch input. */
+html.sim-touch .container aside {
+  display: block !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: scroll !important;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch;
+}
+html.sim-touch .container aside > .panelCard:last-child {
+  display: block !important;
+  min-height: max-content;
+}
+html.sim-touch .container .editorDrop {
+  flex: none !important;
+  min-height: 0;
+}
+html.sim-touch .container .shapeMask {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  aspect-ratio: 1;
 }

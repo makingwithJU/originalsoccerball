@@ -75,14 +75,13 @@
   }
   // サイズ制御用パラメータ（画面依存）
   var INIT_VIEW_FRAC = 0.24;   // 初期直径=ビューポート高さの24%
-  var FULL_VIEW_FRAC = 0.95;   // 画面いっぱい（以前の閾値）で即退場
   function initialRadiusAt(z){ return 0.5 * viewportWorldHeightAtZ(z) * INIT_VIEW_FRAC; }
-  function currentViewRadiusFrac(z, radius){ var vh = viewportWorldHeightAtZ(z); return (radius*2) / Math.max(1e-6, vh); }
   function computeYStart(){
     try{
       var vhWorld = viewportWorldHeightAtZ(0);
-      // Preserve the original video-relative starting position and trajectory.
-      yStart = -1.2 * Math.tan(Math.PI/8) * vhWorld;
+      // Keep the ball center at a fixed video-relative height on every viewport.
+      // Screen-space Y = 0.990 => world Y = -(0.990 - 0.5) * viewport height.
+      yStart = -0.49 * vhWorld;
     }catch(_){ yStart = -0.8; }
     // suppress debug trace
   }
@@ -174,16 +173,20 @@
               }catch(_){ }
             }
           });
-          // 原点正規化
+          // Center the visual mesh without changing the public site's apparent size.
+          // The old normalize scale was immediately overwritten by model.scale.set(r0),
+          // so the child stays at scale 1 and only the animation pivot is scaled.
           try {
-            var box = new THREE.Box3().setFromObject(model);
+            var contentModel = model;
+            var box = new THREE.Box3().setFromObject(contentModel);
             var sphere = box.getBoundingSphere(new THREE.Sphere());
             var c = sphere.center.clone();
-            model.position.sub(c);
-            var normalize = (sphere.radius > 0.0001) ? (1 / sphere.radius) : 1;
-            model.scale.multiplyScalar(normalize);
-            dbg('[face3d] norm r='+sphere.radius.toFixed(3)+' center=('+c.x.toFixed(2)+','+c.y.toFixed(2)+','+c.z.toFixed(2)+')');
-          } catch(e){ dbg('[face3d] normalize failed '+e); }
+            contentModel.position.sub(c);
+            var pivot = new THREE.Group();
+            pivot.add(contentModel);
+            model = pivot;
+            dbg('[face3d] center r='+sphere.radius.toFixed(3)+' center=('+c.x.toFixed(2)+','+c.y.toFixed(2)+','+c.z.toFixed(2)+')');
+          } catch(e){ dbg('[face3d] center failed '+e); }
           scene.add(model);
           if (model.updateMatrixWorld) model.updateMatrixWorld(true);
           // 初期姿勢（タイトル2行分下・小さく開始）
@@ -383,22 +386,19 @@
     var radiusNow = r0 * sPow * boost;
     model.scale.set(radiusNow, radiusNow, radiusNow);
 
-    // 画面いっぱいに達した瞬間だけ消す。進捗を戻せば再表示できる。
-    var frac = currentViewRadiusFrac(zz, radiusNow);
+    // Hide exactly when the centered mesh reaches the video center.
+    // Reverse scrolling retraces the same position and reveals it again.
+    var centerReached = yy >= 0;
     // Show the prepared initial pose with the first film frame in the preview.
     // The original impact cue still controls the subsequent ascent/growth.
     var showInitial = !!window.JUScenes && document.documentElement.classList.contains('hero-media-ready');
     var showBall = targetP > 0 || showInitial;
     layer.style.visibility = showBall ? 'visible' : 'hidden';
-    layer.style.opacity = frac >= FULL_VIEW_FRAC ? '0' : '';
+    layer.style.opacity = centerReached ? '0' : '';
 
-    // p終端でのフェード退場は使わない（満画面判定のみ）
-
-    // Keep scroll state reversible without drawing an invisible full-size layer.
-    if (showBall && frac < FULL_VIEW_FRAC) renderer.render(scene, camera);
+    if (showBall && !centerReached) renderer.render(scene, camera);
     // Natural rotation uses elapsed time; position/scale use scroll directly.
-    // Never keep a hidden ball rendering throughout the rest of the page.
-    if (window.JUScenes && (!showBall || frac >= FULL_VIEW_FRAC || !computeHeroInView())) stopLoop();
+    if (window.JUScenes && (!showBall || centerReached || !computeHeroInView())) stopLoop();
   }
 
   init();

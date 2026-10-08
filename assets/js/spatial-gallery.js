@@ -333,7 +333,9 @@
       if (sources.some(image => !image.complete)) return false;
 
       try {
-        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+        const isCoarse = matchMedia('(hover: none) and (pointer: coarse)').matches;
+        const useAntialias = !isCoarse && (devicePixelRatio <= 1.5);
+        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: useAntialias, powerPreference: 'low-power' });
       } catch {
         failed = true;
         return false;
@@ -401,7 +403,8 @@
         const available = image.naturalWidth > 0 && image.naturalHeight > 0;
         const aspect = squareCrop || !available ? 1 : image.naturalWidth / image.naturalHeight;
         entry.aspect = aspect;
-        const maxSide = 768;
+        const isSmallScreen = Math.min(innerWidth, innerHeight) < 600;
+        const maxSide = isSmallScreen ? 384 : 768;
         let width = maxSide;
         let height = maxSide;
         if (aspect >= 1) height = Math.max(1, Math.round(maxSide / aspect));
@@ -844,6 +847,10 @@
         entry.mesh.material.dispose();
         entry.canvas.width = entry.canvas.height = 1;
         entry.connector.remove();
+      }
+      if (renderer.domElement) {
+        renderer.domElement.width = 1;
+        renderer.domElement.height = 1;
       }
       renderer.dispose();
       renderer.forceContextLoss();

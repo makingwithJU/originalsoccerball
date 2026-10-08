@@ -314,11 +314,17 @@
     function syncFromScroll() {
       scrollRaf = 0;
       const progress = window.JUScenes ? window.JUScenes.progress('hero') : clamp((scrollY - zoneTop()) / scrollDistance());
-      if (heroIsNear()) presentRequested(progress);
-      else {
+      if (heroIsNear()) {
+        if (canvas.width <= 1 || canvas.height <= 1) resizeCanvas();
+        presentRequested(progress);
+      } else {
         waiting(false);
         for (const request of pending.values()) request.cancel();
         decoded.clear();
+        if (canvas && (canvas.width > 1 || canvas.height > 1)) {
+          canvas.width = 1;
+          canvas.height = 1;
+        }
         render(progress);
       }
       window.JUHeroDebug = {

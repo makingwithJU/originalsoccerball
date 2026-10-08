@@ -29,7 +29,8 @@
   function init() {
     if (renderer || unavailable) return !!renderer;
     try {
-      renderer = new THREE.WebGLRenderer({alpha:true, antialias:true, preserveDrawingBuffer:true});
+      const isCoarse = matchMedia('(hover: none) and (pointer: coarse)').matches;
+      renderer = new THREE.WebGLRenderer({alpha:true, antialias:!isCoarse, preserveDrawingBuffer:true});
       renderer.setClearColor(0, 0);
       scene = new THREE.Scene();
       camera = new THREE.OrthographicCamera(-.5,.5,.5,-.5,.01,10);
@@ -80,7 +81,11 @@
   }
   function restore(item) {
     item.img.classList.remove('unroll-source');
-    if (item.canvas) item.canvas.hidden = true;
+    if (item.canvas) {
+      item.canvas.hidden = true;
+      item.canvas.width = 1;
+      item.canvas.height = 1;
+    }
   }
   function prepare(item, rect) {
     if (!item.canvas) {

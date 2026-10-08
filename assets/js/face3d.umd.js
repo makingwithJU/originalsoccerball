@@ -104,7 +104,10 @@
     camera.position.set(0, 0, 6);
     camera.lookAt(0, 0, 0);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    var coarse = false;
+    try { coarse = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches; } catch(_){}
+    var useAntialias = !coarse || (window.devicePixelRatio || 1) <= 1.5;
+    renderer = new THREE.WebGLRenderer({ antialias: useAntialias, alpha: true, powerPreference: 'high-performance' });
     // Cap DPR to reduce long frames (rAF handler warnings) on high-DPI devices.
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4000000 / Math.max(1, width * height))));
     renderer.setSize(width, height);

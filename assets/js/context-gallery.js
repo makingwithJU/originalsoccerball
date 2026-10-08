@@ -46,7 +46,7 @@
     count = completeImageCount(count, images.length);
     const cells = Array.from({ length: count }, (_, i) => images[i % images.length]);
     const sumAspect = cells.reduce((sum, image) => sum + image.naturalWidth / image.naturalHeight, 0);
-    const limit = Math.min(renderer.capabilities.maxTextureSize, 8192);
+    const limit = Math.min(renderer.capabilities.maxTextureSize, coarsePointer.matches ? 4096 : 8192);
     const height = Math.min(coarsePointer.matches ? 256 : 512, Math.floor((limit - count) / sumAspect));
     const widths = cells.map(image => Math.max(1, Math.round(height * image.naturalWidth / image.naturalHeight)));
     const canvas = document.createElement('canvas');
@@ -259,9 +259,18 @@
       cancelAnimationFrame(raf);
       resizeObserver.disconnect();
       cylinder.geometry.dispose();
+      if (material.map?.image) {
+        material.map.image.width = 1;
+        material.map.image.height = 1;
+      }
       material.map?.dispose();
       material.dispose();
+      if (renderer.domElement) {
+        renderer.domElement.width = 1;
+        renderer.domElement.height = 1;
+      }
       renderer.dispose();
+      renderer.forceContextLoss?.();
       renderer.domElement.remove();
       heading.style.removeProperty('opacity');
       heading.style.removeProperty('top');

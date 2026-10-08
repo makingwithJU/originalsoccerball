@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const frames = [...document.querySelectorAll('iframe[data-src*="youtube.com"]')];
+  const frames = [...document.querySelectorAll('iframe.ju-yt, iframe[data-src*="youtube"]')];
   const visible = new Set(), players = new Map(), pending = new Set();
   const playback = new WeakMap(), statuses = new Map();
   let requested = false;

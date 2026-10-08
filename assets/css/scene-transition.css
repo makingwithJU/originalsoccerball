@@ -191,15 +191,16 @@ html.spiral-scenes.footer-visible #hero-2 .hero-title {
 .spiral-scenes #modeling .ju-media iframe,
 iframe.ju-yt { pointer-events: none !important; }
 
-/* Front-layer touch guard to ensure swipes never trigger YouTube links */
-#hero-2::before,
-#modeling .ju-media::before {
+/* Front-layer touch and click blocker: strictly prevents any tap or swipe
+   from reaching YouTube iframe elements so iOS Universal Links never trigger. */
+#hero-2::after,
+#modeling .ju-media::after {
   content: '' !important;
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  z-index: 2 !important;
+  z-index: 100 !important;
   background: transparent !important;
   pointer-events: auto !important;
   touch-action: pan-y pinch-zoom !important;

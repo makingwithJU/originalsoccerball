@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,19 +10,77 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MBHLS3QD');</script>
     <!-- End Google Tag Manager -->
-    <title>404</title>
+    <title>404 Not Found ｜ JUGEND</title>
     <meta name="robots" content="noindex,follow" />
-    <link rel="canonical" href="https://originalsoccerball.com/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <meta http-equiv="refresh" content="0; url=/" />
-    <script>
-      location.replace("/");
-    </script>
     <style>
-      body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif; background: #0b0b0b; color: #f3f3f3; }
-      a { color: inherit; }
-      .wrap { min-height: 100svh; display: grid; place-items: center; padding: 24px; }
-      .card { border: 1px solid rgba(255,255,255,.12); padding: 16px; background: rgba(255,255,255,.06); }
+      :root {
+        --bg: #0b0b0b;
+        --text: #f3f3f3;
+        --muted: #888888;
+        --border: rgba(255, 255, 255, 0.12);
+        --accent: #ffffff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100svh;
+        padding: 24px;
+        -webkit-font-smoothing: antialiased;
+      }
+      .error-card {
+        max-width: 440px;
+        width: 100%;
+        text-align: center;
+        padding: 40px 28px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(8px);
+        border-radius: 4px;
+      }
+      .error-code {
+        font-size: clamp(3rem, 12vw, 4.5rem);
+        font-weight: 300;
+        letter-spacing: 0.15em;
+        line-height: 1;
+        margin: 0 0 16px 0;
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .error-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        margin: 0 0 12px 0;
+      }
+      .error-desc {
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 0 0 28px 0;
+      }
+      .home-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 28px;
+        font-size: 0.8125rem;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        color: #0b0b0b;
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 2px;
+        transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+      }
+      .home-btn:hover {
+        opacity: 0.88;
+      }
     </style>
   </head>
   <body>
@@ -30,11 +88,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBHLS3QD"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <div class="wrap">
-      <div class="card">
-        <p style="margin:0 0 8px 0;">移動しています…</p>
-        <a href="/">トップへ</a>
-      </div>
-    </div>
+    <main class="error-card">
+      <div class="error-code">404</div>
+      <h1 class="error-title">ページが見つかりません</h1>
+      <p class="error-desc">お探しのページは、移動または削除されたか、URLが正しくない可能性があります。</p>
+      <a href="/" class="home-btn">トップページへ戻る</a>
+    </main>
   </body>
 </html>

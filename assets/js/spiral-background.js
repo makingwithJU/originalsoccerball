@@ -66,13 +66,15 @@
             // Preserve the opening orientation, halve angular travel only.
             float angle=PI+PI*(nsin(t*.05)-.5);
             vec3 hex=coordToHex(p,20.0*zoom,angle);
-            vec3 rgb;
-            rgb.r=pow(calc(hex,t,len),3.0);
-            rgb.g=pow(calc(hex,t+.03,len),3.0);
-            rgb.b=pow(calc(hex,t+.06,len),3.0);
+            float w1=pow(calc(hex,t,len),3.0);
+            float w2=pow(calc(hex,t+.03,len),3.0);
+            float w3=pow(calc(hex,t+.06,len),3.0);
+            vec3 cPink=vec3(1.0,0.22,0.68);
+            vec3 cPurple=vec3(0.58,0.12,0.92);
+            vec3 cCyan=vec3(0.0,0.88,0.96);
+            vec3 rgb=w1*cPink+w2*cPurple+w3*cCyan;
             rgb*=.2+.8*sin(PI*len*.5);
-            // Preserve the original blue pedestal, with a brighter RGB grade.
-            vec3 color=rgb+vec3(0.0,0.0,.2);
+            vec3 color=rgb+vec3(0.05,0.0,0.12);
             float luma=dot(color,vec3(.2126,.7152,.0722));
             color=clamp(mix(vec3(luma),color,saturation)*brightness,0.0,1.0);
             // The opening shares the rainbow's coordinates. It reveals the

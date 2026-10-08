@@ -21,6 +21,7 @@
   let frame = 0, resizeFrame = 0, unit = 0, lastWidth = innerWidth;
   let suppressObserverUntil = 0;
   let lastScene = null, lastLocal = 0;
+  let orientationAnchor = null, isRotating = false;
   let footerLatched = false;
   let renderedY = 0;
 
@@ -146,8 +147,10 @@
       blend.outgoingOpacity = 1 - ease(s.transition);
       blend.incomingOpacity = ease(s.transition);
     }
-    lastScene = current;
-    lastLocal = clamp((y - current.start) / (current.end - current.start));
+    if (!isRotating || y > 100) {
+      lastScene = current;
+      lastLocal = clamp((y - current.start) / (current.end - current.start));
+    }
     for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
       const initial = entryLead[scene.section.id] || 0;
@@ -218,7 +221,14 @@
       return;
     }
     root.classList.add('spiral-scenes');
-    const anchor = preserve && lastScene ? { scene: lastScene, local: lastLocal, offset: Math.max(0, scrollY - lastScene.start) } : null;
+    let anchor = null;
+    if (orientationAnchor && byId.has(orientationAnchor.id)) {
+      const s = byId.get(orientationAnchor.id);
+      anchor = { scene: s, local: orientationAnchor.local, fromRotation: true };
+      orientationAnchor = null;
+    } else if (preserve && lastScene) {
+      anchor = { scene: lastScene, local: lastLocal, offset: Math.max(0, scrollY - lastScene.start) };
+    }
     // Stable CSS viewport height: mobile toolbar collapse cannot alter the track.
     if (!unit || preserve === true) unit = probe.offsetHeight;
     updateViewport();
@@ -239,8 +249,9 @@
       scene.animation = (sceneUnits * pace.animation * unit) * pcFactor;
       const bottom = footerLatched ? parseFloat(getComputedStyle(root).getPropertyValue('--footer-height')) || 0 : 0;
       scene.overflow = fixedScenes.has(scene.section.id) ? 0 : Math.max(0, scene.section.scrollHeight - innerHeight + bottom);
-      // On PC, readPace is 1.1 for responsive 1:1 scroll feel; mobile/tablet retains 1.8
-      scene.readPace = isPC ? 1.1 : 1.8;
+      const isAccordionScene = scene.section.id === 'policy' || scene.section.id === 'originalballmaking-accordion' || scene.section.id === 'faq-slide';
+      // On PC, readPace is 1.1; on mobile/tablet, accordion scenes use 1.1 for instant responsive scrolling, others retain 1.8
+      scene.readPace = isPC ? 1.1 : (isAccordionScene ? 1.1 : 1.8);
       scene.readSpan = scene.overflow * scene.readPace;
       scene.hold = (pace.hold * unit) * pcFactor;
       scene.transition = (i === scenes.length - 1 ? 0 : pace.transition * unit) * pcFactor;
@@ -254,11 +265,14 @@
     }
     measureDevices();
     if (anchor) {
-      const y = preserve === 'offset'
-        ? anchor.scene.start + Math.min(anchor.offset, anchor.scene.end - anchor.scene.start)
-        : anchor.scene.start + anchor.local * (anchor.scene.end - anchor.scene.start);
+      const y = anchor.fromRotation
+        ? anchor.scene.start + anchor.local * (anchor.scene.end - anchor.scene.start)
+        : preserve === 'offset'
+          ? anchor.scene.start + Math.min(anchor.offset, anchor.scene.end - anchor.scene.start)
+          : anchor.scene.start + anchor.local * (anchor.scene.end - anchor.scene.start);
       if (Math.abs(y - scrollY) > 1) scrollTo(0, y);
     }
+    isRotating = false;
     draw();
   }
 
@@ -302,12 +316,23 @@
   // A fixed-height chapter does not resize when a details panel expands.
   document.addEventListener('toggle', event => {
     if (!event.target.matches('details') || !event.target.closest('.chapter')) return;
+    const details = event.target;
+    const chapter = details.closest('.chapter');
+    const scene = byId.get(chapter?.id);
+
     cancelAnimationFrame(resizeFrame);
     suppressObserverUntil = performance.now() + 300;
     measure('offset');
-    setTimeout(() => {
-      measure('offset');
-    }, 260);
+
+    if (details.open && scene) {
+      const readingStart = scene.start + scene.animation;
+      // When opening an accordion, immediately jump past the entry deadzone using instant behavior: 'auto'
+      // so the user's very next swipe/scroll immediately moves the text without delay or gesture conflict.
+      if (scrollY < readingStart) {
+        window.scrollTo({ top: readingStart, behavior: 'auto' });
+        draw();
+      }
+    }
   }, true);
   // Cancel only an outward gesture at the document boundary. Internal scroll
   // areas (including the simulator) keep their own input and momentum.
@@ -336,10 +361,27 @@
   }, { passive: true });
   addEventListener('scroll', schedule, { passive: true });
   let settleTimer = 0;
+  function handleOrientationChange() {
+    if (!isRotating && lastScene && lastScene.section.id !== 'hero') {
+      orientationAnchor = { id: lastScene.section.id, local: lastLocal };
+      isRotating = true;
+    }
+    suppressObserverUntil = performance.now() + 600;
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => measure(true));
+    }, 250);
+  }
+  addEventListener('orientationchange', handleOrientationChange, { passive: true });
   addEventListener('resize', () => {
     updateViewport();
     suppressObserverUntil = performance.now() + 500;
     if (innerWidth === lastWidth) { schedule(); return; }
+    if (!isRotating && lastScene && lastScene.section.id !== 'hero') {
+      orientationAnchor = { id: lastScene.section.id, local: lastLocal };
+      isRotating = true;
+    }
     lastWidth = innerWidth;
     clearTimeout(settleTimer);
     settleTimer = setTimeout(() => {

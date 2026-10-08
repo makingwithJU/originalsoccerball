@@ -178,18 +178,19 @@ html.spiral-scenes.footer-visible #hero-2 .hero-title {
 .spiral-scenes #hero-2 .hero-video,
 .spiral-scenes #modeling .ju-media { pointer-events: auto; }
 .spiral-scenes #hero-2 .hero-video::after,
-.spiral-scenes #modeling .ju-media::after {
+.spiral-scenes #modeling .ju-media::after,
+.yt-touch-blocker {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: 99;
-  pointer-events: auto;
-  touch-action: pan-y pinch-zoom;
-  background: transparent;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  pointer-events: auto !important;
+  touch-action: pan-y pinch-zoom !important;
+  background: rgba(0, 0, 0, 0.001) !important;
+  cursor: default;
 }
-.spiral-scenes #hero-2 .hero-video iframe,
-.spiral-scenes #modeling .ju-media iframe,
-iframe.ju-yt { pointer-events: none !important; }
 
 /* Front-layer touch and click blocker: strictly prevents any tap or swipe
    from reaching YouTube iframe elements so iOS Universal Links never trigger. */
@@ -201,13 +202,16 @@ iframe.ju-yt { pointer-events: none !important; }
   width: 100% !important;
   height: 100% !important;
   z-index: 100 !important;
-  background: transparent !important;
+  background: rgba(0, 0, 0, 0.001) !important;
   pointer-events: auto !important;
   touch-action: pan-y pinch-zoom !important;
+  cursor: default !important;
 }
+
 #hero-2 iframe,
 #modeling iframe,
-iframe.ju-yt {
+iframe.ju-yt,
+iframe[data-src*="youtube"] {
   pointer-events: none !important;
 }
 

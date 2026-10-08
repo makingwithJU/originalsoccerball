@@ -257,7 +257,7 @@
       const y = preserve === 'offset'
         ? anchor.scene.start + Math.min(anchor.offset, anchor.scene.end - anchor.scene.start)
         : anchor.scene.start + anchor.local * (anchor.scene.end - anchor.scene.start);
-      scrollTo(0, y);
+      if (Math.abs(y - scrollY) > 1) scrollTo(0, y);
     }
     draw();
   }
@@ -302,37 +302,12 @@
   // A fixed-height chapter does not resize when a details panel expands.
   document.addEventListener('toggle', event => {
     if (!event.target.matches('details') || !event.target.closest('.chapter')) return;
-    const details = event.target;
-    const chapter = details.closest('.chapter');
-    const scene = byId.get(chapter?.id);
-
     cancelAnimationFrame(resizeFrame);
-    suppressObserverUntil = performance.now() + 350;
+    suppressObserverUntil = performance.now() + 300;
     measure('offset');
-
-    if (details.open && scene) {
-      const readingStart = scene.start + scene.animation;
-      // If user opened an accordion while in animation/entry phase, smoothly glide to reading start so scrolling is immediate
-      if (scrollY < readingStart) {
-        window.scrollTo({ top: readingStart, behavior: 'smooth' });
-      } else {
-        // If already in reading phase, gently align newly opened details into viewport if overflowing bottom
-        requestAnimationFrame(() => {
-          const rect = details.getBoundingClientRect();
-          const viewH = window.innerHeight;
-          if (rect.bottom > viewH - 40 && rect.top > 80) {
-            const shift = Math.min(rect.bottom - (viewH - 40), rect.top - 90);
-            if (shift > 0) {
-              const maxScroll = scene.start + scene.animation + scene.readSpan;
-              const targetY = Math.min(maxScroll, scrollY + shift * (scene.readPace || 1));
-              if (targetY > scrollY) {
-                window.scrollTo({ top: targetY, behavior: 'smooth' });
-              }
-            }
-          }
-        });
-      }
-    }
+    setTimeout(() => {
+      measure('offset');
+    }, 260);
   }, true);
   // Cancel only an outward gesture at the document boundary. Internal scroll
   // areas (including the simulator) keep their own input and momentum.

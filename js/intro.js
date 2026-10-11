@@ -1,31 +1,31 @@
-'use strict';
+"use strict";
 (() => {
   function init() {
     const root = document.documentElement;
-    const hero = document.querySelector('#hero');
-    const zone = document.querySelector('#hero-scroll-zone');
-    const video = document.querySelector('#hero-video');
-    const media = hero?.querySelector('.hero-video');
+    const hero = document.querySelector("#hero");
+    const zone = document.querySelector("#hero-scroll-zone");
+    const video = document.querySelector("#hero-video");
+    const media = hero?.querySelector(".hero-video");
     if (!root || !hero || !zone || !video || !media) return;
 
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-    const coarsePointer = matchMedia('(pointer: coarse)');
-    const clamp = n => Math.max(0, Math.min(1, n));
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointer = matchMedia("(pointer: coarse)");
+    const clamp = (n) => Math.max(0, Math.min(1, n));
 
     // IMPORTANT: these timing relationships are the approved pre-V19 HERO
     // timeline. Do not change them when changing the media transport.
-    const HERO_TRANSITION_START = .60;
-    const HERO_SITE_START = .94;
-    const FACE_START = .15;
-    const FACE_SPAN = .45;
-    const FILM_SCROLL_END = .60;
+    const HERO_TRANSITION_START = 0.6;
+    const HERO_SITE_START = 0.94;
+    const FACE_START = 0.15;
+    const FACE_SPAN = 0.45;
+    const FILM_SCROLL_END = 0.6;
     const FRAME_COUNT = 140; // newhero.mp4: 5.833333 s @ 24 fps
 
     function deviceTier() {
       const minSide = Math.min(innerWidth, innerHeight);
-      if (coarsePointer.matches && minSide < 600) return 'phone';
-      if (coarsePointer.matches || innerWidth < 1000) return 'tablet';
-      return 'desktop';
+      if (coarsePointer.matches && minSide < 600) return "phone";
+      if (coarsePointer.matches || innerWidth < 1000) return "tablet";
+      return "desktop";
     }
 
     let tier = deviceTier();
@@ -42,15 +42,17 @@
     const failedFrames = new Set();
     const retries = new Map();
     const retryTimers = new Map();
-    const retryButton = document.createElement('button');
-    retryButton.type = 'button';
-    retryButton.className = 'hero-media-retry';
-    retryButton.textContent = '映像を再読み込み';
+    const retryButton = document.createElement("button");
+    retryButton.type = "button";
+    retryButton.className = "hero-media-retry";
+    retryButton.textContent = "映像を再読み込み";
     retryButton.hidden = true;
     hero.append(retryButton);
-    retryButton.addEventListener('click', () => {
+    retryButton.addEventListener("click", () => {
       for (const timer of retryTimers.values()) clearTimeout(timer);
-      retryTimers.clear(); retries.clear(); failedFrames.clear();
+      retryTimers.clear();
+      retries.clear();
+      failedFrames.clear();
       retryButton.hidden = true;
       scheduleSync();
     });
@@ -60,61 +62,81 @@
       retries.set(index, attempt);
       if (attempt > 3) return;
       const expectedTier = tier;
-      retryTimers.set(index, setTimeout(() => {
-        retryTimers.delete(index);
-        if (expectedTier !== tier) return;
-        failedFrames.delete(index);
-        if (heroIsNear()) scheduleSync();
-      }, 750 * 2 ** (attempt - 1)));
+      retryTimers.set(
+        index,
+        setTimeout(
+          () => {
+            retryTimers.delete(index);
+            if (expectedTier !== tier) return;
+            failedFrames.delete(index);
+            if (heroIsNear()) scheduleSync();
+          },
+          750 * 2 ** (attempt - 1),
+        ),
+      );
     }
     // Bound decoded RGBA residency, not just compressed transfer size.
-    const maxDecoded = () => (tier === 'desktop' ? 48 : 18);
-    const maxPending = () => (tier === 'desktop' ? 10 : 6);
-    const heroIsNear = () => !window.JUScenes || window.JUScenes.visible('hero') || window.JUScenes.near('hero');
-    const loadingStatus = document.createElement('p');
-    loadingStatus.className = 'hero-loading-status';
-    loadingStatus.setAttribute('role', 'status');
-    loadingStatus.setAttribute('aria-label', '映像を読み込んでいます');
+    const maxDecoded = () => (tier === "desktop" ? 48 : 18);
+    const maxPending = () => (tier === "desktop" ? 10 : 6);
+    const heroIsNear = () =>
+      !window.JUScenes ||
+      window.JUScenes.visible("hero") ||
+      window.JUScenes.near("hero");
+    const loadingStatus = document.createElement("p");
+    loadingStatus.className = "hero-loading-status";
+    loadingStatus.setAttribute("role", "status");
+    loadingStatus.setAttribute("aria-label", "映像を読み込んでいます");
     loadingStatus.hidden = true;
     hero.append(loadingStatus);
     function waiting(active) {
       if (!active) {
-        clearTimeout(waitingTimer); waitingTimer = 0;
+        clearTimeout(waitingTimer);
+        waitingTimer = 0;
         loadingStatus.hidden = true;
-        hero.setAttribute('aria-busy', 'false');
+        hero.setAttribute("aria-busy", "false");
       } else if (!waitingTimer && loadingStatus.hidden) {
         waitingTimer = setTimeout(() => {
           waitingTimer = 0;
           loadingStatus.hidden = false;
-          hero.setAttribute('aria-busy', 'true');
+          hero.setAttribute("aria-busy", "true");
         }, 500);
       }
     }
 
-    if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (location.hash)
+      history.replaceState(
+        history.state,
+        "",
+        location.pathname + location.search,
+      );
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
     if (video) {
-      video.style.display = 'none';
-      video.setAttribute('aria-hidden', 'true');
+      video.style.display = "none";
+      video.setAttribute("aria-hidden", "true");
     }
 
-    const canvas = document.createElement('canvas');
-    canvas.id = 'hero-sequence-canvas-v23';
-    canvas.setAttribute('aria-hidden', 'true');
+    const canvas = document.createElement("canvas");
+    canvas.id = "hero-sequence-canvas-v23";
+    canvas.setAttribute("aria-hidden", "true");
     Object.assign(canvas.style, {
-      position: 'absolute', inset: '0', width: '100%', height: '100%',
-      display: 'block', pointerEvents: 'none', opacity: '1',
+      position: "absolute",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      display: "block",
+      pointerEvents: "none",
+      opacity: "1",
     });
     media.append(canvas);
-    const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+    const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
 
     function frameUrl(index) {
-      return `./assets/media/hero-frames-v24/${tier}/frame_${String(index + 1).padStart(3, '0')}.webp`;
+      return `./assets/media/hero-frames-v24/${tier}/frame_${String(index + 1).padStart(3, "0")}.webp`;
     }
 
     function revealFilm() {
-      root.classList.add('hero-media-ready');
+      root.classList.add("hero-media-ready");
     }
 
     // This is intentionally the original approved timing map. Media transport
@@ -122,24 +144,36 @@
     function render(value) {
       currentProgress = value;
       const p = reduced.matches ? 1 : clamp(value);
-      const state = p >= HERO_SITE_START ? 'site' : p >= HERO_TRANSITION_START ? 'transition' : 'hero';
-      if (state !== 'hero') revealFilm();
+      const state =
+        p >= HERO_SITE_START
+          ? "site"
+          : p >= HERO_TRANSITION_START
+            ? "transition"
+            : "hero";
+      if (state !== "hero") revealFilm();
       root.dataset.heroState = state;
-      root.style.setProperty('--hero-progress', p);
-      canvas.style.opacity = String(p > .5 ? clamp((.6 - p) / .1) : 1);
+      root.style.setProperty("--hero-progress", p);
+      canvas.style.opacity = String(p > 0.5 ? clamp((0.6 - p) / 0.1) : 1);
       window.JUHeroProgress = clamp((p - FACE_START) / FACE_SPAN);
-      window.dispatchEvent(new CustomEvent('ju:hero-progress', { detail: { progress: window.JUHeroProgress, state } }));
+      window.dispatchEvent(
+        new CustomEvent("ju:hero-progress", {
+          detail: { progress: window.JUHeroProgress, state },
+        }),
+      );
       window.updateGooeyScroll?.(p);
-      if (state === 'site' && !introReady) {
+      if (state === "site" && !introReady) {
         introReady = true;
-        root.classList.add('intro-complete');
-        window.dispatchEvent(new Event('jugend:intro-complete'));
+        root.classList.add("intro-complete");
+        window.dispatchEvent(new Event("jugend:intro-complete"));
       }
     }
 
     function resizeCanvas() {
       const rect = hero.getBoundingClientRect();
-      const dpr = Math.min(devicePixelRatio || 1, tier === 'desktop' ? 1.5 : 1.0);
+      const dpr = Math.min(
+        devicePixelRatio || 1,
+        tier === "desktop" ? 1.5 : 1.0,
+      );
       const width = Math.max(1, Math.round(rect.width * dpr));
       const height = Math.max(1, Math.round(rect.height * dpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -157,7 +191,10 @@
       const dw = image.naturalWidth * scale;
       const dh = image.naturalHeight * scale;
       ctx.globalAlpha = 1;
-      if (clear) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cw, ch); }
+      if (clear) {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, cw, ch);
+      }
       ctx.globalAlpha = opacity;
       ctx.drawImage(image, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
       ctx.globalAlpha = 1;
@@ -167,17 +204,20 @@
     function evictDecoded(target) {
       if (decoded.size <= maxDecoded()) return;
       const keep = new Set([displayedFrame, target]);
-      for (const key of [...decoded.keys()].sort((a,b)=>Math.abs(b-target)-Math.abs(a-target))) {
+      for (const key of [...decoded.keys()].sort(
+        (a, b) => Math.abs(b - target) - Math.abs(a - target),
+      )) {
         if (decoded.size <= maxDecoded()) break;
         if (!keep.has(key)) decoded.delete(key);
       }
     }
 
-    function loadFrame(index, priority = 'auto') {
+    function loadFrame(index, priority = "auto") {
       index = Math.max(0, Math.min(FRAME_COUNT - 1, index));
       if (decoded.has(index)) return Promise.resolve(decoded.get(index));
       if (pending.has(index)) return pending.get(index).promise;
-      if (failedFrames.has(index)) return Promise.reject(new Error('Unavailable HERO frame'));
+      if (failedFrames.has(index))
+        return Promise.reject(new Error("Unavailable HERO frame"));
       const expectedTier = tier;
       const request = { promise: null, cancel: null };
       const promise = new Promise((resolve, reject) => {
@@ -189,36 +229,50 @@
           image.onload = image.onerror = null;
           if (pending.get(index) === request) pending.delete(index);
         };
-        request.cancel = () => {
+        request.cancel = (immediate = false) => {
           if (!active) return;
           release();
-          image.removeAttribute('src');
-          reject(new DOMException('Obsolete HERO request', 'AbortError'));
+          if (immediate) image.removeAttribute("src");
+          reject(new DOMException("Obsolete HERO request", "AbortError"));
         };
         const timeout = setTimeout(() => {
           if (!active) return;
           release();
-          image.removeAttribute('src');
+          image.removeAttribute("src");
           markFailed(index);
-          reject(new Error('HERO frame request timed out'));
+          reject(new Error("HERO frame request timed out"));
           scheduleSync();
         }, 8000);
-        image.decoding = 'async';
-        try { image.fetchPriority = priority; } catch (_) {}
+        image.decoding = "async";
+        try {
+          image.fetchPriority = priority;
+        } catch (_) {}
         image.onload = async () => {
-          try { await image.decode?.(); } catch (_) {}
+          try {
+            await image.decode?.();
+          } catch (_) {}
           if (!active) return;
           release();
-          if (expectedTier !== tier) { reject(new Error('stale hero tier')); return; }
+          if (expectedTier !== tier) {
+            reject(new Error("stale hero tier"));
+            return;
+          }
           // A request can finish after the reader has left HERO. Do not keep
           // decoded film frames resident throughout the remaining 22 scenes.
-          if (!heroIsNear()) { resolve(image); return; }
+          if (!heroIsNear()) {
+            resolve(image);
+            return;
+          }
           decoded.set(index, image);
-          evictDecoded(Math.round(clamp(requestedProgress / FILM_SCROLL_END) * (FRAME_COUNT - 1)));
+          evictDecoded(
+            Math.round(
+              clamp(requestedProgress / FILM_SCROLL_END) * (FRAME_COUNT - 1),
+            ),
+          );
           resolve(image);
           scheduleSync();
         };
-        image.onerror = error => {
+        image.onerror = (error) => {
           if (!active) return;
           release();
           if (expectedTier === tier) {
@@ -248,14 +302,24 @@
     function prefetchAround(index) {
       if (!heroIsNear()) return;
       // Target + lookahead ahead + lookback behind fit inside the decoded budget.
-      const lookahead = tier === 'desktop' ? 24 : (tier === 'phone' || tier === 'tablet' ? 12 : 8);
-      const lookback = tier === 'desktop' ? 8 : 4;
+      const lookahead =
+        tier === "desktop"
+          ? 24
+          : tier === "phone" || tier === "tablet"
+            ? 12
+            : 8;
+      const lookback = tier === "desktop" ? 8 : 4;
       for (let d = 1; d <= lookahead; d++) {
         if (pending.size >= maxPending() - 2) break;
         const forward = index + d;
         const backward = index - d;
-        if (forward < FRAME_COUNT) loadFrame(forward, d <= (tier === 'desktop' ? 8 : 4) ? 'high' : 'low').catch(() => {});
-        if (backward >= 0 && d <= lookback && pending.size < maxPending() - 2) loadFrame(backward, 'low').catch(() => {});
+        if (forward < FRAME_COUNT)
+          loadFrame(
+            forward,
+            d <= (tier === "desktop" ? 8 : 4) ? "high" : "low",
+          ).catch(() => {});
+        if (backward >= 0 && d <= lookback && pending.size < maxPending() - 2)
+          loadFrame(backward, "low").catch(() => {});
       }
       evictDecoded(index);
     }
@@ -266,29 +330,41 @@
       // repaint this position, but never publish its older frame's progress.
       render(requestedProgress);
       const filmProgress = Math.min(requestedProgress, FILM_SCROLL_END);
-      const fractionalFrame = filmProgress / FILM_SCROLL_END * (FRAME_COUNT - 1);
+      const fractionalFrame =
+        (filmProgress / FILM_SCROLL_END) * (FRAME_COUNT - 1);
       const target = Math.floor(fractionalFrame);
       const following = Math.min(FRAME_COUNT - 1, target + 1);
-      // A fast swipe/reversal must not queue behind downloads for an old pose.
-      // Cancel obsolete work, and reserve the first two slots for this frame pair.
+      // Cancel only genuinely obsolete distant work, reserving slots for target frames.
       for (const [index, request] of pending) {
-        if (Math.abs(index - target) > 16) request.cancel();
+        if (Math.abs(index - target) > 36) request.cancel(false);
       }
-      const needed = [target, following].filter(index => !decoded.has(index) && !pending.has(index) && !failedFrames.has(index));
-      for (const [index, request] of [...pending].sort((a,b)=>Math.abs(b[0]-target)-Math.abs(a[0]-target))) {
+      const needed = [target, following].filter(
+        (index) =>
+          !decoded.has(index) &&
+          !pending.has(index) &&
+          !failedFrames.has(index),
+      );
+      for (const [index, request] of [...pending].sort(
+        (a, b) => Math.abs(b[0] - target) - Math.abs(a[0] - target),
+      )) {
         if (pending.size + needed.length <= maxPending()) break;
-        if (index !== target && index !== following) request.cancel();
+        if (index !== target && index !== following) request.cancel(false);
       }
       if (decoded.has(target)) {
         drawFrame(target);
-        if (following !== target && decoded.has(following)) drawCover(decoded.get(following), fractionalFrame - target, false);
+        if (following !== target && decoded.has(following))
+          drawCover(decoded.get(following), fractionalFrame - target, false);
       } else {
         // During fast swipes/reversals keep motion continuous with the closest
         // already-decoded neighbouring frame; never snap back to frame 0.
-        let nearest = -1, distance = Infinity;
+        let nearest = -1,
+          distance = Infinity;
         for (const index of decoded.keys()) {
           const d = Math.abs(index - target);
-          if (d <= 10 && d < distance) { nearest = index; distance = d; }
+          if (d <= 10 && d < distance) {
+            nearest = index;
+            distance = d;
+          }
         }
         if (nearest >= 0) drawFrame(nearest);
       }
@@ -297,20 +373,28 @@
       waiting(!decoded.has(target) && !unavailable && displayedFrame < 0);
       root.dataset.heroMediaFallback = String(unavailable);
       for (const index of [target, following]) {
-        if (pending.size < maxPending() && !pending.has(index) && !decoded.has(index) && !failedFrames.has(index)) {
-          loadFrame(index, 'high').catch(() => {});
+        if (
+          pending.size < maxPending() &&
+          !pending.has(index) &&
+          !decoded.has(index) &&
+          !failedFrames.has(index)
+        ) {
+          loadFrame(index, "high").catch(() => {});
         }
       }
       prefetchAround(target);
       if (unavailable) revealFilm();
     }
 
-    const scrollDistance = () => Math.max(1, zone.offsetHeight - hero.offsetHeight);
+    const scrollDistance = () =>
+      Math.max(1, zone.offsetHeight - hero.offsetHeight);
     const zoneTop = () => scrollY + zone.getBoundingClientRect().top;
 
     function syncFromScroll() {
       scrollRaf = 0;
-      const progress = window.JUScenes ? window.JUScenes.progress('hero') : clamp((scrollY - zoneTop()) / scrollDistance());
+      const progress = window.JUScenes
+        ? window.JUScenes.progress("hero")
+        : clamp((scrollY - zoneTop()) / scrollDistance());
       if (heroIsNear()) {
         if (canvas.width <= 1 || canvas.height <= 1) resizeCanvas();
         presentRequested(progress);
@@ -325,7 +409,7 @@
         render(progress);
       }
       window.JUHeroDebug = {
-        driver: 'frame-sequence-v24-original-timing',
+        driver: "frame-sequence-v24-original-timing",
         tier,
         requestedProgress: progress,
         presentedProgress: currentProgress,
@@ -333,7 +417,13 @@
         frameCount: FRAME_COUNT,
         decodedFrames: decoded.size,
         pendingFrames: pending.size,
-        timing: { transition: HERO_TRANSITION_START, site: HERO_SITE_START, faceStart: FACE_START, faceSpan: FACE_SPAN, filmEnd: FILM_SCROLL_END },
+        timing: {
+          transition: HERO_TRANSITION_START,
+          site: HERO_SITE_START,
+          faceStart: FACE_START,
+          faceSpan: FACE_SPAN,
+          filmEnd: FILM_SCROLL_END,
+        },
       };
     }
 
@@ -352,46 +442,71 @@
           for (const request of pending.values()) request.cancel();
           pending.clear();
           for (const timer of retryTimers.values()) clearTimeout(timer);
-          retryTimers.clear(); retries.clear(); failedFrames.clear();
+          retryTimers.clear();
+          retries.clear();
+          failedFrames.clear();
           displayedFrame = -1;
           firstFrameReady = false;
-          canvas.style.opacity = '1';
+          canvas.style.opacity = "1";
         }
-        resizeCanvas();
+        if (heroIsNear()) {
+          resizeCanvas();
+        }
         syncFromScroll();
       });
     }
 
-    addEventListener('scroll', () => { if (!window.JUScenes) scheduleSync(); }, { passive: true });
-    document.addEventListener('jugend:scroll-frame', () => {
+    addEventListener(
+      "scroll",
+      () => {
+        if (!window.JUScenes) scheduleSync();
+      },
+      { passive: true },
+    );
+    document.addEventListener("jugend:scroll-frame", () => {
       cancelAnimationFrame(scrollRaf);
       syncFromScroll();
     });
-    addEventListener('resize', handleResize, { passive: true });
-    window.visualViewport?.addEventListener('resize', handleResize, { passive: true });
+    addEventListener("resize", handleResize, { passive: true });
+    window.visualViewport?.addEventListener("resize", handleResize, {
+      passive: true,
+    });
     new ResizeObserver(handleResize).observe(hero);
 
-    const navigation = window.performance?.getEntriesByType?.('navigation')?.[0];
-    if (!navigation || navigation.type === 'navigate' || navigation.type === 'reload') scrollTo(0, 0);
+    const crashed = sessionStorage.getItem("jugend_crashed") === "1";
+    const navigation =
+      window.performance?.getEntriesByType?.("navigation")?.[0];
+    const isBackForward = navigation?.type === "back_forward";
+    const isReload = navigation?.type === "reload";
+    const savedY = parseFloat(sessionStorage.getItem("jugend_last_y")) || 0;
+    const shouldRestore = (crashed || isBackForward || isReload) && savedY > 0;
+    if (!shouldRestore)
+      scrollTo(0, 0);
 
     function warmHttpCache() {
       let nextIndex = 1;
       function fetchBatch(deadline) {
-        while (nextIndex < FRAME_COUNT && ((deadline && deadline.timeRemaining && deadline.timeRemaining() > 5) || !deadline)) {
+        while (
+          nextIndex < FRAME_COUNT &&
+          ((deadline &&
+            deadline.timeRemaining &&
+            deadline.timeRemaining() > 5) ||
+            !deadline)
+        ) {
           const url = frameUrl(nextIndex);
-          fetch(url, { priority: 'low', cache: 'force-cache' }).catch(() => {});
+          fetch(url, { priority: "low", cache: "force-cache" }).catch(() => {});
           nextIndex++;
           if (!deadline && nextIndex % 4 === 0) break;
         }
         if (nextIndex < FRAME_COUNT) {
-          if ('requestIdleCallback' in window) {
+          if ("requestIdleCallback" in window) {
             requestIdleCallback(fetchBatch, { timeout: 2000 });
           } else {
             setTimeout(fetchBatch, 100);
           }
         }
       }
-      if ('requestIdleCallback' in window) {
+      if ("requestIdleCallback" in window) {
         requestIdleCallback(fetchBatch, { timeout: 3000 });
       } else {
         setTimeout(fetchBatch, 1000);
@@ -400,15 +515,17 @@
 
     resizeCanvas();
     render(0);
-    loadFrame(0, 'high').then(() => {
-      syncFromScroll();
-      warmHttpCache();
-    }).catch(error => {
-      if (error?.name === 'AbortError') return;
-      revealFilm();
-    });
+    loadFrame(0, "high")
+      .then(() => {
+        syncFromScroll();
+        warmHttpCache();
+      })
+      .catch((error) => {
+        if (error?.name === "AbortError") return;
+        revealFilm();
+      });
   }
 
-  if (document.readyState === 'complete') init();
-  else document.addEventListener('DOMContentLoaded', init, { once: true });
+  if (document.readyState === "complete") init();
+  else document.addEventListener("DOMContentLoaded", init, { once: true });
 })();

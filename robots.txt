@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
+# Sitemaps and AI optimization
 Sitemap: https://originalsoccerball.com/sitemap.xml

@@ -1,0 +1,446 @@
+/**
+ * scene-transition.css - Experimental scene compositor & transitions
+ *
+ * Native document scroll is the only input.
+ * Boundary overlap replaces sticky/vertical-slide stack.
+ */
+
+html.spiral-scenes {
+  scroll-behavior: auto;
+  scroll-padding-top: 0;
+}
+
+/* One theme-aware backdrop fills viewport, independent of chapter height */
+html.spiral-scenes::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--background);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.spiral-scenes main {
+  isolation: auto;
+}
+
+.scene-slot {
+  position: relative;
+}
+
+.spiral-scenes .scene-slot {
+  pointer-events: none;
+}
+
+.spiral-scenes #hero-scroll-zone {
+  min-height: 0;
+}
+
+.spiral-scenes .scene-slot > .chapter,
+.spiral-scenes #hero-scroll-zone > #hero {
+  position: fixed;
+  inset: 0 0 auto;
+  margin: 0;
+  min-height: var(--scene-height);
+  height: auto;
+  width: 100%;
+  background: transparent;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  transform-origin: 50% calc(var(--scene-height) / 2);
+}
+
+.spiral-scenes #hero-scroll-zone > #hero {
+  height: var(--scene-height);
+}
+
+/* Override ID-specific legacy sticky gallery layout */
+html.spiral-scenes :is(#usage-title, #event-shop-title).cylinder-target {
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--scene-height);
+  min-height: var(--scene-height);
+  background: transparent;
+}
+
+.spiral-scenes .chapter[data-scene-visible="true"] {
+  visibility: visible;
+}
+
+.spiral-scenes #hero-scroll-zone > #hero[data-scene-visible="true"] {
+  visibility: visible;
+}
+
+.spiral-scenes .chapter[data-scene-interactive="true"] {
+  pointer-events: auto;
+}
+
+.spiral-scenes .chapter[data-scene-transitioning="true"] {
+  will-change: opacity;
+}
+
+.spiral-background {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.spiral-scenes
+  .scene-slot
+  > .chapter
+  > :is(.gs-container, .ju-container, .apology-grid),
+.spiral-scenes #faq-slide > #faq-accordion {
+  transform: none;
+}
+
+.spiral-scenes #works > .gs-container,
+.spiral-scenes #specs .gs-container {
+  max-height: none;
+  overflow: visible;
+}
+
+.spiral-scenes .visual .ov {
+  transform: none;
+  clip-path: none;
+}
+
+/* Explicit viewport width for morphing hero words */
+.spiral-scenes #hero .hero-title {
+  width: 100vw;
+}
+
+html.spiral-scenes:is([data-hero-state="transition"], [data-hero-state="site"])
+  #hero
+  .hero-title {
+  color: var(--foreground);
+  mix-blend-mode: normal;
+}
+
+.spiral-scenes .device-shell[data-rotation-complete="false"] iframe {
+  pointer-events: none;
+}
+
+/* Perspective isolation */
+.spiral-scenes #modeling .ju-persp,
+.spiral-scenes #simulator .simu-wrapper {
+  perspective: none;
+}
+
+.spiral-scenes #modeling > .gs-container,
+.spiral-scenes #simulator .simu-wrapper {
+  filter: opacity(1);
+}
+
+/* Fade copy independently */
+.spiral-scenes [data-scene-copy] {
+  filter: opacity(var(--scene-copy-opacity, 1));
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  html.spiral-scenes {
+    --section-space: 1.5rem;
+  }
+}
+
+.spiral-scenes #site-notice {
+  z-index: 901;
+}
+
+/* Specs layout specificity */
+.spiral-scenes #specs .gs-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.spiral-scenes #specs .gs-work-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px), (orientation: portrait) {
+  .spiral-scenes #specs .gs-grid-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .spiral-scenes #specs .gs-work-card {
+    max-width: 620px;
+    width: 100%;
+    margin-inline: auto;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .spiral-scenes #specs .gs-work-image-wrapper {
+    width: min(
+      100%,
+      max(
+        90px,
+        calc(
+          (
+              var(--scene-height) - var(--header-height) -
+                var(--persistent-bottom)
+            ) *
+            0.42
+        )
+      )
+    );
+    margin-inline: auto;
+  }
+}
+
+/* Long reading chapters */
+.spiral-scenes #specs .gs-container,
+.spiral-scenes #policy .ju-acc,
+.spiral-scenes #originalballmaking-accordion .ju-acc,
+.spiral-scenes #faq-accordion .ju-acc {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+/* HERO 2 composition */
+.spiral-scenes .scene-slot > #hero-2-slide {
+  height: var(--scene-height);
+  min-height: 0;
+  padding: 0;
+}
+
+.spiral-scenes #hero-2 {
+  position: absolute;
+  inset: 0;
+  height: var(--scene-height);
+  min-height: 0;
+}
+
+.spiral-scenes #hero-2 .hero-title {
+  padding-top: var(--header-height);
+  padding-bottom: var(--persistent-bottom);
+}
+
+html.spiral-scenes.footer-visible .scene-slot > #hero-2-slide.chapter {
+  padding-bottom: 0;
+}
+
+.hero-loading-status {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: calc(50% - 7px);
+  z-index: 10;
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #ffffff40;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: hero-loading-spin 1.2s linear infinite;
+}
+
+.hero-loading-status[hidden] {
+  display: none;
+}
+
+@keyframes hero-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-loading-status {
+    animation: none;
+  }
+}
+
+.device-media-status {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 0.5em 0.8em;
+  border: 0;
+  border-radius: 4px;
+  color: #ffffff;
+  background: #000000cc;
+  font: 12px/1.5 sans-serif;
+  white-space: nowrap;
+}
+
+.device-media-status:disabled {
+  pointer-events: none;
+}
+
+/* Modeling YouTube presentation-only */
+.spiral-scenes #modeling .device-shell iframe {
+  pointer-events: none;
+}
+
+/* Footer latch */
+html.spiral-scenes.footer-visible #hero-2 {
+  overflow: visible;
+}
+
+html.spiral-scenes.footer-visible #hero-2 .hero-media {
+  height: var(--scene-height);
+  bottom: auto;
+}
+
+/* YouTube presentation priming */
+.ju-yt {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ju-yt[data-primed="true"] {
+  opacity: 1;
+}
+
+/* Touch HERO stability */
+@media (any-pointer: coarse) {
+  html.spiral-scenes #hero-scroll-zone > #hero {
+    height: 100lvh;
+    min-height: 100lvh;
+    transform-origin: 50% 50lvh;
+  }
+}
+
+html.spiral-scenes,
+html.spiral-scenes body {
+  overscroll-behavior-y: none;
+}
+
+.hero-media-retry {
+  pointer-events: auto;
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+}
+
+.hero-media-retry[hidden] {
+  display: none;
+}
+
+/* Contact apology responsive */
+@media (max-width: 600px) and (orientation: portrait) {
+  html.spiral-scenes #contact-apology.chapter {
+    justify-content: center;
+    padding-top: calc(var(--header-height) + 8px);
+    padding-bottom: calc(var(--persistent-bottom) + 8px);
+  }
+
+  #contact-apology .apology-grid {
+    gap: 10px;
+  }
+
+  #contact-apology :is(h2, h3) {
+    font-size: 18px;
+    line-height: 1.25;
+    margin: 0 0 6px;
+  }
+
+  #contact-apology .gs-card-text {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  #contact-apology .dragArea {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  #contact-apology .form-group {
+    margin: 0;
+  }
+
+  #contact-apology .form-group:nth-child(n + 3),
+  #contact-apology button {
+    grid-column: 1 / -1;
+  }
+
+  #contact-apology input {
+    height: 40px;
+    min-height: 40px;
+    padding: 8px;
+    font-size: 16px;
+  }
+
+  #contact-apology textarea {
+    height: 64px;
+    min-height: 64px;
+    padding: 8px;
+    font-size: 16px;
+  }
+
+  #contact-apology button {
+    min-height: 40px;
+    padding: 6px 10px;
+  }
+}
+
+/* HERO 2 persistent sizing */
+html.spiral-scenes.footer-visible .scene-slot > #hero-2-slide.chapter {
+  min-height: var(--scene-height);
+  height: var(--scene-height);
+}
+
+.spiral-scenes #hero-2 .hero-title,
+html.spiral-scenes.footer-visible #hero-2 .hero-title {
+  padding-top: var(--header-height);
+  padding-bottom: 0;
+}
+
+/* Touch blocker surfaces */
+.spiral-scenes #hero-2 .hero-video,
+.spiral-scenes #modeling .ju-media {
+  pointer-events: auto;
+}
+
+.spiral-scenes #hero-2 .hero-video::after,
+.spiral-scenes #modeling .ju-media::after,
+#hero-2::after,
+.yt-touch-blocker {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  touch-action: pan-y pinch-zoom !important;
+  background: rgba(0, 0, 0, 0.001) !important;
+  cursor: default !important;
+}
+
+#hero-2 iframe,
+#modeling iframe,
+iframe.ju-yt,
+iframe[data-src*="youtube"] {
+  pointer-events: none !important;
+}
+
+/* True vertical centering for #design on mobile touch devices */
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) and (max-width: 820px) {
+  html.spiral-scenes #design.chapter {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    padding-top: calc(var(--header-height, 68px) + 8px) !important;
+    padding-bottom: max(var(--safe-bottom, 0px), 8px) !important;
+    padding-inline: var(--gutter) !important;
+  }
+
+  html.spiral-scenes.footer-visible #design.chapter {
+    padding-bottom: calc(var(--footer-height, 84px) + 8px) !important;
+  }
+}

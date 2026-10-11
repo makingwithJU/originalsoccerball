@@ -1,11 +1,16 @@
-/* Specs presentation.
-   Desktop and normal tablets keep the established four-card grid.
-   Constrained portrait/landscape views reuse the same four cards on one
-   continuous horizontal rail; document scroll remains the only playhead. */
+/**
+ * specs-slider.css - Specs presentation & slider styles
+ *
+ * Desktop and normal tablets keep the established four-card grid.
+ * Constrained portrait/landscape views reuse the same four cards on one
+ * continuous horizontal rail; document scroll remains the only playhead.
+ */
+
 html.spiral-scenes #specs.chapter {
   padding-inline: 0;
   overflow: hidden;
 }
+
 html.spiral-scenes #specs > .gs-container {
   width: 100%;
   max-width: none;
@@ -14,6 +19,7 @@ html.spiral-scenes #specs > .gs-container {
   overflow: visible;
   transform: none !important;
 }
+
 html.spiral-scenes #specs .specs-slider-track {
   display: flex;
   width: max-content;
@@ -24,6 +30,7 @@ html.spiral-scenes #specs .specs-slider-track {
   align-items: center;
   will-change: transform;
 }
+
 html.spiral-scenes #specs .specs-slider-track > .gs-work-card {
   display: grid;
   flex: none;
@@ -38,6 +45,7 @@ html.spiral-scenes #specs .specs-slider-track > .gs-work-card {
   gap: var(--spec-card-gap, 12px);
   align-content: start;
 }
+
 html.spiral-scenes #specs .gs-work-image-wrapper {
   position: relative;
   width: var(--spec-image);
@@ -53,6 +61,7 @@ html.spiral-scenes #specs .gs-work-image-wrapper {
   transition: none !important;
   animation: none !important;
 }
+
 html.spiral-scenes #specs .gs-work-image {
   position: absolute;
   inset: 0;
@@ -69,32 +78,63 @@ html.spiral-scenes #specs .gs-work-image {
   animation: none !important;
   visibility: visible !important;
 }
+
 html.spiral-scenes #specs .gs-work-content {
   min-width: 0;
   margin: 0;
   height: auto;
   overflow: visible;
 }
-html.spiral-scenes #specs [data-scene-copy] { filter: none !important; opacity: 1 !important; }
+
+html.spiral-scenes #specs [data-scene-copy] {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
 html.spiral-scenes #specs .gs-work-title {
   margin: 0 0 8px;
   font-size: clamp(19px, 1.8vw, 26px);
   line-height: 1.2;
 }
-html.spiral-scenes #specs .gs-work-text { margin: 0; font-size: 13px; line-height: 1.45; }
-html.spiral-scenes #specs .spec-caption-groups { display: grid; grid-template-columns: 1fr; gap: 12px; }
-html.spiral-scenes #specs .spec-caption-group { display: grid; align-content: start; min-width: 0; }
-html.spiral-scenes #specs .spec-caption-group :is(strong, span) { display: block; overflow-wrap: anywhere; }
-html.spiral-scenes #specs .spec-caption-group strong { color: var(--foreground); font-weight: 600; }
-html.spiral-scenes #specs[data-spec-layout="grid"] .spec-caption-groups { grid-template-rows: var(--spec-rows); }
 
-/* Short/wide responsive presentation.
-   Compact card block prevents vast black empty gaps between items.
-   Item column gaps and image-to-copy margins are tightly controlled. */
+html.spiral-scenes #specs .gs-work-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+html.spiral-scenes #specs .spec-caption-groups {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+html.spiral-scenes #specs .spec-caption-group {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+
+html.spiral-scenes #specs .spec-caption-group :is(strong, span) {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+html.spiral-scenes #specs .spec-caption-group strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+html.spiral-scenes #specs[data-spec-layout="grid"] .spec-caption-groups {
+  grid-template-rows: var(--spec-rows);
+}
+
+/* Short/wide responsive presentation */
 html.spiral-scenes #specs[data-spec-layout="side"] .specs-slider-track {
   align-items: center;
   gap: var(--spec-gap, 32px);
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .gs-work-card {
   --spec-rhythm: 16px;
   width: var(--spec-width);
@@ -105,17 +145,21 @@ html.spiral-scenes #specs[data-spec-layout="side"] .gs-work-card {
   justify-content: center;
   column-gap: var(--spec-rhythm);
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .gs-work-image-wrapper {
   justify-self: end;
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .gs-work-content {
   width: max-content;
   max-width: var(--spec-side-copy-max, 600px);
   align-self: center;
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .gs-work-title {
   margin: 0 0 8px;
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .spec-caption-groups {
   grid-template-columns: repeat(3, max-content);
   column-gap: 14px;
@@ -123,28 +167,34 @@ html.spiral-scenes #specs[data-spec-layout="side"] .spec-caption-groups {
   align-items: start;
   justify-content: start;
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .spec-caption-group {
   width: max-content;
   max-width: var(--spec-side-col-max, 190px);
   row-gap: 0;
 }
+
 html.spiral-scenes #specs[data-spec-layout="side"] .gs-work-text {
   font-size: clamp(10px, 1.18vw, 12px);
   line-height: 1.35;
 }
 
-/* Portrait/constrained slide.
-   Slide view centers the compact slide block vertically. The title includes
-   comfortable breathing room top and bottom, while body line-height and
-   group gaps are compact without unneeded expanded row spacing. */
-html.spiral-scenes #specs[data-spec-layout="slide"] .specs-slider-track { align-items: center; }
+/* Portrait/constrained slide presentation */
+html.spiral-scenes #specs[data-spec-layout="slide"] .specs-slider-track {
+  align-items: center;
+}
+
 html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-card {
   height: var(--spec-card-height);
   grid-template-rows: var(--spec-image) var(--spec-copy-height);
   row-gap: var(--spec-card-gap, 12px);
   align-content: center;
 }
-html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-image-wrapper { justify-self: center; }
+
+html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-image-wrapper {
+  justify-self: center;
+}
+
 html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-content {
   height: var(--spec-copy-height);
   display: flex;
@@ -153,12 +203,15 @@ html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-content {
   justify-content: flex-start;
   text-align: center;
 }
+
 html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-title {
-  margin: var(--spec-title-margin-top, 10px) 0 var(--spec-title-margin-bottom, 10px);
+  margin: var(--spec-title-margin-top, 10px) 0
+    var(--spec-title-margin-bottom, 10px);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 html.spiral-scenes #specs[data-spec-layout="slide"] .spec-caption-groups {
   display: flex;
   flex-direction: column;
@@ -167,6 +220,7 @@ html.spiral-scenes #specs[data-spec-layout="slide"] .spec-caption-groups {
   align-items: center;
   width: 100%;
 }
+
 html.spiral-scenes #specs[data-spec-layout="slide"] .spec-caption-group {
   width: 100%;
   display: flex;
@@ -174,6 +228,7 @@ html.spiral-scenes #specs[data-spec-layout="slide"] .spec-caption-group {
   align-items: center;
   row-gap: 2px;
 }
+
 html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-text {
   font-size: 13px;
   line-height: 1.25;
@@ -181,15 +236,19 @@ html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-text {
 
 @media (max-width: 520px) and (orientation: portrait) {
   html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-title {
-    margin: var(--spec-title-margin-top, 8px) 0 var(--spec-title-margin-bottom, 8px);
+    margin: var(--spec-title-margin-top, 8px) 0
+      var(--spec-title-margin-bottom, 8px);
   }
+
   html.spiral-scenes #specs[data-spec-layout="slide"] .gs-work-text {
     font-size: 12px;
     line-height: 1.2;
   }
+
   html.spiral-scenes #specs[data-spec-layout="slide"] .spec-caption-groups {
     row-gap: var(--spec-slide-group-gap, 5px);
   }
+
   html.spiral-scenes #specs[data-spec-layout="slide"] .spec-caption-group {
     row-gap: 1px;
   }

@@ -1,0 +1,27 @@
+/**
+ * drafting.css - Header/Footer line rules & image backing styles
+ */
+
+:root {
+  --draft-line: rgba(255, 255, 255, 0.34);
+}
+
+html.theme-invert {
+  --draft-line: rgba(0, 0, 0, 0.32);
+}
+
+.site-header,
+html.theme-invert .site-header,
+footer,
+html.theme-invert footer {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-block: 1px solid var(--draft-line);
+}
+
+#order .gs-work-image-wrapper,
+#gallery .rail-item img,
+.unroll-anchor img {
+  background: #000000;
+}

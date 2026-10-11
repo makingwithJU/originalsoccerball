@@ -1,4 +1,10 @@
-/* Order / Design Gallery: shared visual geometry. The section/stage size is untouched. */
+/**
+ * spatial-gallery.css - Order & Design Spatial Gallery styles
+ *
+ * Orbit / Cinematic 3D ribbon gallery & cylinder targets.
+ */
+
+/* Order / Design Gallery: shared visual geometry */
 :is(#order, #gallery, #usage-title, #event-shop-title).chapter {
   width: 100%;
   max-width: none;
@@ -10,13 +16,12 @@
   padding-inline: var(--gutter);
 }
 
-/* Keep source cards out of paint until the sphere is composed. Static fallback
-   explicitly clears pending, including reduced-motion and WebGL failure. */
+/* Keep source cards out of paint until sphere is composed */
 :is(#order, #gallery).gallery-pending .rail-item {
   visibility: hidden !important;
 }
 
-/* Shared rail geometry for enhanced and static modes. */
+/* Shared rail geometry for enhanced and static modes */
 :is(#order, #gallery) .cinematic-rail {
   --tile-width: min(65vw, calc(52 * var(--scene-unit)), 680px);
   --tile-height: min(65vw, calc(52 * var(--scene-unit)), 680px);
@@ -52,13 +57,22 @@
   object-position: center;
 }
 
-#order .gs-work-image-wrapper { position: relative; margin-bottom: 1rem; }
-#order .gs-work-title { font-size: var(--title); }
-#order .gs-work-content { text-align: center; }
+#order .gs-work-image-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+#order .gs-work-title {
+  font-size: var(--title);
+}
+
+#order .gs-work-content {
+  text-align: center;
+}
 
 .ju-line-badge {
   display: inline-block;
-  margin-top: .65rem;
+  margin-top: 0.65rem;
   padding: 5px 9px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -67,9 +81,10 @@
   line-height: 1;
 }
 
-/* Enhanced mode: canvas and cards are positioned directly in the chapter's
-   coordinate system. Parent rail dimensions never size or clip the sphere. */
-:is(#order, #gallery).gallery-enhanced { isolation: isolate; }
+/* Enhanced mode */
+:is(#order, #gallery).gallery-enhanced {
+  isolation: isolate;
+}
 
 :is(#order, #gallery).gallery-enhanced .gallery-visual-layer {
   position: absolute;
@@ -99,6 +114,7 @@
   overflow: hidden;
   pointer-events: none;
 }
+
 :is(#order, #gallery).gallery-enhanced .gallery-connector {
   stroke: var(--line);
   stroke-width: 1px;
@@ -107,8 +123,6 @@
   opacity: 0;
 }
 
-/* Do not rewrite wrapper geometry. Only the rail becomes a full-section
-   positioning layer; this keeps the rest of the site's chapter layout intact. */
 :is(#order, #gallery).gallery-enhanced .cinematic-rail {
   position: absolute;
   inset: 0;
@@ -150,30 +164,42 @@
   text-wrap: balance;
 }
 
-#order.gallery-enhanced .gs-work-image-wrapper { margin: 0; }
+#order.gallery-enhanced .gs-work-image-wrapper {
+  margin: 0;
+}
+
 #order.gallery-enhanced .gs-work-content {
   width: 100%;
-  padding-top: .45rem;
+  padding-top: 0.45rem;
   text-align: center;
   pointer-events: none;
 }
-#order.gallery-enhanced .gs-work-title { margin: 0; line-height: 1.2; }
-#order.gallery-enhanced .gs-work-text { margin: .2rem 0 0; line-height: 1.35; }
 
+#order.gallery-enhanced .gs-work-title {
+  margin: 0;
+  line-height: 1.2;
+}
+
+#order.gallery-enhanced .gs-work-text {
+  margin: 0.2rem 0 0;
+  line-height: 1.35;
+}
 
 @media (orientation: portrait) and (max-width: 600px) {
   #order.gallery-enhanced .order-gallery__title {
     font-size: var(--heading) !important;
-    color: #fff !important;
+    color: #ffffff !important;
     letter-spacing: -0.03em;
     padding: 0 var(--gutter);
   }
+
   #order.gallery-enhanced .gs-work-content {
     padding-top: 0.25rem;
     width: 100%;
     max-width: 96vw;
     margin-inline: auto;
   }
+
   #order.gallery-enhanced .gs-work-title {
     font-size: var(--title) !important;
     white-space: normal;
@@ -183,6 +209,7 @@
     margin-inline: auto;
     line-height: 1.25;
   }
+
   #order.gallery-enhanced .gs-work-text {
     font-size: var(--body) !important;
     white-space: normal;
@@ -193,6 +220,7 @@
     margin-top: 0.15rem;
     line-height: 1.4;
   }
+
   #order.gallery-enhanced .ju-line-badge {
     margin-top: 0.2rem;
     padding: 2px 7px;
@@ -202,14 +230,27 @@
 }
 
 @media (orientation: landscape) and (min-height: 561px) {
-  #order.gallery-enhanced .gs-work-title { font-size: clamp(1.15rem, 1.6vw, 1.8rem); }
-  #order.gallery-enhanced .gs-work-text { font-size: clamp(.75rem, .9vw, 1rem); }
-  #order.gallery-enhanced .gs-work-content { padding-top: .7rem; }
+  #order.gallery-enhanced .gs-work-title {
+    font-size: clamp(1.15rem, 1.6vw, 1.8rem);
+  }
+
+  #order.gallery-enhanced .gs-work-text {
+    font-size: clamp(0.75rem, 0.9vw, 1rem);
+  }
+
+  #order.gallery-enhanced .gs-work-content {
+    padding-top: 0.7rem;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 560px) {
-  #order.gallery-enhanced .gs-work-title { font-size: 14px; }
-  #order.gallery-enhanced .gs-work-text { font-size: 10px; }
+  #order.gallery-enhanced .gs-work-title {
+    font-size: 14px;
+  }
+
+  #order.gallery-enhanced .gs-work-text {
+    font-size: 10px;
+  }
 }
 
 :is(#order, #gallery) .finite-static {
@@ -220,6 +261,7 @@
   padding: var(--gutter);
   perspective: none;
 }
+
 :is(#order, #gallery) .finite-static .rail-item {
   position: relative;
   left: auto;
@@ -227,10 +269,7 @@
   width: 100%;
 }
 
-/* Usage / Event: Codrops Cinematic3DScroll demo 1, adapted to this site's
-   viewport stack. The canvas never contributes layout width, so portrait and
-   tablet rotations cannot create horizontal scrolling or pierce adjacent
-   chapters. */
+/* Cylinder 3D scroll targets (Codrops Cinematic3DScroll) */
 :is(#usage-title, #event-shop-title).cylinder-target {
   --cylinder-title-top: calc(var(--header-height) + clamp(1rem, 2.6svh, 2rem));
   position: sticky;
@@ -269,7 +308,7 @@
   margin: 0;
   padding: 0;
   opacity: 0;
-  transform: translate3d(-50%,-50%,0);
+  transform: translate3d(-50%, -50%, 0);
   transform-origin: 50% 50%;
   color: var(--foreground);
   text-align: center;
@@ -289,12 +328,10 @@
   padding: 0;
   overflow: clip;
   touch-action: pan-y pinch-zoom;
-  /* The transparent header must not create a hard cut through the photographs. */
   clip-path: none;
 }
 
-/* Legacy figures remain only as atlas sources. They are never a visual fallback,
-   which prevents the old gallery from flashing or alternating with WebGL. */
+/* Atlas sources for WebGL */
 :is(#usage-title, #event-shop-title).cylinder-target .rail-item {
   position: absolute !important;
   width: 1px !important;
@@ -331,22 +368,24 @@
 :is(#usage-title, #event-shop-title).cylinder-fallback .gs-heading {
   opacity: 1 !important;
   top: 50% !important;
-  transform: translate3d(-50%,-50%,0) !important;
+  transform: translate3d(-50%, -50%, 0) !important;
 }
 
 @media (max-width: 900px) {
   :is(#usage-title, #event-shop-title).cylinder-target {
-    --cylinder-title-top: calc(var(--header-height) + clamp(.8rem, 2svh, 1.35rem));
+    --cylinder-title-top: calc(
+      var(--header-height) + clamp(0.8rem, 2svh, 1.35rem)
+    );
   }
+
   :is(#usage-title, #event-shop-title).cylinder-target .gs-heading {
     width: min(90vw, 22ch);
   }
 }
 
-
 @media (orientation: landscape) and (max-height: 560px) {
   :is(#usage-title, #event-shop-title).cylinder-target {
-    --cylinder-title-top: calc(var(--header-height) + .6rem);
+    --cylinder-title-top: calc(var(--header-height) + 0.6rem);
   }
 }
 
@@ -397,19 +436,21 @@
   }
 }
 
-
-/* Released card uses the same measured size as its WebGL target. */
+/* Released card & image sizing */
 #order.gallery-enhanced .cinematic-rail .rail-item {
-  --released-tile: var(--gallery-card-height, var(--gallery-tile-height, 240px));
+  --released-tile: var(
+    --gallery-card-height,
+    var(--gallery-tile-height, 240px)
+  );
 }
-/* Match the measured WebGL image rectangle, including width-limited artwork.
-   The caption follows this exact rectangle rather than a shared square slot. */
+
 #order.gallery-enhanced .gs-work-image-wrapper {
   width: 100%;
   height: var(--released-tile);
   aspect-ratio: auto;
   overflow: hidden;
 }
+
 #order.gallery-enhanced .gs-work-image {
   width: 100%;
   height: 100%;
@@ -418,9 +459,11 @@
   object-position: center;
   transform: none;
 }
+
 #order.gallery-enhanced .gs-work-image[data-framing="product"] {
   object-fit: cover;
 }
+
 #gallery.gallery-enhanced .cinematic-rail .rail-item img {
   display: block;
   width: 100%;
@@ -430,8 +473,7 @@
   transform: none;
 }
 
-
-/* V7: PC-only composition. Mobile/tablet rules above are intentionally untouched. */
+/* Desktop composition */
 @media (min-width: 1100px) and (pointer: fine) {
   :is(#order, #gallery).gallery-enhanced .cinematic-rail .rail-item {
     visibility: hidden;
@@ -453,7 +495,7 @@
   }
 
   #order.gallery-enhanced .gs-work-content {
-    padding-top: .8rem;
+    padding-top: 0.8rem;
   }
 
   #order.gallery-enhanced .gs-work-title {
@@ -461,64 +503,20 @@
   }
 
   #order.gallery-enhanced .gs-work-text {
-    font-size: clamp(.82rem, .92vw, 1rem);
+    font-size: clamp(0.82rem, 0.92vw, 1rem);
   }
 }
 
-
-/* V9 — short PC only. Keep the released work large without letting its caption
-   extend into the fixed footer/notice area. Mobile/tablet rules are untouched. */
+/* Short/wide desktop composition (side captions) */
 @media (min-width: 1100px) and (pointer: fine) and (max-height: 519px) {
   #order.gallery-enhanced .cinematic-rail .rail-item {
-    overflow: hidden;
+    overflow: visible;
     background: transparent;
   }
 
   #order.gallery-enhanced .gs-work-image-wrapper {
     width: 100%;
     height: var(--released-tile);
-  }
-
-  #order.gallery-enhanced .gs-work-content {
-    position: absolute;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-sizing: border-box;
-    width: 100%;
-    margin: 0;
-    padding: 2.4rem .8rem .65rem;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.82) 46%, rgba(0,0,0,.96) 100%);
-    color: var(--foreground);
-    text-align: center;
-  }
-
-  #order.gallery-enhanced .gs-work-title {
-    margin: 0;
-    font-size: clamp(15px, 1.05vw, 19px);
-    line-height: 1.08;
-    white-space: normal;
-    overflow-wrap: normal;
-    word-break: normal;
-    text-wrap: balance;
-  }
-
-  #order.gallery-enhanced .gs-work-text {
-    margin: .26rem 0 0;
-    font-size: clamp(9px, .62vw, 11px);
-    line-height: 1.15;
-    white-space: normal;
-    overflow-wrap: normal;
-    word-break: normal;
-  }
-
-}
-
-/* V13 — ONLY short/wide desktop. All other viewport geometries remain V11. */
-@media (min-width: 1100px) and (pointer: fine) and (max-height: 519px) {
-  #order.gallery-enhanced .cinematic-rail .rail-item {
-    overflow: visible;
   }
 
   #order.gallery-enhanced .gs-work-content {
@@ -557,14 +555,14 @@
   }
 
   #order.gallery-enhanced .gs-work-text {
-    margin: .38rem 0 0;
-    font-size: clamp(9px, .62vw, 11px);
+    margin: 0.38rem 0 0;
+    font-size: clamp(9px, 0.62vw, 11px);
     line-height: 1.22;
   }
 
   #order.gallery-enhanced .ju-line-badge {
     display: inline-block;
-    margin-top: .55rem;
+    margin-top: 0.55rem;
     font-size: 10px;
   }
 }

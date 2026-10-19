@@ -21,14 +21,15 @@
     simulator: 6,
   };
   // Distances, not scroll locks. Relative to the first preview, internal motion
-  // takes 2.1x the scrolling distance. Keep chapter pacing independent of the
-  // long decorative interlude (44 screens) and upright-copy intervals.
+  // Distances, not scroll locks. Relative to the first preview, internal motion
+  // takes 1.05x the scrolling distance. Keep chapter pacing independent of the
+  // decorative interlude (22 screens) and upright-copy intervals.
   const pace = {
-    animation: 2.1,
-    hold: 1.5,
-    transition: 44,
-    copyDelay: 0.25,
-    copyReveal: 1.15,
+    animation: 1.05,
+    hold: 0.75,
+    transition: 22,
+    copyDelay: 0.125,
+    copyReveal: 0.575,
   };
   // Start gently once the aperture reveals a quarter of the incoming viewport.
   // Sphere leads stay within their large, centred opening phase.

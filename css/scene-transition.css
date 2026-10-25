@@ -207,14 +207,28 @@ html.spiral-scenes:is([data-hero-state="transition"], [data-hero-state="site"])
 .spiral-scenes .scene-slot > #hero-2-slide {
   height: var(--scene-height);
   min-height: 0;
-  padding: 0;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  padding-inline: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-block: 0 !important;
+  margin: 0 !important;
 }
 
 .spiral-scenes #hero-2 {
-  position: absolute;
-  inset: 0;
+  position: absolute !important;
+  inset: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
   height: var(--scene-height);
   min-height: 0;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .spiral-scenes #hero-2 .hero-title {

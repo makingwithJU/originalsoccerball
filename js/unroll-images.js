@@ -6,6 +6,9 @@
 // images, avoiding the one-frame lag of a fixed viewport overlay.
 (() => {
   if (!window.THREE) return;
+  // Mobile coarse touch optimization: disable 25 heavy 2D canvases & WebGL roll textures
+  // on mobile touch devices to eliminate ~400MB GPU VRAM overhead and prevent iOS Safari WebProcess crashes.
+  if (matchMedia('(hover: none) and (pointer: coarse)').matches) return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const selector = '#works .gs-work-image, #design .ju-design__image img, #policy .ju-policy__img, #design-intro .ju-design__image img';
   const items = [...document.querySelectorAll(selector)].map(img => ({

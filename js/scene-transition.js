@@ -73,6 +73,9 @@
 
   // Public read-only progress is consumed by HERO, image rolls and galleries.
   window.JUScenes = {
+    get active() {
+      return lastScene?.section?.id || (scenes[0]?.section?.id ?? null);
+    },
     progress(id) {
       return reduced.matches ? 1 : (byId.get(id)?.progress ?? 0);
     },
@@ -81,12 +84,11 @@
     },
     near(id) {
       const s = byId.get(id);
-      // Prewarm incoming resources before the aperture opens, including the
-      // now-longer interlude. Distant scenes release their rendering resources.
+      if (!s) return false;
+      // Tight margin keeps Three.js spatial galleries, 140 intro frames, and WebGL simulator
+      // bounded in memory so iOS Safari does not exceed its per-tab limit and crash.
       const y = renderedY ?? scrollY;
-      return (
-        !!s && y > s.start - unit * pace.transition * 0.7 && y < s.end + unit
-      );
+      return y > s.start - unit * pace.transition * 0.7 && y < s.end + unit;
     },
     go(id) {
       const s = byId.get(id);
@@ -256,7 +258,7 @@
       Math.min(scrollY, document.documentElement.scrollHeight - innerHeight),
     );
     const y = renderedY;
-    let index = scenes.findIndex((scene) => y < scene.end);
+    let index = scenes.findIndex((scene) => y < scene.end - 0.5);
     if (index < 0) index = scenes.length - 1;
     const current = scenes[index];
     const s = state(current, y);
@@ -280,7 +282,7 @@
       blend.outgoingOpacity = 1 - ease(s.transition);
       blend.incomingOpacity = ease(s.transition);
     }
-    if (!isRotating || y > 100) {
+    if (!isRotating) {
       lastScene = current;
       lastLocal = clamp((y - current.start) / (current.end - current.start));
     }
@@ -353,6 +355,7 @@
 
   function measure(preserve = false) {
     resizeFrame = 0;
+    suppressObserverUntil = Math.max(suppressObserverUntil, performance.now() + 600);
     if (reduced.matches) {
       root.classList.remove("spiral-scenes");
       root.classList.add("intro-complete", "hero-media-ready");
@@ -470,17 +473,26 @@
     }
     measureDevices();
     if (anchor) {
+      const span = anchor.scene.end - anchor.scene.start;
+      const rawY = anchor.scene.start + anchor.local * span;
       const y = anchor.fromRotation
-        ? anchor.scene.start +
-          anchor.local * (anchor.scene.end - anchor.scene.start)
+        ? anchor.scene.id === "hero" && anchor.local === 0
+          ? 0
+          : Math.min(anchor.scene.end - 1, Math.max(anchor.scene.start + 0.5, rawY))
         : preserve === "offset"
-          ? anchor.scene.start +
-            Math.min(anchor.offset, anchor.scene.end - anchor.scene.start)
-          : anchor.scene.start +
-            anchor.local * (anchor.scene.end - anchor.scene.start);
-      if (Math.abs(y - scrollY) > 1) scrollTo(0, y);
+          ? anchor.scene.start + Math.min(anchor.offset, span)
+          : rawY;
+      if (Math.abs(y - scrollY) > 0.5) scrollTo(0, y);
+      lastScene = anchor.scene;
+      lastLocal = anchor.local;
     }
-    isRotating = false;
+    if (anchor?.fromRotation) {
+      setTimeout(() => {
+        isRotating = false;
+      }, 200);
+    } else {
+      isRotating = false;
+    }
     draw();
   }
 
@@ -550,7 +562,7 @@
     // Browser UI show/hide and orientation generate ResizeObserver bursts for
     // viewport-sized chapters. Ignore those; explicit resize handling below
     // owns viewport changes. Content expansion (details) still remeasures.
-    if (performance.now() < suppressObserverUntil) return;
+    if (isRotating || performance.now() < suppressObserverUntil) return;
     if (!resizeFrame)
       resizeFrame = requestAnimationFrame(() => measure("offset"));
   });
@@ -638,17 +650,23 @@
   );
   addEventListener("scroll", schedule, { passive: true });
   let settleTimer = 0;
-  function handleOrientationChange() {
-    if (!isRotating && lastScene && lastScene.section.id !== "hero") {
-      orientationAnchor = { id: lastScene.section.id, local: lastLocal };
-      isRotating = true;
+  function captureOrientationAnchor() {
+    if (!isRotating) {
+      const target = lastScene || scenes[0];
+      if (target) {
+        orientationAnchor = { id: target.section.id, local: lastLocal || 0 };
+        isRotating = true;
+      }
     }
-    suppressObserverUntil = performance.now() + 600;
+  }
+  function handleOrientationChange() {
+    captureOrientationAnchor();
+    suppressObserverUntil = performance.now() + 1200;
     clearTimeout(settleTimer);
     settleTimer = setTimeout(() => {
       cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => measure(true));
-    }, 250);
+    }, 450);
   }
   addEventListener("orientationchange", handleOrientationChange, {
     passive: true,
@@ -657,22 +675,19 @@
     "resize",
     () => {
       updateViewport();
-      suppressObserverUntil = performance.now() + 500;
+      suppressObserverUntil = performance.now() + 1000;
       if (innerWidth === lastWidth) {
         schedule();
         return;
       }
-      if (!isRotating && lastScene && lastScene.section.id !== "hero") {
-        orientationAnchor = { id: lastScene.section.id, local: lastLocal };
-        isRotating = true;
-      }
+      captureOrientationAnchor();
       lastWidth = innerWidth;
       cancelAnimationFrame(resizeFrame);
       clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
         cancelAnimationFrame(resizeFrame);
         resizeFrame = requestAnimationFrame(() => measure(true));
-      }, 220);
+      }, 400);
     },
     { passive: true },
   );

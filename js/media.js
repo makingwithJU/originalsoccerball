@@ -28,9 +28,17 @@
       deviceReady
     );
   }
-  function near(frame) {
+  function videoNear(frame) {
     const id = frame.closest(".chapter")?.id;
-    return !window.JUScenes || !id || window.JUScenes.near(id);
+    if (!window.JUScenes || !id) return true;
+    const snap = window.JUScenes.snapshot?.();
+    const s = snap?.find((item) => item.id === id);
+    if (!s) return false;
+    const y = window.scrollY;
+    return y > s.start - 2500 && y < s.end + 2000;
+  }
+  function near(frame) {
+    return videoNear(frame);
   }
   function prime(frame, player) {
     if (
@@ -122,19 +130,18 @@
       }),
     );
   }
-  // Release a far-away player so only the scenes around the viewport stay
-  // resident in memory. The same iframe element is re-attached by load().
+  // Release distant players cleanly by pausing.
+  // We NEVER destroy the player or clear frame.src to prevent YouTube 429 rate limit errors ("回数が多すぎる")
+  // and maintain seamless instant playback when returning to the section.
   function unload(frame) {
-    if (!frame.dataset.loadedSrc) return;
-    players.delete(frame);
-    pending.delete(frame);
-    playback.delete(frame);
+    const player = players.get(frame);
+    if (player) {
+      try {
+        player.pauseVideo();
+      } catch (_) {}
+    }
+    playback.set(frame, false);
     visible.delete(frame);
-    delete frame.dataset.ready;
-    delete frame.dataset.primed;
-    delete frame.dataset.priming;
-    delete frame.dataset.loadedSrc;
-    frame.src = "about:blank";
   }
   function load(frame) {
     if (!frame.dataset.loadedSrc) {
@@ -190,7 +197,7 @@
   document.addEventListener("visibilitychange", () => frames.forEach(sync));
   function warmAndSync(frame) {
     const id = frame.closest(".chapter")?.id;
-    if (!window.JUScenes || !id || window.JUScenes.near(id)) load(frame);
+    if (videoNear(frame)) load(frame);
     else unload(frame);
     if (window.JUScenes?.visible(id)) visible.add(frame);
     else visible.delete(frame);

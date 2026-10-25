@@ -6,8 +6,7 @@
   const visible = new Set(),
     players = new Map(),
     pending = new Set();
-  const playback = new WeakMap(),
-    statuses = new Map();
+  const playback = new WeakMap();
   let requested = false;
   function shouldPlay(frame) {
     const chapter = frame.closest(".chapter");
@@ -43,16 +42,12 @@
     )
       return;
     frame.dataset.priming = "true";
-    player.mute();
-    player.playVideo();
+    try {
+      player.mute();
+      player.playVideo();
+    } catch (_) {}
   }
-  function status(frame, text, retry = false) {
-    const node = statuses.get(frame);
-    if (!node) return;
-    node.hidden = !text;
-    node.textContent = text || "";
-    node.disabled = !retry;
-  }
+  function status() {}
   function sync(frame) {
     const player = players.get(frame);
     if (!player || frame.dataset.ready !== "true") return;
@@ -90,21 +85,38 @@
               frame.dataset.primed = "true";
               delete frame.dataset.priming;
               playback.delete(frame);
-              status(frame, "");
               if (!shouldPlay(frame)) event.target.pauseVideo();
               sync(frame);
               return;
             }
-            status(frame, "");
           },
           onAutoplayBlocked: () => {
             delete frame.dataset.priming;
-            status(frame, "タップして動画を再生", true);
+            const resumeOnInteraction = () => {
+              const player = players.get(frame);
+              if (player) {
+                try {
+                  player.mute();
+                  player.playVideo();
+                } catch (_) {}
+              }
+            };
+            window.addEventListener("pointerdown", resumeOnInteraction, {
+              once: true,
+              passive: true,
+            });
+            window.addEventListener("touchstart", resumeOnInteraction, {
+              once: true,
+              passive: true,
+            });
+            window.addEventListener("scroll", resumeOnInteraction, {
+              once: true,
+              passive: true,
+            });
           },
           onError: () => {
             delete frame.dataset.primed;
             delete frame.dataset.priming;
-            status(frame, "動画を再読み込み", true);
           },
         },
       }),
@@ -123,13 +135,13 @@
     delete frame.dataset.priming;
     delete frame.dataset.loadedSrc;
     frame.src = "about:blank";
-    status(frame, "動画を準備中…");
   }
   function load(frame) {
     if (!frame.dataset.loadedSrc) {
       frame.loading = "eager";
       const url = new URL(frame.dataset.src);
-      url.searchParams.set("autoplay", "0");
+      url.searchParams.set("autoplay", "1");
+      url.searchParams.set("mute", "1");
       url.searchParams.set("playsinline", "1");
       url.searchParams.set("fs", "0");
       url.searchParams.set("disablekb", "1");
@@ -150,7 +162,6 @@
     script.async = true;
     script.addEventListener("error", () => {
       requested = false;
-      pending.forEach((frame) => status(frame, "動画を再読み込み", true));
       script.remove();
     });
     document.head.append(script);
@@ -174,32 +185,6 @@
     frame.id ||= "jugend-video-" + (index + 1);
     // Presentation iframe never receives direct pointer/tab input; controls stay site-owned.
     frame.tabIndex = -1;
-    {
-      const node = document.createElement("button");
-      node.type = "button";
-      node.className = "device-media-status";
-      node.setAttribute("aria-live", "polite");
-      frame.parentElement.append(node);
-      statuses.set(frame, node);
-      status(frame, "動画を準備中…");
-      node.addEventListener("click", () => {
-        const player = players.get(frame);
-        if (!player) {
-          status(frame, "動画を準備中…");
-          load(frame);
-          return;
-        }
-        if (frame.dataset.primed !== "true") {
-          delete frame.dataset.priming;
-          const videoId = new URL(frame.dataset.src).pathname.split("/").pop();
-          player.mute();
-          player.loadVideoById(videoId);
-        } else {
-          player.mute();
-          player.playVideo();
-        }
-      });
-    }
     observer.observe(frame);
   });
   document.addEventListener("visibilitychange", () => frames.forEach(sync));

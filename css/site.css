@@ -300,7 +300,7 @@ p + p {
   text-align: center;
 }
 #hero .hero-title {
-  font-size: min(13.5vw, 55svh);
+  font-size: min(calc((100vw - var(--safe-left) - var(--safe-right)) * 0.135), 55svh);
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.05em;

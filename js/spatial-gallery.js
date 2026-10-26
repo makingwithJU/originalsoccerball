@@ -847,8 +847,9 @@
       // Persistent context pattern: Do NOT destroy WebGLRenderer or call forceContextLoss on scroll.
       // In WebKit (iOS Safari), repeatedly destroying and creating WebGLRenderers leaks uncollected IOSurface
       // allocations in the GPU process, triggering the "A problem repeatedly occurred" crash.
-      // Simply pause rendering and hide the visual layer when far away.
+      // Simply pause rendering, hide the visual layer, and collapse the retina framebuffer to 1x1 to reclaim ~30MB VRAM per gallery.
       visualLayer.hidden = true;
+      renderer.setSize(1, 1, false);
     }
     function prepare(now) {
       // Compile and upload while the opaque portal still covers this chapter.

@@ -58,6 +58,7 @@
     "usage-title",
     "event-shop-title",
     "hero-2-slide",
+    "contact-apology",
   ]);
   let frame = 0,
     resizeFrame = 0,
@@ -132,7 +133,7 @@
   };
 
   function measureDevices() {
-    const header = document.querySelector(".site-header").offsetHeight;
+    const header = document.querySelector(".site-header")?.offsetHeight || 0;
     const bottom = footerLatched
       ? parseFloat(
           getComputedStyle(root).getPropertyValue("--footer-height"),
@@ -141,18 +142,16 @@
     for (const scene of scenes) {
       const device = scene.section.querySelector(".device-shell");
       if (!device) continue;
-      const saved = device.style.transform;
-      device.style.transform = "none";
-      const rect = device.getBoundingClientRect();
+      const w = device.offsetWidth || 340;
+      const h = device.offsetHeight || 500;
       scene.deviceBox = {
-        width: device.offsetWidth,
-        height: device.offsetHeight,
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
+        width: w,
+        height: h,
+        x: innerWidth / 2,
+        y: (innerHeight + header - bottom) / 2,
         header,
         bottom,
       };
-      device.style.transform = saved;
     }
   }
 
@@ -190,6 +189,9 @@
     return Math.max(0.05, fit);
   }
 
+  let cachedHeaderHeight = 0;
+  let cachedFooterHeight = 0;
+
   function paint(scene, opacity, read, interactive, transferring) {
     const section = scene.section;
     const visible = opacity > 0.00001;
@@ -204,23 +206,31 @@
     section.inert = !interactive || !visible;
     section.setAttribute("aria-hidden", String(!visible));
     section.style.opacity = String(opacity);
+
+    if (!visible) {
+      section.style.visibility = "hidden";
+      section.style.transform = "";
+      section.style.clipPath = "";
+      return;
+    }
+
+    section.style.visibility = "visible";
     const vvOffset = window.visualViewport
       ? Math.round(window.visualViewport.offsetTop)
       : 0;
     section.style.transform = `translateY(${vvOffset - read}px)`;
     // Clip reading content to the safe frame even while its document offset moves.
     if (!fixedScenes.has(section.id)) {
-      const header = document.querySelector(".site-header").offsetHeight;
-      const bottom = footerLatched
-        ? parseFloat(
-            getComputedStyle(root).getPropertyValue("--footer-height"),
-          ) || 0
-        : 0;
+      const header = cachedHeaderHeight;
+      const bottom = cachedFooterHeight;
+      const sHeight = scene.sectionHeight || (scene.sectionHeight = section.offsetHeight);
       const clipBottom = Math.max(
         0,
-        section.offsetHeight - read - innerHeight + bottom,
+        sHeight - read - innerHeight + bottom,
       );
       section.style.clipPath = `inset(${header + read}px 0 ${clipBottom}px 0)`;
+    } else {
+      section.style.clipPath = "";
     }
     section.style.setProperty("--chapter-progress", scene.progress);
     const local = renderedY - scene.start;
@@ -256,10 +266,12 @@
     // Safari rubber-band coordinates can leave the document's valid range.
     // One input, one timeline. Native touch/trackpad momentum may move scrollY,
     // but the site never accumulates a second playhead or releases scroll debt.
-    renderedY = Math.max(
-      0,
-      Math.min(scrollY, document.documentElement.scrollHeight - innerHeight),
-    );
+    if (!isRotating) {
+      renderedY = Math.max(
+        0,
+        Math.min(scrollY, document.documentElement.scrollHeight - innerHeight),
+      );
+    }
     const y = renderedY;
     let index = scenes.findIndex((scene) => y < scene.end - 0.5);
     if (index < 0) index = scenes.length - 1;
@@ -329,9 +341,9 @@
       footerLatched = true;
       // Footer geometry is visual-only. Suppress ResizeObserver remeasurement so
       // backward scrolling keeps the exact same scene timeline/progress.
-      suppressObserverUntil = performance.now() + 800;
+      suppressObserverUntil = performance.now() + 1500;
       root.classList.add("footer-visible");
-      requestAnimationFrame(() => measure("offset"));
+      cachedFooterHeight = parseFloat(getComputedStyle(root).getPropertyValue("--footer-height")) || 0;
     }
     root.dataset.scene = current.section.id;
     root.dataset.scenePhase = next
@@ -369,6 +381,7 @@
         scene.section.style.transform = "";
         scene.section.style.clipPath = "";
         scene.section.style.maskImage = "";
+        scene.section.style.visibility = "";
         scene.section.style.webkitMaskImage = "";
         scene.section.style.backgroundColor = "";
         scene.section.inert = false;
@@ -398,22 +411,34 @@
         offset: Math.max(0, scrollY - lastScene.start),
       };
     }
-    // Stable CSS viewport height: mobile toolbar collapse cannot alter the track.
-    if (!unit || preserve === true) unit = probe.offsetHeight;
-    updateViewport();
-
     // PC detection: fine pointer and NOT a coarse touch device
     const isCoarseTouch = matchMedia(
       "(hover: none) and (pointer: coarse)",
     ).matches;
     const isPC = !isCoarseTouch && matchMedia("(pointer: fine)").matches;
 
+    // Stable CSS viewport height: mobile toolbar collapse cannot alter the track.
+    // On mobile touch devices, unit is fixed to the stable screen height so that
+    // rotating between portrait and landscape never collapses the 480k scroll track,
+    // avoiding massive 240k scroll jumps, tile thrashing, and WebKit process crashes.
+    if (!unit) {
+      unit = isCoarseTouch
+        ? Math.max(probe.offsetHeight, window.screen?.height || innerHeight, window.screen?.width || innerWidth, 600)
+        : probe.offsetHeight;
+    } else if (!isCoarseTouch && preserve === true) {
+      unit = probe.offsetHeight;
+    }
+    updateViewport();
+
     // Phase 1 (Batch Read): read all layout metrics before any DOM writes to prevent layout thrashing
-    const bottom = footerLatched
+    for (const scene of scenes) scene.sectionHeight = 0;
+    cachedHeaderHeight = document.querySelector(".site-header")?.offsetHeight || 0;
+    cachedFooterHeight = footerLatched
       ? parseFloat(
           getComputedStyle(root).getPropertyValue("--footer-height"),
         ) || 0
       : 0;
+    const bottom = cachedFooterHeight;
     const overflows = scenes.map((scene) =>
       fixedScenes.has(scene.section.id)
         ? 0
@@ -495,9 +520,13 @@
       clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
         isRotating = false;
+        renderedY = Math.max(
+          0,
+          Math.min(scrollY, document.documentElement.scrollHeight - innerHeight),
+        );
         draw();
         document.dispatchEvent(new Event("jugend:layout"));
-      }, 450);
+      }, 200);
     } else {
       isRotating = false;
     }
@@ -573,11 +602,14 @@
     if (!resizeFrame)
       resizeFrame = requestAnimationFrame(() => measure("offset"));
   });
-  scenes.forEach((scene) => {
-    observer.observe(scene.section);
-    if (!fixedScenes.has(scene.section.id))
-      for (const child of scene.section.children) observer.observe(child);
-  });
+  const accordionSections = [
+    "policy",
+    "originalballmaking-accordion",
+    "faq-slide",
+  ]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  accordionSections.forEach((sec) => observer.observe(sec));
   // A fixed-height chapter does not resize when a details panel expands.
   document.addEventListener(
     "toggle",
@@ -665,7 +697,7 @@
   );
   let settleTimer = 0;
   function captureOrientationAnchor() {
-    if (!isRotating) {
+    if (!orientationAnchor) {
       const curY = renderedY ?? scrollY;
       let target = lastScene;
       if (!target) {
@@ -677,18 +709,19 @@
         const span = target.end - target.start;
         const local = span > 0 ? clamp((curY - target.start) / span) : (lastLocal || 0);
         orientationAnchor = { id: target.section.id, local };
-        isRotating = true;
       }
     }
+    isRotating = true;
   }
   function handleOrientationChange() {
     captureOrientationAnchor();
     suppressObserverUntil = performance.now() + 1500;
     clearTimeout(settleTimer);
+    cancelAnimationFrame(resizeFrame);
     settleTimer = setTimeout(() => {
       cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => measure(true));
-    }, 450);
+    }, 250);
   }
   addEventListener("orientationchange", handleOrientationChange, {
     passive: true,
@@ -712,7 +745,7 @@
       settleTimer = setTimeout(() => {
         cancelAnimationFrame(resizeFrame);
         resizeFrame = requestAnimationFrame(() => measure(true));
-      }, 400);
+      }, 250);
     },
     { passive: true },
   );
@@ -735,9 +768,7 @@
     { passive: true },
   );
   document.addEventListener("jugend:layout", () => {
-    if (isRotating) return;
-    cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(() => measure("offset"));
+    // Layout event consumed by sub-components (context-gallery, etc.)
   });
   document.fonts?.ready.then(() => measure("offset"));
   reduced.addEventListener("change", () => measure(false));

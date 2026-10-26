@@ -36,12 +36,8 @@
   }
   function videoNear(frame) {
     const id = frame.closest(".chapter")?.id;
-    if (!window.JUScenes || !id) return true;
-    const snap = window.JUScenes.snapshot?.();
-    const s = snap?.find((item) => item.id === id);
-    if (!s) return false;
-    const y = window.scrollY;
-    return y > s.start - 4500 && y < s.end + 3000;
+    if (!id) return false;
+    return window.JUScenes ? window.JUScenes.near(id) : true;
   }
   function near(frame) {
     return videoNear(frame);
@@ -248,15 +244,27 @@
   // is on screen and released when the scene is far, so it never coexists
   // with the YouTube players at the end of the page.
   const simulator = document.querySelector("#simulatorIframe");
-  const simulatorSrc = simulator?.dataset.src || simulator?.getAttribute("src");
+  const simulatorSrc = simulator?.dataset.src || simulator?.getAttribute("src") || "./simulator/index.html?v=3";
   function syncSimulator() {
     if (!simulator || !window.JUScenes || !simulatorSrc) return;
-    if (window.JUScenes.visible("simulator")) {
-      if (simulator.getAttribute("src") !== simulatorSrc)
+    const isCoarse = matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const shouldLoad = isCoarse
+      ? window.JUScenes.visible("simulator")
+      : window.JUScenes.near("simulator");
+    if (shouldLoad) {
+      if (!simulator.src || simulator.src.includes("about:blank")) {
+        simulator.style.display = "";
         simulator.src = simulatorSrc;
+      }
+    } else {
+      if (simulator.src && !simulator.src.includes("about:blank")) {
+        simulator.src = "about:blank";
+        simulator.style.display = "none";
+      }
     }
   }
   document.addEventListener("jugend:chapter-visibility", syncSimulator);
+  document.addEventListener("jugend:chapter-motion", syncSimulator);
   const notice = document.querySelector("#site-notice");
   const footer = document.querySelector("footer");
   const header = document.querySelector(".site-header");

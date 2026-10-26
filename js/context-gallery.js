@@ -331,11 +331,15 @@
       paused = true;
       cancelAnimationFrame(raf);
       renderer.domElement.style.visibility = "hidden";
+      renderer.setSize(1, 1, false);
     }
     function resume() {
       if (!paused || disposed) return;
       paused = false;
       renderer.domElement.style.visibility = "visible";
+      const width = section.clientWidth;
+      const height = section.clientHeight;
+      if (width && height) renderer.setSize(width, height, false);
       needsRender = true;
       tick();
     }
@@ -393,7 +397,6 @@
         renderer.domElement.height = 1;
       }
       renderer.dispose();
-      renderer.forceContextLoss?.();
       renderer.domElement.remove();
       heading.style.removeProperty("opacity");
       heading.style.removeProperty("top");
@@ -402,7 +405,7 @@
       rail.classList.remove("cylinder-scene");
       delete section.dataset.galleryMode;
     }
-    return { id, section, dispose, pause, resume };
+    return { id, section, dispose, pause, resume, measure };
   }
 
   function clearActiveGallery() {
@@ -443,6 +446,7 @@
 
   function chooseVisibleTarget() {
     activationFrame = 0;
+    if (window.JUScenes?.isRotating) return;
     if (reducedMotion.matches) {
       clearActiveGallery();
       return;
@@ -484,7 +488,14 @@
 
   addEventListener("scroll", scheduleActivation, { passive: true });
   document.addEventListener("jugend:chapter-visibility", scheduleActivation);
-  document.addEventListener("jugend:layout", scheduleActivation);
+  document.addEventListener("jugend:layout", () => {
+    scheduleActivation();
+    for (const gallery of activeGalleries.values()) {
+      if (window.JUScenes ? window.JUScenes.near(gallery.id) : true) {
+        gallery.measure?.();
+      }
+    }
+  });
   addEventListener("resize", () => {
     if (window.JUScenes?.isRotating) return;
     scheduleActivation();

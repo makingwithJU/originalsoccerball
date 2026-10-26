@@ -5,47 +5,14 @@
     <script>
       (() => {
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-
-        const prevAlive = sessionStorage.getItem('jugend_alive') === '1';
-        sessionStorage.setItem('jugend_alive', '1');
-        const clearAlive = () => sessionStorage.removeItem('jugend_alive');
-        window.addEventListener('pagehide', clearAlive);
-        window.addEventListener('beforeunload', clearAlive);
-
-        const savedY = parseFloat(sessionStorage.getItem('jugend_last_y')) || 0;
-        const nav = window.performance?.getEntriesByType?.('navigation')?.[0];
-        const isBackForward = nav?.type === 'back_forward';
-        const isReload = nav?.type === 'reload';
-        const crashed = prevAlive;
-        if (crashed) {
-          sessionStorage.setItem('jugend_crashed', '1');
-        } else {
+        try {
+          sessionStorage.removeItem('jugend_alive');
           sessionStorage.removeItem('jugend_crashed');
-        }
-
-        const shouldRestore = (crashed || isBackForward || isReload) && savedY > 0;
-        if (shouldRestore) {
-          window.scrollTo(0, savedY);
-          document.addEventListener('DOMContentLoaded', () => {
-            window.scrollTo(0, savedY);
-          }, { once: true });
-        } else {
-          scrollTo(0, 0);
-          document.documentElement.classList.add('intro-active');
-        }
-
-        let scrollTimer = 0;
-        window.addEventListener('scroll', () => {
-          if (!scrollTimer) {
-            scrollTimer = setTimeout(() => {
-              scrollTimer = 0;
-              sessionStorage.setItem('jugend_last_y', String(window.scrollY));
-              if (window.JUScenes?.active) {
-                sessionStorage.setItem('jugend_last_scene', window.JUScenes.active);
-              }
-            }, 100);
-          }
-        }, { passive: true });
+          sessionStorage.removeItem('jugend_last_y');
+          sessionStorage.removeItem('jugend_last_scene');
+        } catch (_) {}
+        scrollTo(0, 0);
+        document.documentElement.classList.add('intro-active');
       })();
     </script>
     <script>
@@ -119,29 +86,29 @@
 
     <!-- ==================== 3. 3D & CORE MOTION ENGINES ==================== -->
     <!-- 3D Ball Renderer (Three.js + GLTFLoader) -->
-    <script src="./js/face3d.umd.js?v=2.2.0" defer></script>
+    <script src="./js/face3d.umd.js?v=2.3.8" defer></script>
     <!-- 3D Wireframe Cursor (Three.js + STLLoader) -->
     <script src="./js/cursor-3d.js?v=2.2.0" defer></script>
     <!-- Hero frame-sequence scrubber -->
-    <script src="./js/intro.js?v=2.3.1" defer></script>
+    <script src="./js/intro.js?v=2.3.8" defer></script>
     <!-- Hero Typography Morphing -->
-    <script src="./js/hero-title.js?v=2.2.0" defer></script>
+    <script src="./js/hero-title.js?v=2.3.8" defer></script>
     <!-- Experimental native-scroll scene compositor -->
     <script src="./js/scene-progress.js?v=2.2.0" defer></script>
     <script src="./js/spiral-background.js?v=2.2.0" defer></script>
-    <script src="./js/scene-transition.js?v=2.3.6" defer></script>
+    <script src="./js/scene-transition.js?v=2.3.8" defer></script>
     <script src="./js/simulator-interaction.js?v=2.2.0" defer></script>
     <script src="./js/specs-slider.js?v=2.2.0" defer></script>
-    <script src="./js/unroll-images.js?v=2.3.6" defer></script>
+    <script src="./js/unroll-images.js?v=2.3.8" defer></script>
     <!-- 3D Orbit Carousel Gallery -->
-    <script src="./js/spatial-gallery.js?v=2.2.0" defer></script>
-    <script src="./js/context-gallery.js?v=2.2.0" defer></script>
+    <script src="./js/spatial-gallery.js?v=2.3.8" defer></script>
+    <script src="./js/context-gallery.js?v=2.3.8" defer></script>
 
     <!-- ==================== 4. UI & INTERACTION SCRIPTS ==================== -->
     <!-- Theme Switcher: each visit starts dark. -->
     <script src="./js/theme.js?v=2.2.0" defer></script>
     <!-- Media & Lazy Video Loader -->
-    <script src="./js/media.js?v=2.3.6" defer></script>
+    <script src="./js/media.js?v=2.3.8" defer></script>
     <!-- General UI Interactions (Modals, Forms, Badges) -->
     <script src="./js/interactions.js?v=2.2.0" defer></script>
 
@@ -857,7 +824,7 @@
     <div class="simu-wrapper" id="simu-collapse-target">
       <div class="simu-card device-shell">
         <div class="simu-frame">
-          <iframe id="simulatorIframe" title="fullcolorballs simulator" loading="lazy" allow="fullscreen" src="./simulator/index.html?v=3"></iframe>
+          <iframe id="simulatorIframe" title="fullcolorballs simulator" allow="fullscreen" data-src="./simulator/index.html?v=3" src="about:blank"></iframe>
         </div>
       </div>
     </div>

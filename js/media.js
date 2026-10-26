@@ -1,5 +1,11 @@
 "use strict";
 (() => {
+  try {
+    const pc = document.createElement("link");
+    pc.rel = "preconnect";
+    pc.href = "https://www.youtube-nocookie.com";
+    document.head.append(pc);
+  } catch (_) {}
   const frames = [
     ...document.querySelectorAll('iframe.ju-yt, iframe[data-src*="youtube"]'),
   ];
@@ -35,7 +41,7 @@
     const s = snap?.find((item) => item.id === id);
     if (!s) return false;
     const y = window.scrollY;
-    return y > s.start - 2500 && y < s.end + 2000;
+    return y > s.start - 4500 && y < s.end + 3000;
   }
   function near(frame) {
     return videoNear(frame);
@@ -224,19 +230,30 @@
   });
   document.addEventListener("jugend:scroll-frame", checkChapterMediaSync);
 
+  // Pre-load YouTube API after HERO is passed, during idle time, so it's ready ahead of arrival
+  document.addEventListener("jugend:chapter-visibility", () => {
+    if (window.JUScenes?.active && window.JUScenes.active !== "hero" && !requested) {
+      const startPreload = () => {
+        if (!requested && frames.length > 0) load(frames[0]);
+      };
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(startPreload, { timeout: 3000 });
+      } else {
+        setTimeout(startPreload, 1500);
+      }
+    }
+  }, { once: true });
+
   // Simulator (WebGL): no eager preboot. It is attached only while its scene
   // is on screen and released when the scene is far, so it never coexists
   // with the YouTube players at the end of the page.
   const simulator = document.querySelector("#simulatorIframe");
-  const simulatorSrc = simulator?.getAttribute("src");
+  const simulatorSrc = simulator?.dataset.src || simulator?.getAttribute("src");
   function syncSimulator() {
-    if (!simulator || !window.JUScenes) return;
+    if (!simulator || !window.JUScenes || !simulatorSrc) return;
     if (window.JUScenes.visible("simulator")) {
       if (simulator.getAttribute("src") !== simulatorSrc)
         simulator.src = simulatorSrc;
-    } else if (!window.JUScenes.near("simulator")) {
-      if (simulator.getAttribute("src") === simulatorSrc)
-        simulator.src = "about:blank";
     }
   }
   document.addEventListener("jugend:chapter-visibility", syncSimulator);

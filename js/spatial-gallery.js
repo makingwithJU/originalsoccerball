@@ -402,8 +402,8 @@
         const available = image.naturalWidth > 0 && image.naturalHeight > 0;
         const aspect = squareCrop || !available ? 1 : image.naturalWidth / image.naturalHeight;
         entry.aspect = aspect;
-        const isSmallScreen = Math.min(innerWidth, innerHeight) < 600;
-        const maxSide = isSmallScreen ? 384 : 768;
+        const isMobile = matchMedia('(hover: none) and (pointer: coarse)').matches || Math.min(innerWidth, innerHeight) < 600;
+        const maxSide = isMobile ? 256 : 768;
         let width = maxSide;
         let height = maxSide;
         if (aspect >= 1) height = Math.max(1, Math.round(maxSide / aspect));
@@ -590,10 +590,12 @@
       connectorLayer.setAttribute('viewBox', `0 0 ${frame.width} ${frame.height}`);
 
       const canvas = renderer.domElement;
+      visualLayer.hidden = false;
       canvas.hidden = false;
       if (
-        canvas.width !== Math.floor(frame.width * renderer.getPixelRatio()) ||
-        canvas.height !== Math.floor(frame.height * renderer.getPixelRatio())
+        !window.JUScenes?.isRotating &&
+        (canvas.width !== Math.floor(frame.width * renderer.getPixelRatio()) ||
+         canvas.height !== Math.floor(frame.height * renderer.getPixelRatio()))
       ) renderer.setSize(frame.width, frame.height, false);
 
       camera.aspect = frame.width / frame.height;
@@ -842,24 +844,11 @@
     });
     function release() {
       if (!renderer) return;
-      for (const entry of entries) {
-        entry.mesh.geometry.dispose();
-        entry.mesh.material.map.dispose();
-        entry.mesh.material.dispose();
-        entry.canvas.width = entry.canvas.height = 1;
-        entry.connector.remove();
-      }
-      if (renderer.domElement) {
-        renderer.domElement.width = 1;
-        renderer.domElement.height = 1;
-      }
-      renderer.dispose();
-      renderer.forceContextLoss();
-      renderer.domElement.remove();
-      renderer = scene = camera = entries = null;
-      textureKey = '';
+      // Persistent context pattern: Do NOT destroy WebGLRenderer or call forceContextLoss on scroll.
+      // In WebKit (iOS Safari), repeatedly destroying and creating WebGLRenderers leaks uncollected IOSurface
+      // allocations in the GPU process, triggering the "A problem repeatedly occurred" crash.
+      // Simply pause rendering and hide the visual layer when far away.
       visualLayer.hidden = true;
-      section.classList.add('gallery-pending');
     }
     function prepare(now) {
       // Compile and upload while the opaque portal still covers this chapter.
@@ -898,8 +887,14 @@
     attributeFilter: ['class'],
   });
   addEventListener('scroll', schedule, { passive: true });
-  addEventListener('resize', schedule, { passive: true });
-  window.visualViewport?.addEventListener('resize', schedule, { passive: true });
+  addEventListener('resize', () => {
+    if (window.JUScenes?.isRotating) return;
+    schedule();
+  }, { passive: true });
+  window.visualViewport?.addEventListener('resize', () => {
+    if (window.JUScenes?.isRotating) return;
+    schedule();
+  }, { passive: true });
   document.addEventListener('visibilitychange', schedule);
   document.addEventListener('jugend:chapter-visibility', schedule);
   reduced.addEventListener('change', schedule);

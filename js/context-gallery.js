@@ -60,7 +60,7 @@
     );
     const limit = Math.min(
       renderer.capabilities.maxTextureSize,
-      coarsePointer.matches ? 4096 : 8192,
+      coarsePointer.matches ? 2048 : 8192,
     );
     const height = Math.min(
       coarsePointer.matches ? 256 : 512,
@@ -190,7 +190,7 @@
     const aim = new THREE.Vector3();
 
     function measure() {
-      if (disposed) return;
+      if (disposed || window.JUScenes?.isRotating) return;
       needsRender = true;
       const width = section.clientWidth;
       const height = section.clientHeight;
@@ -325,8 +325,23 @@
       section.style.setProperty("--gallery-progress", progress);
     }
 
+    let paused = false;
+    function pause() {
+      if (paused || disposed) return;
+      paused = true;
+      cancelAnimationFrame(raf);
+      renderer.domElement.style.visibility = "hidden";
+    }
+    function resume() {
+      if (!paused || disposed) return;
+      paused = false;
+      renderer.domElement.style.visibility = "visible";
+      needsRender = true;
+      tick();
+    }
+
     function tick() {
-      if (disposed) return;
+      if (disposed || paused) return;
       const stage = section.closest(".chapter-stage");
       const scrollProgress = window.JUScenes
         ? window.JUScenes.progress(id)
@@ -387,7 +402,7 @@
       rail.classList.remove("cylinder-scene");
       delete section.dataset.galleryMode;
     }
-    return { id, section, dispose };
+    return { id, section, dispose, pause, resume };
   }
 
   function clearActiveGallery() {
@@ -433,17 +448,22 @@
       return;
     }
 
-    // Both canvases must survive the overlapping reveal. Retire a canvas
-    // only after its scene has fully left the viewport and prefetch margin.
+    // Retain created gallery instances and pause/resume their rendering loop.
+    // Avoid constantly creating and disposing WebGLRenderers on scroll, which leaks
+    // uncollected GPU IOSurfaces on iOS Safari (WebKit).
     for (const section of targets) {
       const rect = section.getBoundingClientRect();
       const nearby = window.JUScenes
         ? window.JUScenes.near(section.id)
         : rect.bottom > -innerHeight && rect.top < innerHeight * 2;
-      if (nearby) activate(section);
-      else if (activeGalleries.has(section.id)) {
-        activeGalleries.get(section.id).dispose();
-        activeGalleries.delete(section.id);
+      if (nearby) {
+        if (!activeGalleries.has(section.id)) {
+          activate(section);
+        } else {
+          activeGalleries.get(section.id).resume?.();
+        }
+      } else if (activeGalleries.has(section.id)) {
+        activeGalleries.get(section.id).pause?.();
       }
     }
   }
@@ -464,7 +484,11 @@
 
   addEventListener("scroll", scheduleActivation, { passive: true });
   document.addEventListener("jugend:chapter-visibility", scheduleActivation);
-  addEventListener("resize", scheduleActivation, { passive: true });
+  document.addEventListener("jugend:layout", scheduleActivation);
+  addEventListener("resize", () => {
+    if (window.JUScenes?.isRotating) return;
+    scheduleActivation();
+  }, { passive: true });
   window.addEventListener("jugend:intro-complete", scheduleActivation);
   scheduleActivation();
 

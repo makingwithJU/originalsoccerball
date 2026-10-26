@@ -73,6 +73,9 @@
 
   // Public read-only progress is consumed by HERO, image rolls and galleries.
   window.JUScenes = {
+    get isRotating() {
+      return isRotating;
+    },
     get active() {
       return lastScene?.section?.id || (scenes[0]?.section?.id ?? null);
     },
@@ -483,17 +486,21 @@
           ? anchor.scene.start + Math.min(anchor.offset, span)
           : rawY;
       if (Math.abs(y - scrollY) > 0.5) scrollTo(0, y);
+      renderedY = y;
       lastScene = anchor.scene;
       lastLocal = anchor.local;
     }
+    draw();
     if (anchor?.fromRotation) {
-      setTimeout(() => {
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
         isRotating = false;
-      }, 200);
+        draw();
+        document.dispatchEvent(new Event("jugend:layout"));
+      }, 450);
     } else {
       isRotating = false;
     }
-    draw();
   }
 
   const probe = document.createElement("div");
@@ -648,20 +655,35 @@
     },
     { passive: true },
   );
-  addEventListener("scroll", schedule, { passive: true });
+  addEventListener(
+    "scroll",
+    () => {
+      if (isRotating) return;
+      schedule();
+    },
+    { passive: true },
+  );
   let settleTimer = 0;
   function captureOrientationAnchor() {
     if (!isRotating) {
-      const target = lastScene || scenes[0];
+      const curY = renderedY ?? scrollY;
+      let target = lastScene;
+      if (!target) {
+        let idx = scenes.findIndex((scene) => curY < scene.end - 0.5);
+        if (idx < 0) idx = scenes.length - 1;
+        target = scenes[idx] || scenes[0];
+      }
       if (target) {
-        orientationAnchor = { id: target.section.id, local: lastLocal || 0 };
+        const span = target.end - target.start;
+        const local = span > 0 ? clamp((curY - target.start) / span) : (lastLocal || 0);
+        orientationAnchor = { id: target.section.id, local };
         isRotating = true;
       }
     }
   }
   function handleOrientationChange() {
     captureOrientationAnchor();
-    suppressObserverUntil = performance.now() + 1200;
+    suppressObserverUntil = performance.now() + 1500;
     clearTimeout(settleTimer);
     settleTimer = setTimeout(() => {
       cancelAnimationFrame(resizeFrame);
@@ -671,13 +693,16 @@
   addEventListener("orientationchange", handleOrientationChange, {
     passive: true,
   });
+  window.screen?.orientation?.addEventListener?.("change", handleOrientationChange);
+  const orientationMql = matchMedia("(orientation: portrait)");
+  orientationMql.addEventListener?.("change", handleOrientationChange);
   addEventListener(
     "resize",
     () => {
       updateViewport();
-      suppressObserverUntil = performance.now() + 1000;
+      suppressObserverUntil = performance.now() + 1200;
       if (innerWidth === lastWidth) {
-        schedule();
+        if (!isRotating) schedule();
         return;
       }
       captureOrientationAnchor();

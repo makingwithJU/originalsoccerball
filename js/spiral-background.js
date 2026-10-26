@@ -97,6 +97,7 @@
       if (unavailable || !init()) return false;
       const size = `${innerWidth}:${innerHeight}`;
       if (size !== previousSize) {
+        if (window.JUScenes?.isRotating) return false;
         renderer.setSize(Math.floor(512 * innerWidth / innerHeight), 512, false);
         material.uniforms.aspect.value = innerWidth / innerHeight;
         previousSize = size;

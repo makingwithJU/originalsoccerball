@@ -397,6 +397,7 @@
         renderer.domElement.height = 1;
       }
       renderer.dispose();
+      renderer.forceContextLoss?.();
       renderer.domElement.remove();
       heading.style.removeProperty("opacity");
       heading.style.removeProperty("top");

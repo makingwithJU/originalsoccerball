@@ -1,5 +1,8 @@
 "use strict";
 (() => {
+  const isMobile =
+    matchMedia("(hover: none) and (pointer: coarse)").matches ||
+    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   try {
     const pc = document.createElement("link");
     pc.rel = "preconnect";
@@ -37,7 +40,13 @@
   function videoNear(frame) {
     const id = frame.closest(".chapter")?.id;
     if (!id) return false;
-    return window.JUScenes ? window.JUScenes.near(id) : true;
+    if (!window.JUScenes) return true;
+    if (isMobile) {
+      // On mobile touch devices, load when the section is visible or immediately transitioning
+      // to avoid background Jetsam memory spikes while user is in preceding chapters.
+      return window.JUScenes.visible(id);
+    }
+    return window.JUScenes.near(id);
   }
   function near(frame) {
     return videoNear(frame);
@@ -52,6 +61,13 @@
     )
       return;
     frame.dataset.priming = "true";
+    // On coarse touch devices, avoid force-starting playback while off-screen.
+    // URL parameters handle playback when visible, and sync() controls state.
+    if (isMobile && !shouldPlay(frame)) {
+      frame.dataset.primed = "true";
+      delete frame.dataset.priming;
+      return;
+    }
     try {
       player.mute();
       player.playVideo();
@@ -132,9 +148,10 @@
       }),
     );
   }
-  // Release distant players cleanly by pausing.
-  // We NEVER destroy the player or clear frame.src to prevent YouTube 429 rate limit errors ("回数が多すぎる")
-  // and maintain seamless instant playback when returning to the section.
+  // Release distant players cleanly.
+  // On PC, we pause to maintain instant playback.
+  // On mobile touch devices, we release the distant iframe so multiple heavy YouTube players
+  // never coexist simultaneously, preventing iOS WebKit memory Jetsam crashes.
   function unload(frame) {
     const player = players.get(frame);
     if (player) {
@@ -144,6 +161,19 @@
     }
     playback.set(frame, false);
     visible.delete(frame);
+
+    if (isMobile && frame.dataset.loadedSrc) {
+      try {
+        player?.destroy?.();
+      } catch (_) {}
+      players.delete(frame);
+      pending.delete(frame);
+      delete frame.dataset.ready;
+      delete frame.dataset.primed;
+      delete frame.dataset.priming;
+      delete frame.dataset.loadedSrc;
+      frame.src = "about:blank";
+    }
   }
   function load(frame) {
     if (!frame.dataset.loadedSrc) {
@@ -226,11 +256,12 @@
   });
   document.addEventListener("jugend:scroll-frame", checkChapterMediaSync);
 
-  // Pre-load YouTube API after HERO is passed, during idle time, so it's ready ahead of arrival
+  // Pre-load YouTube API after HERO is passed on PC, during idle time.
+  // On mobile touch devices, omit eager pre-boot to keep initial memory clean.
   document.addEventListener("jugend:chapter-visibility", () => {
     if (window.JUScenes?.active && window.JUScenes.active !== "hero" && !requested) {
       const startPreload = () => {
-        if (!requested && frames.length > 0) load(frames[0]);
+        if (!requested && frames.length > 0 && !isMobile) load(frames[0]);
       };
       if ("requestIdleCallback" in window) {
         requestIdleCallback(startPreload, { timeout: 3000 });
@@ -247,8 +278,7 @@
   const simulatorSrc = simulator?.dataset.src || simulator?.getAttribute("src") || "./simulator/index.html?v=3";
   function syncSimulator() {
     if (!simulator || !window.JUScenes || !simulatorSrc) return;
-    const isCoarse = matchMedia("(hover: none) and (pointer: coarse)").matches;
-    const shouldLoad = isCoarse
+    const shouldLoad = isMobile
       ? window.JUScenes.visible("simulator")
       : window.JUScenes.near("simulator");
     if (shouldLoad) {

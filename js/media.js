@@ -40,13 +40,7 @@
   function videoNear(frame) {
     const id = frame.closest(".chapter")?.id;
     if (!id) return false;
-    if (!window.JUScenes) return true;
-    if (isMobile) {
-      // On mobile touch devices, load when the section is visible or immediately transitioning
-      // to avoid background Jetsam memory spikes while user is in preceding chapters.
-      return window.JUScenes.visible(id);
-    }
-    return window.JUScenes.near(id);
+    return window.JUScenes ? window.JUScenes.near(id) : true;
   }
   function near(frame) {
     return videoNear(frame);
@@ -61,13 +55,6 @@
     )
       return;
     frame.dataset.priming = "true";
-    // On coarse touch devices, avoid force-starting playback while off-screen.
-    // URL parameters handle playback when visible, and sync() controls state.
-    if (isMobile && !shouldPlay(frame)) {
-      frame.dataset.primed = "true";
-      delete frame.dataset.priming;
-      return;
-    }
     try {
       player.mute();
       player.playVideo();
@@ -161,7 +148,7 @@
     playback.set(frame, false);
     visible.delete(frame);
 
-    if (isMobile && frame.dataset.loadedSrc) {
+    if (isMobile && frame.dataset.loadedSrc && !near(frame)) {
       try {
         player?.destroy?.();
       } catch (_) {}
@@ -183,7 +170,6 @@
       url.searchParams.set("playsinline", "1");
       url.searchParams.set("fs", "0");
       url.searchParams.set("disablekb", "1");
-      url.searchParams.set("origin", location.origin);
       frame.src = url.href;
       frame.dataset.loadedSrc = url.href;
     }
@@ -255,12 +241,11 @@
   });
   document.addEventListener("jugend:scroll-frame", checkChapterMediaSync);
 
-  // Pre-load YouTube API after HERO is passed on PC, during idle time.
-  // On mobile touch devices, omit eager pre-boot to keep initial memory clean.
+  // Pre-load YouTube API after HERO is passed, during idle time, so it's ready ahead of arrival
   document.addEventListener("jugend:chapter-visibility", () => {
     if (window.JUScenes?.active && window.JUScenes.active !== "hero" && !requested) {
       const startPreload = () => {
-        if (!requested && frames.length > 0 && !isMobile) load(frames[0]);
+        if (!requested && frames.length > 0) load(frames[0]);
       };
       if ("requestIdleCallback" in window) {
         requestIdleCallback(startPreload, { timeout: 3000 });

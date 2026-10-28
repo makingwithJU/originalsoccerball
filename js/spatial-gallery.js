@@ -105,7 +105,6 @@
       const headingBand = clamp(frame.width * 0.09, 32, 48);
       const sphereX = frame.width * 0.50;
       const sphereY = clamp(frame.height * 0.20, radius + 6, frame.height * 0.27);
-      const sphereBottom = sphereY + radius;
       // Heading is placed at top, so card can sit right below upper sphere with subtle overlap
       const rowTopMin = sphereY + radius * 0.50;
       const availableBelow = Math.max(140, frame.height - rowTopMin - captionReserve - EDGE);

@@ -771,6 +771,7 @@
     // Layout event consumed by sub-components (context-gallery, etc.)
   });
   document.fonts?.ready.then(() => measure("offset"));
+  addEventListener("load", () => measure("offset"), { once: true });
   reduced.addEventListener("change", () => measure(false));
   document.addEventListener("click", (event) => {
     const anchor = event.target.closest('a[href^="#"]');

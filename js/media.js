@@ -73,7 +73,6 @@
       player.playVideo();
     } catch (_) {}
   }
-  function status() {}
   function sync(frame) {
     const player = players.get(frame);
     if (!player || frame.dataset.ready !== "true") return;

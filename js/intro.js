@@ -76,8 +76,8 @@
       );
     }
     // Bound decoded RGBA residency, not just compressed transfer size.
-    const maxDecoded = () => (tier === "desktop" ? 48 : 18);
-    const maxPending = () => (tier === "desktop" ? 10 : 6);
+    const maxDecoded = () => (tier === "desktop" ? 140 : 48);
+    const maxPending = () => (tier === "desktop" ? 16 : 10);
     const heroIsNear = () =>
       !window.JUScenes ||
       window.JUScenes.visible("hero") ||
@@ -304,21 +304,21 @@
       // Target + lookahead ahead + lookback behind fit inside the decoded budget.
       const lookahead =
         tier === "desktop"
-          ? 24
+          ? 36
           : tier === "phone" || tier === "tablet"
-            ? 12
-            : 8;
-      const lookback = tier === "desktop" ? 8 : 4;
+            ? 24
+            : 16;
+      const lookback = tier === "desktop" ? 16 : 8;
       for (let d = 1; d <= lookahead; d++) {
-        if (pending.size >= maxPending() - 2) break;
+        if (pending.size >= maxPending() - 1) break;
         const forward = index + d;
         const backward = index - d;
         if (forward < FRAME_COUNT)
           loadFrame(
             forward,
-            d <= (tier === "desktop" ? 8 : 4) ? "high" : "low",
+            d <= (tier === "desktop" ? 12 : 6) ? "high" : "low",
           ).catch(() => {});
-        if (backward >= 0 && d <= lookback && pending.size < maxPending() - 2)
+        if (backward >= 0 && d <= lookback && pending.size < maxPending() - 1)
           loadFrame(backward, "low").catch(() => {});
       }
       evictDecoded(index);
@@ -361,7 +361,7 @@
           distance = Infinity;
         for (const index of decoded.keys()) {
           const d = Math.abs(index - target);
-          if (d <= 10 && d < distance) {
+          if (d <= 32 && d < distance) {
             nearest = index;
             distance = d;
           }
@@ -485,32 +485,20 @@
 
     function warmHttpCache() {
       let nextIndex = 1;
-      function fetchBatch(deadline) {
-        while (
-          nextIndex < FRAME_COUNT &&
-          ((deadline &&
-            deadline.timeRemaining &&
-            deadline.timeRemaining() > 5) ||
-            !deadline)
-        ) {
+      function fetchBatch() {
+        const batchSize = 8;
+        let count = 0;
+        while (nextIndex < FRAME_COUNT && count < batchSize) {
           const url = frameUrl(nextIndex);
           fetch(url, { priority: "low", cache: "force-cache" }).catch(() => {});
           nextIndex++;
-          if (!deadline && nextIndex % 4 === 0) break;
+          count++;
         }
         if (nextIndex < FRAME_COUNT) {
-          if ("requestIdleCallback" in window) {
-            requestIdleCallback(fetchBatch, { timeout: 2000 });
-          } else {
-            setTimeout(fetchBatch, 100);
-          }
+          setTimeout(fetchBatch, 24);
         }
       }
-      if ("requestIdleCallback" in window) {
-        requestIdleCallback(fetchBatch, { timeout: 3000 });
-      } else {
-        setTimeout(fetchBatch, 1000);
-      }
+      setTimeout(fetchBatch, 50);
     }
 
     resizeCanvas();

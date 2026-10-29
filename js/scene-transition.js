@@ -46,6 +46,7 @@
     "simulator",
     "usage-title",
     "event-shop-title",
+    "hero-2-slide",
   ]);
   const fixedScenes = new Set([
     "hero",

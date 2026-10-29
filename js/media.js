@@ -23,14 +23,19 @@
     const reducedMotion = matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const isHero = chapter?.id === "hero-2-slide" || chapter?.id === "hero";
     const motionReady =
+      isHero ||
       !window.JUScenes ||
       chapter?.dataset.motionReady === "true" ||
       reducedMotion;
     const deviceReady =
       !device || device.dataset.rotationComplete === "true" || reducedMotion;
+    const isVisible =
+      visible.has(frame) ||
+      (isHero && window.JUScenes?.visible(chapter?.id));
     return (
-      visible.has(frame) &&
+      isVisible &&
       !document.hidden &&
       chapter?.dataset.covered !== "true" &&
       motionReady &&
@@ -54,6 +59,10 @@
       frame.dataset.priming === "true"
     )
       return;
+    // On mobile touch devices, do not decode hardware video while the scene is distant/hidden
+    if (isMobile && !window.JUScenes?.visible(frame.closest(".chapter")?.id)) {
+      return;
+    }
     frame.dataset.priming = "true";
     try {
       player.mute();
@@ -136,32 +145,34 @@
   }
   // Release distant players cleanly.
   // On PC, we pause to maintain instant playback.
-  // On mobile touch devices, we release the distant iframe so multiple heavy YouTube players
-  // never coexist simultaneously, preventing iOS WebKit memory Jetsam crashes.
+  // On mobile touch devices, we pause and stop video when distant to release
+  // hardware video decoding without destroying the <iframe> DOM element.
   function unload(frame) {
     const player = players.get(frame);
     if (player) {
       try {
         player.pauseVideo();
+        if (isMobile && !near(frame)) {
+          player.stopVideo?.();
+        }
       } catch (_) {}
     }
     playback.set(frame, false);
     visible.delete(frame);
-
-    if (isMobile && frame.dataset.loadedSrc && !near(frame)) {
-      try {
-        player?.destroy?.();
-      } catch (_) {}
-      players.delete(frame);
-      pending.delete(frame);
-      delete frame.dataset.ready;
-      delete frame.dataset.primed;
-      delete frame.dataset.priming;
-      delete frame.dataset.loadedSrc;
-      frame.src = "about:blank";
-    }
   }
   function load(frame) {
+    // If the frame element was somehow detached, ensure it remains in its container
+    if (!document.contains(frame)) {
+      const container =
+        frame.id === "jugend-video-2"
+          ? document.querySelector("#hero-2 .hero-video")
+          : frame.id === "jugend-video-1"
+            ? document.querySelector("#modeling .ju-media")
+            : null;
+      if (container && !container.contains(frame)) {
+        container.appendChild(frame);
+      }
+    }
     if (!frame.dataset.loadedSrc) {
       frame.loading = "eager";
       const url = new URL(frame.dataset.src);

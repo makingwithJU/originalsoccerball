@@ -361,6 +361,13 @@
       camera = new THREE.PerspectiveCamera(30, 1, 1, 12000);
 
       const sharedCardGeometry = new THREE.PlaneGeometry(1, 1, 16, 16);
+      const posAttr = sharedCardGeometry.attributes.position;
+      for (let i = 0; i < posAttr.count; i++) {
+        const vx = posAttr.getX(i);
+        const vy = posAttr.getY(i);
+        posAttr.setZ(i, -(vx * vx + vy * vy) * 2.0);
+      }
+      posAttr.needsUpdate = true;
 
       entries = sources.map((image, index) => {
         const canvas = document.createElement('canvas');
@@ -369,38 +376,6 @@
         texture.minFilter = THREE.LinearFilter;
         texture.generateMipmaps = false;
         const material = new THREE.MeshBasicMaterial({ map: texture, transparent: false, side: THREE.DoubleSide });
-
-        material.userData.uCurvature = { value: 0 };
-        material.userData.uCardSize = { value: new THREE.Vector2(1, 1) };
-        material.userData.uSphereRadius = { value: 500 };
-
-        material.onBeforeCompile = (shader) => {
-          shader.uniforms.uCurvature = material.userData.uCurvature;
-          shader.uniforms.uCardSize = material.userData.uCardSize;
-          shader.uniforms.uSphereRadius = material.userData.uSphereRadius;
-
-          shader.vertexShader = `
-            uniform float uCurvature;
-            uniform vec2 uCardSize;
-            uniform float uSphereRadius;
-          ` + shader.vertexShader;
-
-          shader.vertexShader = shader.vertexShader.replace(
-            '#include <begin_vertex>',
-            `
-            #include <begin_vertex>
-            if (uCurvature > 0.0001 && uSphereRadius > 1.0) {
-              float wx = position.x * uCardSize.x;
-              float wy = position.y * uCardSize.y;
-              float r2 = wx * wx + wy * wy;
-              float R = uSphereRadius;
-              float deltaZ = R - sqrt(max(0.0, R * R - r2));
-              transformed.z -= deltaZ * uCurvature;
-            }
-            `
-          );
-        };
-
         const mesh = new THREE.Mesh(sharedCardGeometry, material);
         mesh.frustumCulled = false;
         mesh.renderOrder = 2;
@@ -412,7 +387,7 @@
         connectorLayer.append(connector);
 
         return {
-          mesh, material, connector, canvas, image, cell: cells[index],
+          mesh, connector, canvas, image, cell: cells[index],
           basePosition: new THREE.Vector3(), baseQuaternion: new THREE.Quaternion(),
           baseWidth: 1, baseHeight: 1, aspect: 1,
         };
@@ -544,13 +519,12 @@
     function applyPlane(entry, position, quaternion, width, height, curvature = 0, sphereRadius = 500) {
       entry.mesh.position.copy(position);
       entry.mesh.quaternion.copy(quaternion);
-      entry.mesh.scale.set(width, height, 1);
+      const chord2 = width * width + height * height;
+      const rawSagitta = chord2 / (8 * Math.max(180, sphereRadius));
+      const maxSagitta = Math.min(rawSagitta, Math.min(width, height) * 0.10);
+      const scaleZ = Math.max(0.0001, maxSagitta * curvature);
+      entry.mesh.scale.set(width, height, scaleZ);
       entry.mesh.visible = width > .5 && height > .5;
-      if (entry.material && entry.material.userData && entry.material.userData.uCurvature) {
-        entry.material.userData.uCurvature.value = curvature;
-        entry.material.userData.uCardSize.value.set(width, height);
-        entry.material.userData.uSphereRadius.value = sphereRadius;
-      }
     }
 
     function focusDisplay(frame, layout, aspect, hasCaption) {
@@ -743,6 +717,7 @@
           // becomes the visual subject at a time; it leaves, holds, and returns
           // before the next work begins.
           lineOpacity = CONNECTOR_OPACITY;
+          let cardCurvature = 0.65;
           if (index === activeIndex && sequencePhase === 'focus-return') {
             const departEnd = .18;
             const holdEnd = .82;
@@ -782,10 +757,7 @@
             height = lerp(base.baseHeight, display.height * targetDepthScale, pulse);
             lineOpacity = CONNECTOR_OPACITY;
             showCaption = pulse > .62;
-          }
-          let cardCurvature = 0.75;
-          if (index === activeIndex && sequencePhase === 'focus-return') {
-            cardCurvature = 0.75 * (1 - pulse);
+            cardCurvature = 0.65 * (1 - pulse);
           }
           applyPlane(entry, tempPosition, tempQuat, width, height, cardCurvature, sphereRadius);
           setLine(entry, sphereCenter, tempPosition, lineOpacity, frame);
@@ -842,7 +814,7 @@
           tempQuat.slerp(identityQuat, unfold);
           width = lerp(width, released.width, unfold);
           height = lerp(height, released.height, unfold);
-          const cardCurvature = 0.75 * (1 - unfold);
+          const cardCurvature = 0.65 * (1 - unfold);
           applyPlane(entry, tempPosition, tempQuat, width, height, cardCurvature, sphereRadius);
 
           // Portrait, landscape and short-PC use one reversible return path.

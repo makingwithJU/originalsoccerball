@@ -360,6 +360,8 @@
       // The sphere is a positioning guide only; it must never occlude artwork.
       camera = new THREE.PerspectiveCamera(30, 1, 1, 12000);
 
+      const sharedCardGeometry = new THREE.PlaneGeometry(1, 1, 16, 16);
+
       entries = sources.map((image, index) => {
         const canvas = document.createElement('canvas');
         const texture = new THREE.CanvasTexture(canvas);
@@ -367,7 +369,39 @@
         texture.minFilter = THREE.LinearFilter;
         texture.generateMipmaps = false;
         const material = new THREE.MeshBasicMaterial({ map: texture, transparent: false, side: THREE.DoubleSide });
-        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+
+        material.userData.uCurvature = { value: 0 };
+        material.userData.uCardSize = { value: new THREE.Vector2(1, 1) };
+        material.userData.uSphereRadius = { value: 500 };
+
+        material.onBeforeCompile = (shader) => {
+          shader.uniforms.uCurvature = material.userData.uCurvature;
+          shader.uniforms.uCardSize = material.userData.uCardSize;
+          shader.uniforms.uSphereRadius = material.userData.uSphereRadius;
+
+          shader.vertexShader = `
+            uniform float uCurvature;
+            uniform vec2 uCardSize;
+            uniform float uSphereRadius;
+          ` + shader.vertexShader;
+
+          shader.vertexShader = shader.vertexShader.replace(
+            '#include <begin_vertex>',
+            `
+            #include <begin_vertex>
+            if (uCurvature > 0.0001 && uSphereRadius > 1.0) {
+              float wx = position.x * uCardSize.x;
+              float wy = position.y * uCardSize.y;
+              float r2 = wx * wx + wy * wy;
+              float R = uSphereRadius;
+              float deltaZ = R - sqrt(max(0.0, R * R - r2));
+              transformed.z -= deltaZ * uCurvature;
+            }
+            `
+          );
+        };
+
+        const mesh = new THREE.Mesh(sharedCardGeometry, material);
         mesh.frustumCulled = false;
         mesh.renderOrder = 2;
         scene.add(mesh);
@@ -378,7 +412,7 @@
         connectorLayer.append(connector);
 
         return {
-          mesh, connector, canvas, image, cell: cells[index],
+          mesh, material, connector, canvas, image, cell: cells[index],
           basePosition: new THREE.Vector3(), baseQuaternion: new THREE.Quaternion(),
           baseWidth: 1, baseHeight: 1, aspect: 1,
         };
@@ -507,11 +541,16 @@
       return entry;
     }
 
-    function applyPlane(entry, position, quaternion, width, height) {
+    function applyPlane(entry, position, quaternion, width, height, curvature = 0, sphereRadius = 500) {
       entry.mesh.position.copy(position);
       entry.mesh.quaternion.copy(quaternion);
       entry.mesh.scale.set(width, height, 1);
       entry.mesh.visible = width > .5 && height > .5;
+      if (entry.material && entry.material.userData && entry.material.userData.uCurvature) {
+        entry.material.userData.uCurvature.value = curvature;
+        entry.material.userData.uCardSize.value.set(width, height);
+        entry.material.userData.uSphereRadius.value = sphereRadius;
+      }
     }
 
     function focusDisplay(frame, layout, aspect, hasCaption) {
@@ -744,7 +783,11 @@
             lineOpacity = CONNECTOR_OPACITY;
             showCaption = pulse > .62;
           }
-          applyPlane(entry, tempPosition, tempQuat, width, height);
+          let cardCurvature = 0.75;
+          if (index === activeIndex && sequencePhase === 'focus-return') {
+            cardCurvature = 0.75 * (1 - pulse);
+          }
+          applyPlane(entry, tempPosition, tempQuat, width, height, cardCurvature, sphereRadius);
           setLine(entry, sphereCenter, tempPosition, lineOpacity, frame);
 
           // WebGL owns the artwork for the whole cinematic pass. DOM is used
@@ -799,7 +842,8 @@
           tempQuat.slerp(identityQuat, unfold);
           width = lerp(width, released.width, unfold);
           height = lerp(height, released.height, unfold);
-          applyPlane(entry, tempPosition, tempQuat, width, height);
+          const cardCurvature = 0.75 * (1 - unfold);
+          applyPlane(entry, tempPosition, tempQuat, width, height, cardCurvature, sphereRadius);
 
           // Portrait, landscape and short-PC use one reversible return path.
           // Lines belong to panels that are still on the sphere or are currently

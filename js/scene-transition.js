@@ -420,11 +420,16 @@
 
     // Stable CSS viewport height: mobile toolbar collapse cannot alter the track.
     // On mobile touch devices, unit is fixed to the stable screen height so that
-    // rotating between portrait and landscape never collapses the 480k scroll track,
-    // avoiding massive 240k scroll jumps, tile thrashing, and WebKit process crashes.
+    // rotating between portrait and landscape never collapses the scroll track.
+    // We cap screen dimensions at 1200px to prevent desktop monitor sizes (e.g. 2240px)
+    // from bloating the unit when tested in Chrome DevTools or touch-enabled laptops.
     if (!unit) {
+      const screenDim = (window.screen && window.screen.height && window.screen.width)
+        ? Math.max(window.screen.height, window.screen.width)
+        : innerHeight;
+      const stableHeight = Math.min(screenDim, 1200);
       unit = isCoarseTouch
-        ? Math.max(probe.offsetHeight, window.screen?.height || innerHeight, window.screen?.width || innerWidth, 600)
+        ? Math.max(probe.offsetHeight || innerHeight, stableHeight, 600)
         : probe.offsetHeight;
     } else if (!isCoarseTouch && preserve === true) {
       unit = probe.offsetHeight;

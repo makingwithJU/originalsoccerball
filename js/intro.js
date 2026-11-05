@@ -9,140 +9,91 @@
     if (!root || !hero || !zone || !video || !media) return;
 
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    const coarsePointer = matchMedia("(pointer: coarse)");
     const clamp = (n) => Math.max(0, Math.min(1, n));
 
-    // IMPORTANT: these timing relationships are the approved pre-V19 HERO
-    // timeline. Do not change them when changing the media transport.
     const HERO_TRANSITION_START = 0.6;
     const HERO_SITE_START = 0.94;
     const FACE_START = 0.15;
     const FACE_SPAN = 0.45;
     const FILM_SCROLL_END = 0.6;
-    const FRAME_COUNT = 140; // newhero.mp4: 5.833333 s @ 24 fps
 
-    function deviceTier() {
-      const minSide = Math.min(innerWidth, innerHeight);
-      if (coarsePointer.matches && minSide < 600) return "phone";
-      if (coarsePointer.matches || innerWidth < 1000) return "tablet";
-      return "desktop";
-    }
+    const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isMobileOrTablet = hasTouch || (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches);
 
-    let tier = deviceTier();
-    let currentProgress = 0;
-    let requestedProgress = 0;
-    let displayedFrame = -1;
-    let scrollRaf = 0;
-    let resizeRaf = 0;
+    const videoSrc = isMobileOrTablet
+      ? './assets/media/hero/hero_mobile.mp4?v=134'
+      : './assets/media/hero/hero_pc.mp4?v=134';
+
+    // State for smooth, jitter-free video scrub & 3D ball synchronisation
+    let heroQ = 0;
+    let heroQt = 0;
+    let heroLast = performance.now();
+    let heroRaf = 0;
+    let lastSeekTime = 0;
+
     let introReady = false;
     let firstFrameReady = false;
-    let waitingTimer = 0;
-    const decoded = new Map();
-    const pending = new Map();
-    const failedFrames = new Set();
-    const retries = new Map();
-    const retryTimers = new Map();
-    const retryButton = document.createElement("button");
-    retryButton.type = "button";
-    retryButton.className = "hero-media-retry";
-    retryButton.textContent = "映像を再読み込み";
-    retryButton.hidden = true;
-    hero.append(retryButton);
-    retryButton.addEventListener("click", () => {
-      for (const timer of retryTimers.values()) clearTimeout(timer);
-      retryTimers.clear();
-      retries.clear();
-      failedFrames.clear();
-      retryButton.hidden = true;
-      scheduleSync();
-    });
-    function markFailed(index) {
-      failedFrames.add(index);
-      const attempt = (retries.get(index) || 0) + 1;
-      retries.set(index, attempt);
-      if (attempt > 3) return;
-      const expectedTier = tier;
-      retryTimers.set(
-        index,
-        setTimeout(
-          () => {
-            retryTimers.delete(index);
-            if (expectedTier !== tier) return;
-            failedFrames.delete(index);
-            if (heroIsNear()) scheduleSync();
-          },
-          750 * 2 ** (attempt - 1),
-        ),
-      );
-    }
-    // Bound decoded RGBA residency, not just compressed transfer size.
-    const maxDecoded = () => (tier === "desktop" ? 140 : 48);
-    const maxPending = () => (tier === "desktop" ? 16 : 10);
-    const heroIsNear = () =>
-      !window.JUScenes ||
-      window.JUScenes.visible("hero") ||
-      window.JUScenes.near("hero");
-    const loadingStatus = document.createElement("p");
-    loadingStatus.className = "hero-loading-status";
-    loadingStatus.setAttribute("role", "status");
-    loadingStatus.setAttribute("aria-label", "映像を読み込んでいます");
-    loadingStatus.hidden = true;
-    hero.append(loadingStatus);
-    function waiting(active) {
-      if (!active) {
-        clearTimeout(waitingTimer);
-        waitingTimer = 0;
-        loadingStatus.hidden = true;
-        hero.setAttribute("aria-busy", "false");
-      } else if (!waitingTimer && loadingStatus.hidden) {
-        waitingTimer = setTimeout(() => {
-          waitingTimer = 0;
-          loadingStatus.hidden = false;
-          hero.setAttribute("aria-busy", "true");
-        }, 500);
+    let decoderUnlocked = false;
+    let decoderUnlocking = false;
+
+    video.style.display = "block";
+    video.removeAttribute("aria-hidden");
+    video.muted = true;
+    video.playsInline = true;
+
+    function revealFilm() {
+      if (!firstFrameReady) {
+        firstFrameReady = true;
+        root.classList.add("hero-media-ready");
       }
     }
 
-    if (location.hash)
-      history.replaceState(
-        history.state,
-        "",
-        location.pathname + location.search,
-      );
-    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-
-    if (video) {
-      video.style.display = "none";
-      video.setAttribute("aria-hidden", "true");
+    function unlockDecoder() {
+      if (decoderUnlocked || decoderUnlocking) return;
+      decoderUnlocking = true;
+      try {
+        video.muted = true;
+        video.playbackRate = 0.0001;
+        const finish = () => {
+          decoderUnlocking = false;
+          decoderUnlocked = true;
+          try {
+            video.pause();
+            video.playbackRate = 1;
+            startHeroLoop();
+          } catch (e) {}
+        };
+        const timer = setTimeout(finish, 24);
+        const p = video.play();
+        if (p && typeof p.then === "function") {
+          p.then(() => { clearTimeout(timer); finish(); }).catch(() => { clearTimeout(timer); decoderUnlocking = false; });
+        } else {
+          clearTimeout(timer);
+          finish();
+        }
+      } catch (e) {
+        decoderUnlocking = false;
+      }
     }
 
-    const canvas = document.createElement("canvas");
-    canvas.id = "hero-sequence-canvas-v23";
-    canvas.setAttribute("aria-hidden", "true");
-    Object.assign(canvas.style, {
-      position: "absolute",
-      inset: "0",
-      width: "100%",
-      height: "100%",
-      display: "block",
-      pointerEvents: "none",
-      opacity: "1",
-    });
-    media.append(canvas);
-    const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
-
-    function frameUrl(index) {
-      return `./assets/media/hero-frames-v24/${tier}/frame_${String(index + 1).padStart(3, "0")}.webp`;
+    async function preloadVideoBlob(url) {
+      try {
+        const response = await fetch(url, { cache: "force-cache" });
+        if (!response.ok) return;
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        if (video && !video.ended && video.src !== blobUrl) {
+          const curT = (Number.isFinite(video.currentTime) && video.currentTime > 0) ? video.currentTime : 0;
+          const wasPaused = video.paused;
+          video.src = blobUrl;
+          try { video.currentTime = curT; } catch (_) {}
+          if (wasPaused) { try { video.pause(); } catch (_) {} }
+          startHeroLoop();
+        }
+      } catch (e) {}
     }
 
-    function revealFilm() {
-      root.classList.add("hero-media-ready");
-    }
-
-    // This is intentionally the original approved timing map. Media transport
-    // (MP4 seek vs frame sequence) must never alter these values.
     function render(value) {
-      currentProgress = value;
       const p = reduced.matches ? 1 : clamp(value);
       const state =
         p >= HERO_SITE_START
@@ -153,7 +104,14 @@
       if (state !== "hero") revealFilm();
       root.dataset.heroState = state;
       root.style.setProperty("--hero-progress", p);
-      canvas.style.opacity = String(p > 0.5 ? clamp((0.6 - p) / 0.1) : 1);
+
+      // Smooth video opacity fade into 3D ball
+      video.style.opacity = String(p > 0.5 ? clamp((0.6 - p) / 0.1) : 1);
+
+      // Master scroll timeline synchronization:
+      // JUHeroProgress is driven directly and smoothly by p, exactly matching PC.
+      // Between FACE_START (0.15: kicker strike) and FACE_START + FACE_SPAN (0.60: video end),
+      // the 3D ball ascends and spins at full 60fps WebGL rate without decoder blocking.
       window.JUHeroProgress = clamp((p - FACE_START) / FACE_SPAN);
       window.dispatchEvent(
         new CustomEvent("ju:hero-progress", {
@@ -168,350 +126,116 @@
       }
     }
 
-    function resizeCanvas() {
-      const rect = hero.getBoundingClientRect();
-      const dpr = Math.min(
-        devicePixelRatio || 1,
-        tier === "desktop" ? 1.5 : 1.0,
-      );
-      const width = Math.max(1, Math.round(rect.width * dpr));
-      const height = Math.max(1, Math.round(rect.height * dpr));
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
-      }
-      if (displayedFrame >= 0) drawFrame(displayedFrame);
-    }
+    function heroLoop(now) {
+      const dt = Math.min(0.08, (now - heroLast) / 1000 || 0.016);
+      heroLast = now;
 
-    function drawCover(image, opacity = 1, clear = true) {
-      if (!ctx || !image?.naturalWidth || !image?.naturalHeight) return false;
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const scale = Math.max(cw / image.naturalWidth, ch / image.naturalHeight);
-      const dw = image.naturalWidth * scale;
-      const dh = image.naturalHeight * scale;
-      ctx.globalAlpha = 1;
-      if (clear) {
-        ctx.fillStyle = "#000";
-        ctx.fillRect(0, 0, cw, ch);
-      }
-      ctx.globalAlpha = opacity;
-      ctx.drawImage(image, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
-      ctx.globalAlpha = 1;
-      return true;
-    }
-
-    function evictDecoded(target) {
-      if (decoded.size <= maxDecoded()) return;
-      const keep = new Set([displayedFrame, target]);
-      for (const key of [...decoded.keys()].sort(
-        (a, b) => Math.abs(b - target) - Math.abs(a - target),
-      )) {
-        if (decoded.size <= maxDecoded()) break;
-        if (!keep.has(key)) decoded.delete(key);
-      }
-    }
-
-    function loadFrame(index, priority = "auto") {
-      index = Math.max(0, Math.min(FRAME_COUNT - 1, index));
-      if (decoded.has(index)) return Promise.resolve(decoded.get(index));
-      if (pending.has(index)) return pending.get(index).promise;
-      if (failedFrames.has(index))
-        return Promise.reject(new Error("Unavailable HERO frame"));
-      const expectedTier = tier;
-      const request = { promise: null, cancel: null };
-      const promise = new Promise((resolve, reject) => {
-        const image = new Image();
-        let active = true;
-        const release = () => {
-          active = false;
-          clearTimeout(timeout);
-          image.onload = image.onerror = null;
-          if (pending.get(index) === request) pending.delete(index);
-        };
-        request.cancel = (immediate = false) => {
-          if (!active) return;
-          release();
-          if (immediate) image.removeAttribute("src");
-          reject(new DOMException("Obsolete HERO request", "AbortError"));
-        };
-        const timeout = setTimeout(() => {
-          if (!active) return;
-          release();
-          image.removeAttribute("src");
-          markFailed(index);
-          reject(new Error("HERO frame request timed out"));
-          scheduleSync();
-        }, 8000);
-        image.decoding = "async";
-        try {
-          image.fetchPriority = priority;
-        } catch (_) {}
-        image.onload = async () => {
-          try {
-            await image.decode?.();
-          } catch (_) {}
-          if (!active) return;
-          release();
-          if (expectedTier !== tier) {
-            reject(new Error("stale hero tier"));
-            return;
-          }
-          // A request can finish after the reader has left HERO. Do not keep
-          // decoded film frames resident throughout the remaining 22 scenes.
-          if (!heroIsNear()) {
-            resolve(image);
-            return;
-          }
-          decoded.set(index, image);
-          evictDecoded(
-            Math.round(
-              clamp(requestedProgress / FILM_SCROLL_END) * (FRAME_COUNT - 1),
-            ),
-          );
-          resolve(image);
-          scheduleSync();
-        };
-        image.onerror = (error) => {
-          if (!active) return;
-          release();
-          if (expectedTier === tier) {
-            markFailed(index);
-            scheduleSync();
-          }
-          reject(error);
-        };
-        image.src = frameUrl(index);
-      });
-      request.promise = promise;
-      pending.set(index, request);
-      return promise;
-    }
-
-    function drawFrame(index) {
-      const image = decoded.get(index);
-      if (!image || !drawCover(image)) return false;
-      displayedFrame = index;
-      if (!firstFrameReady) {
-        firstFrameReady = true;
-        revealFilm();
-      }
-      return true;
-    }
-
-    function prefetchAround(index) {
-      if (!heroIsNear()) return;
-      // Target + lookahead ahead + lookback behind fit inside the decoded budget.
-      const lookahead =
-        tier === "desktop"
-          ? 36
-          : tier === "phone" || tier === "tablet"
-            ? 24
-            : 16;
-      const lookback = tier === "desktop" ? 16 : 8;
-      for (let d = 1; d <= lookahead; d++) {
-        if (pending.size >= maxPending() - 1) break;
-        const forward = index + d;
-        const backward = index - d;
-        if (forward < FRAME_COUNT)
-          loadFrame(
-            forward,
-            d <= (tier === "desktop" ? 12 : 6) ? "high" : "low",
-          ).catch(() => {});
-        if (backward >= 0 && d <= lookback && pending.size < maxPending() - 1)
-          loadFrame(backward, "low").catch(() => {});
-      }
-      evictDecoded(index);
-    }
-
-    function presentRequested(progress) {
-      requestedProgress = clamp(progress);
-      // One timeline for film, type and ball. A completed image request may
-      // repaint this position, but never publish its older frame's progress.
-      render(requestedProgress);
-      const filmProgress = Math.min(requestedProgress, FILM_SCROLL_END);
-      const fractionalFrame =
-        (filmProgress / FILM_SCROLL_END) * (FRAME_COUNT - 1);
-      const target = Math.floor(fractionalFrame);
-      const following = Math.min(FRAME_COUNT - 1, target + 1);
-      // Cancel only genuinely obsolete distant work, reserving slots for target frames.
-      for (const [index, request] of pending) {
-        if (Math.abs(index - target) > 36) request.cancel(false);
-      }
-      const needed = [target, following].filter(
-        (index) =>
-          !decoded.has(index) &&
-          !pending.has(index) &&
-          !failedFrames.has(index),
-      );
-      for (const [index, request] of [...pending].sort(
-        (a, b) => Math.abs(b[0] - target) - Math.abs(a[0] - target),
-      )) {
-        if (pending.size + needed.length <= maxPending()) break;
-        if (index !== target && index !== following) request.cancel(false);
-      }
-      if (decoded.has(target)) {
-        drawFrame(target);
-        if (following !== target && decoded.has(following))
-          drawCover(decoded.get(following), fractionalFrame - target, false);
+      // Snappy lerp smoothing that follows touch and wheel momentum without lag
+      const diff = heroQt - heroQ;
+      const lerpSpeed = hasTouch ? 28 : 20;
+      if (Math.abs(diff) > 0.0003) {
+        heroQ += diff * Math.min(1, dt * lerpSpeed);
       } else {
-        // During fast swipes/reversals keep motion continuous with the closest
-        // already-decoded neighbouring frame; never snap back to frame 0.
-        let nearest = -1,
-          distance = Infinity;
-        for (const index of decoded.keys()) {
-          const d = Math.abs(index - target);
-          if (d <= 32 && d < distance) {
-            nearest = index;
-            distance = d;
-          }
-        }
-        if (nearest >= 0) drawFrame(nearest);
+        heroQ = heroQt;
       }
-      const unavailable = failedFrames.has(target);
-      retryButton.hidden = !unavailable;
-      waiting(!decoded.has(target) && !unavailable && displayedFrame < 0);
-      root.dataset.heroMediaFallback = String(unavailable);
-      for (const index of [target, following]) {
-        if (
-          pending.size < maxPending() &&
-          !pending.has(index) &&
-          !decoded.has(index) &&
-          !failedFrames.has(index)
-        ) {
-          loadFrame(index, "high").catch(() => {});
+
+      render(heroQ);
+
+      const filmProgress = Math.min(heroQ, FILM_SCROLL_END);
+      const dur = (Number.isFinite(video.duration) && video.duration > 0) ? video.duration : 5.8;
+      const targetTime = Math.max(0.001, Math.min(dur - 0.04, (filmProgress / FILM_SCROLL_END) * dur));
+
+      if (video && Number.isFinite(video.duration) && video.duration > 0 && heroQ <= 0.65) {
+        if (!decoderUnlocking && !video.paused) {
+          try { video.pause(); } catch (_) {}
+        }
+        if (video.hasAttribute("poster") && targetTime > 0.05 && video.readyState >= 2) {
+          video.removeAttribute("poster");
+        }
+        // Proven PORTFOLIO scrub engine:
+        // Issue seek if video is idle (!seeking) OR if >= 60ms has passed since last seek.
+        // This throttles hardware seek requests to ~16-20fps max, giving mobile GPU decoders
+        // sufficient throughput while preventing frame drops, decoder buffer overflow, and stutter.
+        if ((!video.seeking || (now - lastSeekTime > 60)) && Math.abs(video.currentTime - targetTime) > 0.012) {
+          lastSeekTime = now;
+          try {
+            video.currentTime = targetTime;
+          } catch (_) {}
         }
       }
-      prefetchAround(target);
-      if (unavailable) revealFilm();
+
+      if (Math.abs(heroQt - heroQ) > 0.0003) {
+        heroRaf = requestAnimationFrame(heroLoop);
+      } else {
+        heroRaf = 0;
+        if (video && Number.isFinite(video.duration) && video.duration > 0 && heroQ <= 0.65) {
+          lastSeekTime = now;
+          try { video.currentTime = targetTime; } catch (_) {}
+        }
+      }
     }
+
+    function startHeroLoop() {
+      if (!heroRaf) {
+        heroLast = performance.now();
+        heroRaf = requestAnimationFrame(heroLoop);
+      }
+    }
+
+    video.addEventListener("seeked", () => {
+      revealFilm();
+    }, { passive: true });
+
+    video.addEventListener("loadeddata", revealFilm, { once: true });
+    video.addEventListener("canplay", revealFilm, { once: true });
+
+    ["touchstart", "pointerdown", "wheel", "keydown", "scroll"].forEach((ev) => {
+      window.addEventListener(ev, unlockDecoder, { passive: true, once: true });
+    });
 
     const scrollDistance = () =>
       Math.max(1, zone.offsetHeight - hero.offsetHeight);
     const zoneTop = () => scrollY + zone.getBoundingClientRect().top;
 
     function syncFromScroll() {
-      scrollRaf = 0;
-      const progress = window.JUScenes
-        ? window.JUScenes.progress("hero")
-        : clamp((scrollY - zoneTop()) / scrollDistance());
-      if (heroIsNear()) {
-        if (canvas.width <= 1 || canvas.height <= 1) resizeCanvas();
-        presentRequested(progress);
+      let progress = 0;
+      if (window.JUScenes) {
+        const snap = window.JUScenes.snapshot ? window.JUScenes.snapshot()[0] : null;
+        if (snap && snap.animation > 0) {
+          progress = clamp(scrollY / snap.animation);
+        } else {
+          progress = window.JUScenes.progress("hero");
+        }
       } else {
-        waiting(false);
-        for (const request of pending.values()) request.cancel();
-        decoded.clear();
-        if (canvas && (canvas.width > 1 || canvas.height > 1)) {
-          canvas.width = 1;
-          canvas.height = 1;
-        }
-        render(progress);
+        progress = clamp((scrollY - zoneTop()) / scrollDistance());
       }
-      window.JUHeroDebug = {
-        driver: "frame-sequence-v24-original-timing",
-        tier,
-        requestedProgress: progress,
-        presentedProgress: currentProgress,
-        displayedFrame,
-        frameCount: FRAME_COUNT,
-        decodedFrames: decoded.size,
-        pendingFrames: pending.size,
-        timing: {
-          transition: HERO_TRANSITION_START,
-          site: HERO_SITE_START,
-          faceStart: FACE_START,
-          faceSpan: FACE_SPAN,
-          filmEnd: FILM_SCROLL_END,
-        },
-      };
+
+      heroQt = clamp(progress);
+      startHeroLoop();
     }
 
-    function scheduleSync() {
-      if (!scrollRaf) scrollRaf = requestAnimationFrame(syncFromScroll);
+    if (location.hash) {
+      history.replaceState(history.state, "", location.pathname + location.search);
     }
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-    function handleResize() {
-      if (resizeRaf) return;
-      resizeRaf = requestAnimationFrame(() => {
-        resizeRaf = 0;
-        const nextTier = deviceTier();
-        if (nextTier !== tier) {
-          tier = nextTier;
-          decoded.clear();
-          for (const request of pending.values()) request.cancel();
-          pending.clear();
-          for (const timer of retryTimers.values()) clearTimeout(timer);
-          retryTimers.clear();
-          retries.clear();
-          failedFrames.clear();
-          displayedFrame = -1;
-          firstFrameReady = false;
-          canvas.style.opacity = "1";
-        }
-        if (heroIsNear()) {
-          resizeCanvas();
-        }
-        syncFromScroll();
-      });
-    }
-
-    addEventListener(
-      "scroll",
-      () => {
-        if (!window.JUScenes) scheduleSync();
-      },
-      { passive: true },
-    );
-    document.addEventListener("jugend:scroll-frame", () => {
-      cancelAnimationFrame(scrollRaf);
-      syncFromScroll();
-    });
-    addEventListener("resize", handleResize, { passive: true });
-    window.visualViewport?.addEventListener("resize", handleResize, {
-      passive: true,
-    });
-    new ResizeObserver(handleResize).observe(hero);
+    addEventListener("scroll", syncFromScroll, { passive: true });
+    document.addEventListener("jugend:scroll-frame", syncFromScroll);
+    addEventListener("resize", syncFromScroll, { passive: true });
+    window.visualViewport?.addEventListener("resize", syncFromScroll, { passive: true });
+    new ResizeObserver(syncFromScroll).observe(hero);
 
     const crashed = sessionStorage.getItem("jugend_crashed") === "1";
-    const navigation =
-      window.performance?.getEntriesByType?.("navigation")?.[0];
+    const navigation = window.performance?.getEntriesByType?.("navigation")?.[0];
     const isBackForward = navigation?.type === "back_forward";
     const isReload = navigation?.type === "reload";
     const savedY = parseFloat(sessionStorage.getItem("jugend_last_y")) || 0;
     const shouldRestore = (crashed || isBackForward || isReload) && savedY > 0;
-    if (!shouldRestore)
-      scrollTo(0, 0);
+    if (!shouldRestore) scrollTo(0, 0);
 
-    function warmHttpCache() {
-      let nextIndex = 1;
-      function fetchBatch() {
-        const batchSize = 8;
-        let count = 0;
-        while (nextIndex < FRAME_COUNT && count < batchSize) {
-          const url = frameUrl(nextIndex);
-          fetch(url, { priority: "low", cache: "force-cache" }).catch(() => {});
-          nextIndex++;
-          count++;
-        }
-        if (nextIndex < FRAME_COUNT) {
-          setTimeout(fetchBatch, 24);
-        }
-      }
-      setTimeout(fetchBatch, 50);
-    }
-
-    resizeCanvas();
     render(0);
-    loadFrame(0, "high")
-      .then(() => {
-        syncFromScroll();
-        warmHttpCache();
-      })
-      .catch((error) => {
-        if (error?.name === "AbortError") return;
-        revealFilm();
-      });
+    syncFromScroll();
+    preloadVideoBlob(videoSrc);
   }
 
   if (document.readyState === "complete") init();

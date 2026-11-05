@@ -291,6 +291,14 @@ p + p {
   position: absolute;
   inset: 0;
 }
+html:not(.hero-media-ready) #hero .hero-video {
+  background: #000 url('../assets/media/hero/hero_poster.webp?v=134') center center / cover no-repeat;
+}
+@media (max-width: 1024px) {
+  html:not(.hero-media-ready) #hero .hero-video {
+    background-image: url('../assets/media/hero/hero_poster_mobile.webp?v=134');
+  }
+}
 .video-el {
   width: 100%;
   height: 100%;

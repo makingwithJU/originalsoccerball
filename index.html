@@ -67,12 +67,11 @@
     </script>
     <meta name="theme-color" content="#111111">
     <meta name="color-scheme" content="light dark">
-    <!-- Preload HERO initial frame for instant flicker-free rendering -->
-    <link rel="preload" as="image" href="./assets/media/hero-frames-v24/desktop/frame_001.webp" media="(min-width: 1000px)" fetchpriority="high">
-    <link rel="preload" as="image" href="./assets/media/hero-frames-v24/tablet/frame_001.webp" media="(min-width: 600px) and (max-width: 999px)" fetchpriority="high">
-    <link rel="preload" as="image" href="./assets/media/hero-frames-v24/phone/frame_001.webp" media="(max-width: 599px)" fetchpriority="high">
+    <!-- Preload HERO initial poster for instant flicker-free rendering -->
+    <link rel="preload" as="image" href="./assets/media/hero/hero_poster.webp?v=134" media="(min-width: 1000px)" fetchpriority="high">
+    <link rel="preload" as="image" href="./assets/media/hero/hero_poster_mobile.webp?v=134" media="(max-width: 999px)" fetchpriority="high">
     <!-- ==================== 1. STYLESHEETS ==================== -->
-    <link rel="stylesheet" href="./css/site.css?v=2.2.6">
+    <link rel="stylesheet" href="./css/site.css?v=2.2.7">
     <link rel="stylesheet" href="./css/spatial-gallery.css?v=2.2.0">
     <link rel="stylesheet" href="./css/scene-transition.css?v=2.2.6">
     <link rel="stylesheet" href="./css/specs-slider.css?v=2.2.0">
@@ -90,18 +89,18 @@
     <!-- 3D Wireframe Cursor (Three.js + STLLoader) -->
     <script src="./js/cursor-3d.js?v=2.2.0" defer></script>
     <!-- Hero frame-sequence scrubber -->
-    <script src="./js/intro.js?v=2.4.2" defer></script>
+    <script src="./js/intro.js?v=2.4.5" defer></script>
     <!-- Hero Typography Morphing -->
     <script src="./js/hero-title.js?v=2.4.1" defer></script>
     <!-- Experimental native-scroll scene compositor -->
     <script src="./js/scene-progress.js?v=2.2.0" defer></script>
     <script src="./js/spiral-background.js?v=2.2.0" defer></script>
-    <script src="./js/scene-transition.js?v=2.4.2" defer></script>
+    <script src="./js/scene-transition.js?v=2.4.5" defer></script>
     <script src="./js/simulator-interaction.js?v=2.2.0" defer></script>
     <script src="./js/specs-slider.js?v=2.2.0" defer></script>
     <script src="./js/unroll-images.js?v=2.4.1" defer></script>
     <!-- 3D Orbit Carousel Gallery -->
-    <script src="./js/spatial-gallery.js?v=2.4.1" defer></script>
+    <script src="./js/spatial-gallery.js?v=2.4.3" defer></script>
     <script src="./js/context-gallery.js?v=2.4.1" defer></script>
 
     <!-- ==================== 4. UI & INTERACTION SCRIPTS ==================== -->
@@ -149,7 +148,16 @@
       <section class="hero chapter" id="hero">
         <div class="hero-media">
           <div class="hero-video">
-            <video id="hero-video" class="video-el" muted playsinline aria-hidden="true" style="display:none;"></video>
+            <video id="hero-video" class="video-el" muted playsinline webkit-playsinline preload="auto" aria-hidden="true"></video>
+            <script>
+              (function() {
+                var v = document.getElementById('hero-video');
+                var m = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) ||
+                        (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches);
+                v.poster = m ? './assets/media/hero/hero_poster_mobile.webp?v=134' : './assets/media/hero/hero_poster.webp?v=134';
+                v.src = m ? './assets/media/hero/hero_mobile.mp4?v=134' : './assets/media/hero/hero_pc.mp4?v=134';
+              })();
+            </script>
           </div>
           <!-- 3D Face Layer -->
           <div id="face3d-layer" class="face3d-layer" aria-hidden="true"></div>
@@ -689,36 +697,40 @@
               <img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_mebk3suo.webp" alt="サッカーボール作品ギャラリー 07" decoding="async" fetchpriority="low" width="1816" height="2544">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-08"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp">
-              <img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp" alt="サッカーボール作品ギャラリー 08" decoding="async" fetchpriority="low" width="1400" height="1980">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/design_graphic_16.webp">
+              <img loading="lazy" src="./assets/images/design_graphic_16.webp" alt="サッカーボール作品ギャラリー 08" decoding="async" fetchpriority="low" width="582" height="842">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-09"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1520363909542-9f69145ab-h_mebk6lfo.webp">
-              <img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_mebk6lfo.webp" alt="サッカーボール作品ギャラリー 09" decoding="async" fetchpriority="low" width="1400" height="1208">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp">
+              <img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk4q7k.webp" alt="サッカーボール作品ギャラリー 09" decoding="async" fetchpriority="low" width="1400" height="1980">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-10"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp">
-              <img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp" alt="サッカーボール作品ギャラリー 10" decoding="async" fetchpriority="low" width="1400" height="1220">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1520363909542-9f69145ab-h_mebk6lfo.webp">
+              <img loading="lazy" src="./assets/images/photo-1520363909542-9f69145ab-h_mebk6lfo.webp" alt="サッカーボール作品ギャラリー 10" decoding="async" fetchpriority="low" width="1400" height="1208">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-11"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1521731978332-9e9e714bd-h_meclgp61.webp">
-              <img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_meclgp61.webp" alt="サッカーボール作品ギャラリー 11" decoding="async" fetchpriority="low" width="1200" height="1652">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp">
+              <img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebk7tud.webp" alt="サッカーボール作品ギャラリー 11" decoding="async" fetchpriority="low" width="1400" height="1220">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-12"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp">
-              <img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp" alt="サッカーボール作品ギャラリー 12" decoding="async" fetchpriority="low" width="1160" height="1596">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1521731978332-9e9e714bd-h_meclgp61.webp">
+              <img loading="lazy" src="./assets/images/photo-1521731978332-9e9e714bd-h_meclgp61.webp" alt="サッカーボール作品ギャラリー 12" decoding="async" fetchpriority="low" width="1200" height="1652">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-13"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp">
-              <img loading="lazy" src="./assets/images/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp" alt="サッカーボール作品ギャラリー 13" decoding="async" fetchpriority="low" width="1200" height="808">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp">
+              <img loading="lazy" src="./assets/images/photo-1553778263-73a83bab9b0c-h_mebka1dg.webp" alt="サッカーボール作品ギャラリー 13" decoding="async" fetchpriority="low" width="1160" height="1596">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-14"><picture>
-              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp">
-              <img loading="lazy" src="./assets/images/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp" alt="サッカーボール作品ギャラリー 14" decoding="async" fetchpriority="low" width="1600" height="1256">
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp">
+              <img loading="lazy" src="./assets/images/kamonuroIqrNjdDuDXuYIBurpuzKfvpC_upscayl_2x_remacri-4x.webp" alt="サッカーボール作品ギャラリー 14" decoding="async" fetchpriority="low" width="1200" height="808">
             </picture></figure>
           <figure class="rail-item" data-item-id="gallery-15"><picture>
+              <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp">
+              <img loading="lazy" src="./assets/images/munariRGNZvWKMphrtZBbspfSfxCfuNa_upscayl_2x_remacri-4x.webp" alt="サッカーボール作品ギャラリー 15" decoding="async" fetchpriority="low" width="1600" height="1256">
+            </picture></figure>
+          <figure class="rail-item" data-item-id="gallery-16"><picture>
               <source media="(max-width: 600px), ((pointer: coarse) and (max-height: 500px))" srcset="./assets/images/mobile/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp">
-              <img loading="lazy" src="./assets/images/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp" alt="サッカーボール作品ギャラリー 15" decoding="async" fetchpriority="low" width="1800" height="2424">
+              <img loading="lazy" src="./assets/images/everyoneozVkLQvAwsDSjvVCNjHevLlv_upscayl_2x_remacri-4x.webp" alt="サッカーボール作品ギャラリー 16" decoding="async" fetchpriority="low" width="1800" height="2424">
             </picture></figure>
         </div>
       </div>

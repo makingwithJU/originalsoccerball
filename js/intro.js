@@ -77,6 +77,10 @@
     }
 
     async function preloadVideoBlob(url) {
+      // Do not use in-memory Blob URLs on mobile/tablet WebKit.
+      // iOS Safari fails to issue byte-range seeks on blob: URLs, locking up at readyState 1 (frozen first frame / poster).
+      // Direct MP4 URLs use native HTTP 206 Partial Content Range requests, which scrub instantly with All-Intra 720p.
+      if (isMobileOrTablet) return;
       try {
         const response = await fetch(url, { cache: "force-cache" });
         if (!response.ok) return;
@@ -149,17 +153,22 @@
         if (!decoderUnlocking && !video.paused) {
           try { video.pause(); } catch (_) {}
         }
-        if (video.hasAttribute("poster") && targetTime > 0.05 && video.readyState >= 2) {
+        if (video.hasAttribute("poster") && (targetTime > 0.02 || heroQ > 0.02)) {
           video.removeAttribute("poster");
+          revealFilm();
         }
-        // Proven PORTFOLIO scrub engine:
-        // Issue seek if video is idle (!seeking) OR if >= 60ms has passed since last seek.
-        // This throttles hardware seek requests to ~16-20fps max, giving mobile GPU decoders
-        // sufficient throughput while preventing frame drops, decoder buffer overflow, and stutter.
-        if ((!video.seeking || (now - lastSeekTime > 60)) && Math.abs(video.currentTime - targetTime) > 0.012) {
+        // Proven Scrub Engine:
+        // Issue seek if video is idle (!seeking) OR if >= 50ms has passed since last seek.
+        // On mobile, video is 720p All-Intra (every frame is an I-frame), so fastSeek
+        // seeks immediately with zero inter-frame dependency or buffer latency.
+        if ((!video.seeking || (now - lastSeekTime > 50)) && Math.abs(video.currentTime - targetTime) > 0.012) {
           lastSeekTime = now;
           try {
-            video.currentTime = targetTime;
+            if (isMobileOrTablet && typeof video.fastSeek === "function") {
+              video.fastSeek(targetTime);
+            } else {
+              video.currentTime = targetTime;
+            }
           } catch (_) {}
         }
       }
@@ -170,7 +179,13 @@
         heroRaf = 0;
         if (video && Number.isFinite(video.duration) && video.duration > 0 && heroQ <= 0.65) {
           lastSeekTime = now;
-          try { video.currentTime = targetTime; } catch (_) {}
+          try {
+            if (isMobileOrTablet && typeof video.fastSeek === "function") {
+              video.fastSeek(targetTime);
+            } else {
+              video.currentTime = targetTime;
+            }
+          } catch (_) {}
         }
       }
     }
@@ -188,10 +203,16 @@
 
     video.addEventListener("loadeddata", revealFilm, { once: true });
     video.addEventListener("canplay", revealFilm, { once: true });
+    video.addEventListener("loadedmetadata", () => {
+      revealFilm();
+      startHeroLoop();
+    }, { once: true });
 
-    ["touchstart", "pointerdown", "wheel", "keydown", "scroll"].forEach((ev) => {
-      window.addEventListener(ev, unlockDecoder, { passive: true, once: true });
-    });
+    window.addEventListener("touchstart", unlockDecoder, { passive: true });
+    window.addEventListener("pointerdown", unlockDecoder, { passive: true });
+    window.addEventListener("scroll", unlockDecoder, { passive: true });
+    window.addEventListener("wheel", unlockDecoder, { passive: true, once: true });
+    window.addEventListener("keydown", unlockDecoder, { passive: true, once: true });
 
     const scrollDistance = () =>
       Math.max(1, zone.offsetHeight - hero.offsetHeight);

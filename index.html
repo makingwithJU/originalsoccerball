@@ -68,10 +68,10 @@
     <meta name="theme-color" content="#111111">
     <meta name="color-scheme" content="light dark">
     <!-- Preload HERO initial poster for instant flicker-free rendering -->
-    <link rel="preload" as="image" href="./assets/media/hero/hero_poster.webp?v=134" media="(min-width: 1000px)" fetchpriority="high">
-    <link rel="preload" as="image" href="./assets/media/hero/hero_poster_mobile.webp?v=134" media="(max-width: 999px)" fetchpriority="high">
+    <link rel="preload" as="image" href="./assets/media/hero/hero_poster.webp?v=135" media="(min-width: 1000px)" fetchpriority="high">
+    <link rel="preload" as="image" href="./assets/media/hero/hero_poster_mobile.webp?v=135" media="(max-width: 999px)" fetchpriority="high">
     <!-- ==================== 1. STYLESHEETS ==================== -->
-    <link rel="stylesheet" href="./css/site.css?v=2.2.7">
+    <link rel="stylesheet" href="./css/site.css?v=2.2.9">
     <link rel="stylesheet" href="./css/spatial-gallery.css?v=2.2.0">
     <link rel="stylesheet" href="./css/scene-transition.css?v=2.2.6">
     <link rel="stylesheet" href="./css/specs-slider.css?v=2.2.0">
@@ -89,7 +89,7 @@
     <!-- 3D Wireframe Cursor (Three.js + STLLoader) -->
     <script src="./js/cursor-3d.js?v=2.2.0" defer></script>
     <!-- Hero frame-sequence scrubber -->
-    <script src="./js/intro.js?v=2.4.6" defer></script>
+    <script src="./js/intro.js?v=2.4.8" defer></script>
     <!-- Hero Typography Morphing -->
     <script src="./js/hero-title.js?v=2.4.1" defer></script>
     <!-- Experimental native-scroll scene compositor -->
@@ -154,8 +154,12 @@
                 var v = document.getElementById('hero-video');
                 var m = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) ||
                         (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches);
-                v.poster = m ? './assets/media/hero/hero_poster_mobile.webp?v=134' : './assets/media/hero/hero_poster.webp?v=134';
-                v.src = m ? './assets/media/hero/hero_mobile.mp4?v=134' : './assets/media/hero/hero_pc.mp4?v=134';
+                var src = m ? './assets/media/hero/hero_mobile.mp4?v=136' : './assets/media/hero/hero_pc.mp4?v=136';
+                v.defaultMuted = true;
+                v.muted = true;
+                v.playsInline = true;
+                v.src = src;
+                try { v.load(); } catch (e) {}
               })();
             </script>
           </div>

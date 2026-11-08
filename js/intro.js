@@ -16,15 +16,16 @@
     const FACE_START = 0.15;
     const FACE_SPAN = 0.45;
     const FILM_SCROLL_END = 0.6;
+    const DEFAULT_DURATION = 5.79;
 
-    const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    const isMobileOrTablet = hasTouch || (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches);
+    const hasTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+    const isMobileOrTablet =
+      hasTouch || (window.matchMedia && window.matchMedia("(max-width: 1024px)").matches);
 
     const videoSrc = isMobileOrTablet
-      ? './assets/media/hero/hero_mobile.mp4?v=134'
-      : './assets/media/hero/hero_pc.mp4?v=134';
+      ? "./assets/media/hero/hero_mobile.mp4?v=136"
+      : "./assets/media/hero/hero_pc.mp4?v=136";
 
-    // State for smooth, jitter-free video scrub & 3D ball synchronisation
     let heroQ = 0;
     let heroQt = 0;
     let heroLast = performance.now();
@@ -35,11 +36,58 @@
     let firstFrameReady = false;
     let decoderUnlocked = false;
     let decoderUnlocking = false;
+    let isTouching = false;
+    let blobSwapDone = false;
+    let diagSeekCount = 0;
+
+    const isDevHost =
+      location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1" ||
+      location.hostname.startsWith("192.168.");
+
+    function sendDiag(stage, extra = "") {
+      if (!isDevHost) return;
+      try {
+        const rs = video ? video.readyState : -1;
+        const ns = video ? video.networkState : -1;
+        const dur = video && Number.isFinite(video.duration) ? video.duration.toFixed(2) : "NaN";
+        const ct = video && Number.isFinite(video.currentTime) ? video.currentTime.toFixed(3) : "NaN";
+        const isBlob = video && (video.currentSrc || video.src || "").startsWith("blob:") ? 1 : 0;
+        const q = heroQ.toFixed(3);
+        const url = `/__diag?s=${encodeURIComponent(stage)}&rs=${rs}&ns=${ns}&dur=${dur}&ct=${ct}&blob=${isBlob}&ul=${decoderUnlocked ? 1 : 0}&q=${q}${extra ? "&" + extra : ""}&t=${Date.now()}`;
+        fetch(url, { method: "GET", keepalive: true, cache: "no-store" }).catch(() => {});
+      } catch (_) {}
+    }
 
     video.style.display = "block";
     video.removeAttribute("aria-hidden");
+    video.removeAttribute("poster");
+    video.defaultMuted = true;
     video.muted = true;
     video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+
+    const currentAttrSrc = video.getAttribute("src") || "";
+    if (!currentAttrSrc) {
+      video.src = videoSrc;
+      try {
+        video.load();
+      } catch (_) {}
+    }
+
+    function getDuration() {
+      return Number.isFinite(video.duration) && video.duration > 0
+        ? video.duration
+        : DEFAULT_DURATION;
+    }
+
+    function getTargetTime() {
+      const filmProgress = Math.min(heroQ, FILM_SCROLL_END);
+      const dur = getDuration();
+      return Math.max(0.001, Math.min(dur - 0.04, (filmProgress / FILM_SCROLL_END) * dur));
+    }
 
     function revealFilm() {
       if (!firstFrameReady) {
@@ -48,28 +96,76 @@
       }
     }
 
+    function syncHeroFrame() {
+      if (!video || decoderUnlocking) return;
+      try {
+        if (!video.paused) video.pause();
+        if (video.readyState >= 1) {
+          const targetTime = getTargetTime();
+          if (Math.abs(video.currentTime - targetTime) > 0.012) {
+            lastSeekTime = performance.now();
+            video.currentTime = targetTime;
+          }
+        }
+      } catch (_) {}
+    }
+
     function unlockDecoder() {
-      if (decoderUnlocked || decoderUnlocking) return;
+      if (decoderUnlocked || decoderUnlocking || !video) return;
+      if (video.readyState === 0) {
+        try {
+          video.load();
+        } catch (_) {}
+      }
       decoderUnlocking = true;
       try {
+        video.defaultMuted = true;
         video.muted = true;
+        video.playsInline = true;
         video.playbackRate = 0.0001;
-        const finish = () => {
+
+        const finishUnlock = (didPlay, errName = "") => {
           decoderUnlocking = false;
-          decoderUnlocked = true;
-          try {
-            video.pause();
-            video.playbackRate = 1;
-            startHeroLoop();
-          } catch (e) {}
+          if (didPlay) {
+            decoderUnlocked = true;
+            try {
+              video.pause();
+              video.playbackRate = 1;
+              syncHeroFrame();
+            } catch (_) {}
+            sendDiag("unlock_ok");
+          } else {
+            try {
+              video.playbackRate = 1;
+            } catch (_) {}
+            sendDiag("unlock_fail", `err=${encodeURIComponent(errName)}`);
+          }
         };
-        const timer = setTimeout(finish, 24);
+
+        // Safety timeout: never call video.pause() on timeout if play() hasn't resolved,
+        // so we never abort an in-progress AVPlayer initialization on iOS WebKit.
+        const safetyTimer = setTimeout(() => {
+          if (decoderUnlocking) {
+            decoderUnlocking = false;
+            try {
+              video.playbackRate = 1;
+            } catch (_) {}
+            sendDiag("unlock_timeout");
+          }
+        }, 700);
+
         const p = video.play();
         if (p && typeof p.then === "function") {
-          p.then(() => { clearTimeout(timer); finish(); }).catch(() => { clearTimeout(timer); decoderUnlocking = false; });
+          p.then(() => {
+            clearTimeout(safetyTimer);
+            finishUnlock(true);
+          }).catch((err) => {
+            clearTimeout(safetyTimer);
+            finishUnlock(false, err && err.name ? err.name : "err");
+          });
         } else {
-          clearTimeout(timer);
-          finish();
+          clearTimeout(safetyTimer);
+          finishUnlock(true);
         }
       } catch (e) {
         decoderUnlocking = false;
@@ -77,24 +173,62 @@
     }
 
     async function preloadVideoBlob(url) {
-      // Do not use in-memory Blob URLs on mobile/tablet WebKit.
-      // iOS Safari fails to issue byte-range seeks on blob: URLs, locking up at readyState 1 (frozen first frame / poster).
-      // Direct MP4 URLs use native HTTP 206 Partial Content Range requests, which scrub instantly with All-Intra 720p.
-      if (isMobileOrTablet) return;
+      if (blobSwapDone) return;
       try {
         const response = await fetch(url, { cache: "force-cache" });
         if (!response.ok) return;
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        if (video && !video.ended && video.src !== blobUrl) {
-          const curT = (Number.isFinite(video.currentTime) && video.currentTime > 0) ? video.currentTime : 0;
-          const wasPaused = video.paused;
+        const rawBlob = await response.blob();
+        const mp4Blob =
+          rawBlob.type === "video/mp4"
+            ? rawBlob
+            : new Blob([rawBlob], { type: "video/mp4" });
+        const blobUrl = URL.createObjectURL(mp4Blob);
+        if (!blobUrl || !blobUrl.startsWith("blob:")) return;
+
+        const applyBlobWhenIdle = () => {
+          if (blobSwapDone || !video) return;
+          if (isTouching || heroRaf !== 0 || decoderUnlocking || heroQ > 0.03) {
+            setTimeout(applyBlobWhenIdle, 250);
+            return;
+          }
+          blobSwapDone = true;
+          const prevTime = getTargetTime();
+          decoderUnlocked = false;
+          decoderUnlocking = false;
           video.src = blobUrl;
-          try { video.currentTime = curT; } catch (_) {}
-          if (wasPaused) { try { video.pause(); } catch (_) {} }
-          startHeroLoop();
-        }
-      } catch (e) {}
+          try {
+            video.load();
+          } catch (_) {}
+          sendDiag("blob_swap");
+
+          const onBlobLoaded = () => {
+            video.removeEventListener("loadeddata", onBlobLoaded);
+            clearTimeout(watchdog);
+            try {
+              video.currentTime = prevTime;
+            } catch (_) {}
+            unlockDecoder();
+            sendDiag("blob_ready");
+          };
+
+          const watchdog = setTimeout(() => {
+            video.removeEventListener("loadeddata", onBlobLoaded);
+            if (video.readyState < 1) {
+              sendDiag("blob_watchdog_revert");
+              decoderUnlocked = false;
+              decoderUnlocking = false;
+              video.src = videoSrc;
+              try {
+                video.load();
+              } catch (_) {}
+            }
+          }, 600);
+
+          video.addEventListener("loadeddata", onBlobLoaded, { once: true });
+        };
+
+        applyBlobWhenIdle();
+      } catch (_) {}
     }
 
     function render(value) {
@@ -109,13 +243,9 @@
       root.dataset.heroState = state;
       root.style.setProperty("--hero-progress", p);
 
-      // Smooth video opacity fade into 3D ball
+      media.classList.toggle("is-past-poster", p > 0.45);
       video.style.opacity = String(p > 0.5 ? clamp((0.6 - p) / 0.1) : 1);
 
-      // Master scroll timeline synchronization:
-      // JUHeroProgress is driven directly and smoothly by p, exactly matching PC.
-      // Between FACE_START (0.15: kicker strike) and FACE_START + FACE_SPAN (0.60: video end),
-      // the 3D ball ascends and spins at full 60fps WebGL rate without decoder blocking.
       window.JUHeroProgress = clamp((p - FACE_START) / FACE_SPAN);
       window.dispatchEvent(
         new CustomEvent("ju:hero-progress", {
@@ -130,63 +260,56 @@
       }
     }
 
+    function seekVideoToTarget(now) {
+      if (!video || decoderUnlocking || heroQ > 0.65) return;
+      if (!video.paused) {
+        try {
+          video.pause();
+        } catch (_) {}
+      }
+      if (video.hasAttribute("poster") && video.readyState >= 2) {
+        video.removeAttribute("poster");
+      }
+      if (video.readyState >= 1) {
+        const targetTime = getTargetTime();
+        if (
+          (!video.seeking || now - lastSeekTime > 50) &&
+          Math.abs(video.currentTime - targetTime) > 0.012
+        ) {
+          lastSeekTime = now;
+          try {
+            video.currentTime = targetTime;
+            if (diagSeekCount < 5 && targetTime > 0.05) {
+              diagSeekCount++;
+              sendDiag("seek_exec", `tt=${targetTime.toFixed(3)}`);
+            }
+          } catch (e) {
+            sendDiag("seek_err", `err=${encodeURIComponent(e && e.name ? e.name : "err")}`);
+          }
+        }
+      }
+    }
+
     function heroLoop(now) {
       const dt = Math.min(0.08, (now - heroLast) / 1000 || 0.016);
       heroLast = now;
 
-      // Snappy lerp smoothing that follows touch and wheel momentum without lag
       const diff = heroQt - heroQ;
-      const lerpSpeed = hasTouch ? 28 : 20;
-      if (Math.abs(diff) > 0.0003) {
+      const lerpSpeed = hasTouch ? 18 : 16;
+      if (Math.abs(diff) > 0.0004) {
         heroQ += diff * Math.min(1, dt * lerpSpeed);
       } else {
         heroQ = heroQt;
       }
 
       render(heroQ);
+      seekVideoToTarget(now);
 
-      const filmProgress = Math.min(heroQ, FILM_SCROLL_END);
-      const dur = (Number.isFinite(video.duration) && video.duration > 0) ? video.duration : 5.8;
-      const targetTime = Math.max(0.001, Math.min(dur - 0.04, (filmProgress / FILM_SCROLL_END) * dur));
-
-      if (video && Number.isFinite(video.duration) && video.duration > 0 && heroQ <= 0.65) {
-        if (!decoderUnlocking && !video.paused) {
-          try { video.pause(); } catch (_) {}
-        }
-        if (video.hasAttribute("poster") && (targetTime > 0.02 || heroQ > 0.02)) {
-          video.removeAttribute("poster");
-          revealFilm();
-        }
-        // Proven Scrub Engine:
-        // Issue seek if video is idle (!seeking) OR if >= 50ms has passed since last seek.
-        // On mobile, video is 720p All-Intra (every frame is an I-frame), so fastSeek
-        // seeks immediately with zero inter-frame dependency or buffer latency.
-        if ((!video.seeking || (now - lastSeekTime > 50)) && Math.abs(video.currentTime - targetTime) > 0.012) {
-          lastSeekTime = now;
-          try {
-            if (isMobileOrTablet && typeof video.fastSeek === "function") {
-              video.fastSeek(targetTime);
-            } else {
-              video.currentTime = targetTime;
-            }
-          } catch (_) {}
-        }
-      }
-
-      if (Math.abs(heroQt - heroQ) > 0.0003) {
+      if (Math.abs(heroQt - heroQ) > 0.0004) {
         heroRaf = requestAnimationFrame(heroLoop);
       } else {
         heroRaf = 0;
-        if (video && Number.isFinite(video.duration) && video.duration > 0 && heroQ <= 0.65) {
-          lastSeekTime = now;
-          try {
-            if (isMobileOrTablet && typeof video.fastSeek === "function") {
-              video.fastSeek(targetTime);
-            } else {
-              video.currentTime = targetTime;
-            }
-          } catch (_) {}
-        }
+        seekVideoToTarget(now);
       }
     }
 
@@ -197,25 +320,109 @@
       }
     }
 
-    video.addEventListener("seeked", () => {
-      revealFilm();
-    }, { passive: true });
+    ["play", "playing", "timeupdate"].forEach((ev) => {
+      video.addEventListener(ev, () => {
+        if (!decoderUnlocking && !video.paused) {
+          try {
+            video.pause();
+          } catch (_) {}
+        }
+      });
+    });
 
-    video.addEventListener("loadeddata", revealFilm, { once: true });
-    video.addEventListener("canplay", revealFilm, { once: true });
+    video.addEventListener(
+      "seeked",
+      () => {
+        revealFilm();
+        if (!decoderUnlocking && heroQ <= 0.65 && video.readyState >= 1) {
+          const targetTime = getTargetTime();
+          if (Math.abs(video.currentTime - targetTime) > 0.025) {
+            lastSeekTime = performance.now();
+            try {
+              video.currentTime = targetTime;
+            } catch (_) {}
+          }
+        }
+      },
+      { passive: true },
+    );
+
+    video.addEventListener("error", () => {
+      const s = video.currentSrc || video.getAttribute("src") || "";
+      sendDiag("video_err", `src=${s.startsWith("blob:") ? "blob" : "http"}`);
+      if (s.startsWith("blob:")) {
+        decoderUnlocked = false;
+        decoderUnlocking = false;
+        video.src = videoSrc;
+        try {
+          video.load();
+        } catch (_) {}
+      }
+    });
+
+    let blobPreloadTriggered = false;
+    function triggerBlobPreloadOnce() {
+      if (blobPreloadTriggered) return;
+      blobPreloadTriggered = true;
+      preloadVideoBlob(videoSrc);
+    }
+
     video.addEventListener("loadedmetadata", () => {
       revealFilm();
+      syncHeroFrame();
       startHeroLoop();
-    }, { once: true });
+      sendDiag("loadedmetadata");
+    });
+    video.addEventListener("loadeddata", () => {
+      revealFilm();
+      unlockDecoder();
+      syncHeroFrame();
+      sendDiag("loadeddata");
+      triggerBlobPreloadOnce();
+    });
+    video.addEventListener("canplay", () => {
+      revealFilm();
+      unlockDecoder();
+      syncHeroFrame();
+      triggerBlobPreloadOnce();
+    });
 
-    window.addEventListener("touchstart", unlockDecoder, { passive: true });
+    if (video.readyState >= 1) {
+      revealFilm();
+      unlockDecoder();
+      syncHeroFrame();
+      triggerBlobPreloadOnce();
+    } else {
+      setTimeout(triggerBlobPreloadOnce, 1800);
+    }
+
+    window.addEventListener(
+      "touchstart",
+      () => {
+        isTouching = true;
+        unlockDecoder();
+      },
+      { passive: true },
+    );
+    window.addEventListener(
+      "touchend",
+      () => {
+        isTouching = false;
+        unlockDecoder();
+      },
+      { passive: true },
+    );
+    window.addEventListener(
+      "touchcancel",
+      () => {
+        isTouching = false;
+      },
+      { passive: true },
+    );
     window.addEventListener("pointerdown", unlockDecoder, { passive: true });
-    window.addEventListener("scroll", unlockDecoder, { passive: true });
-    window.addEventListener("wheel", unlockDecoder, { passive: true, once: true });
-    window.addEventListener("keydown", unlockDecoder, { passive: true, once: true });
+    window.addEventListener("keydown", unlockDecoder, { passive: true });
 
-    const scrollDistance = () =>
-      Math.max(1, zone.offsetHeight - hero.offsetHeight);
+    const scrollDistance = () => Math.max(1, zone.offsetHeight - hero.offsetHeight);
     const zoneTop = () => scrollY + zone.getBoundingClientRect().top;
 
     function syncFromScroll() {
@@ -256,9 +463,12 @@
 
     render(0);
     syncFromScroll();
-    preloadVideoBlob(videoSrc);
+    sendDiag("init");
   }
 
-  if (document.readyState === "complete") init();
-  else document.addEventListener("DOMContentLoaded", init, { once: true });
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 })();

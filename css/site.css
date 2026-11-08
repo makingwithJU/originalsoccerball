@@ -291,13 +291,16 @@ p + p {
   position: absolute;
   inset: 0;
 }
-html:not(.hero-media-ready) #hero .hero-video {
-  background: #000 url('../assets/media/hero/hero_poster.webp?v=134') center center / cover no-repeat;
+#hero .hero-video {
+  background: #000 url('../assets/media/hero/hero_poster.webp?v=135') center center / cover no-repeat;
 }
 @media (max-width: 1024px) {
-  html:not(.hero-media-ready) #hero .hero-video {
-    background-image: url('../assets/media/hero/hero_poster_mobile.webp?v=134');
+  #hero .hero-video {
+    background-image: url('../assets/media/hero/hero_poster_mobile.webp?v=135');
   }
+}
+#hero .hero-video.is-past-poster {
+  background-image: none !important;
 }
 .video-el {
   width: 100%;

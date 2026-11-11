@@ -705,9 +705,38 @@ details[open] summary .sign::after {
   color: var(--secondary);
   font-size: var(--caption);
   pointer-events: none;
+  z-index: 6;
 }
 .simu-empty[hidden] {
   display: none;
+}
+.simu-pro-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: 999px;
+  background: rgba(242, 102, 179, 0.16);
+  border: 1.5px solid #f266b3;
+  color: #ff85c8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(0.92rem, 1.4vw, 1.08rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  box-shadow: 0 0 24px rgba(242, 102, 179, 0.28), inset 0 0 12px rgba(242, 102, 179, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+}
+.simu-pro-cta:hover,
+.simu-pro-cta:focus-visible {
+  background: #f266b3;
+  color: #0a0a0e;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 34px rgba(242, 102, 179, 0.58);
 }
 #simulator.chapter {
   justify-content: center;
@@ -723,7 +752,35 @@ details[open] summary .sign::after {
   max-width: 1180px;
   margin: 0 auto 0.4rem;
   position: relative;
-  z-index: 5;
+  z-index: 7;
+}
+.simu-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+.simu-mode-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.42;
+  cursor: pointer;
+  transition: opacity 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+}
+.simu-mode-label.is-free.is-active {
+  opacity: 0.95;
+  color: currentColor;
+}
+.simu-mode-label.is-pro.is-active {
+  opacity: 1;
+  color: #f266b3;
+  text-shadow: 0 0 10px rgba(242, 102, 179, 0.55);
+}
+.simu-toggle[aria-pressed="false"]::after {
+  background: #f266b3;
+  box-shadow: 0 0 8px rgba(242, 102, 179, 0.7);
 }
 @media (max-width: 520px) {
   :root {
@@ -2342,3 +2399,210 @@ html.spiral-scenes.footer-visible #simulator .simu-frame iframe {
     overscroll-behavior: contain;
   }
 }
+
+/* ============================================================
+   MINIMAL BOTTOM-RIGHT PULL-TAB & CENTERED YOUTUBE PLAYER
+   ============================================================ */
+html.yt-modal-open,
+html.yt-modal-open body {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.ju-yt-tab {
+  position: fixed;
+  right: 0;
+  bottom: 12px;
+  z-index: 2000;
+  width: 34px;
+  height: 34px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: rgba(0, 0, 0, 0.32);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  overflow: hidden;
+  display: block;
+  transition: width 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+              padding 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+              bottom 0.22s ease,
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ju-yt-tab[hidden],
+html.yt-modal-open .ju-yt-tab {
+  display: none !important;
+}
+
+html.footer-visible .ju-yt-tab {
+  bottom: calc(var(--persistent-bottom, 42px) + 6px);
+}
+
+.ju-yt-tab:hover,
+.ju-yt-tab:focus-visible,
+.ju-yt-tab.is-hover {
+  width: 196px;
+  height: 112px;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.38);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+  outline: none;
+}
+
+.ju-yt-tab__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.ju-yt-tab:hover .ju-yt-tab__thumb,
+.ju-yt-tab:focus-visible .ju-yt-tab__thumb,
+.ju-yt-tab.is-hover .ju-yt-tab__thumb {
+  opacity: 1;
+}
+
+.ju-yt-tab__mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.ju-yt-tab__mark svg {
+  width: 18px;
+  height: 13px;
+  display: block;
+  transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ju-yt-tab:hover .ju-yt-tab__mark svg,
+.ju-yt-tab:focus-visible .ju-yt-tab__mark svg,
+.ju-yt-tab.is-hover .ju-yt-tab__mark svg {
+  width: 34px;
+  height: 24px;
+}
+
+/* Centered Large-Screen Player Modal */
+.ju-yt-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+.ju-yt-modal[hidden] {
+  display: none;
+}
+
+.ju-yt-modal__frame {
+  position: relative;
+  width: min(1080px, 88vw, calc(82svh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.ju-yt-modal__close {
+  position: absolute;
+  top: -36px;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.65);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ju-yt-modal__close:hover,
+.ju-yt-modal__close:focus-visible {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000000;
+  outline: none;
+}
+
+.ju-yt-modal__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+.ju-yt-modal__iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .ju-yt-tab {
+    width: 30px;
+    height: 30px;
+    bottom: 10px;
+  }
+  .ju-yt-tab__mark svg {
+    width: 15px;
+    height: 11px;
+  }
+  .ju-yt-tab:hover,
+  .ju-yt-tab:focus-visible,
+  .ju-yt-tab.is-hover {
+    width: 160px;
+    height: 92px;
+    padding: 5px;
+  }
+  .ju-yt-modal {
+    padding: 12px;
+  }
+  .ju-yt-modal__frame {
+    width: calc(100vw - 24px);
+  }
+}
+
+@media (max-height: 500px) {
+  .ju-yt-tab {
+    bottom: 8px;
+  }
+  .ju-yt-modal__frame {
+    width: min(84vw, calc(74svh * 16 / 9));
+  }
+}
+

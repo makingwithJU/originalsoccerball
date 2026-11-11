@@ -100,8 +100,14 @@
       if (!s) return;
       if (reduced.matches) s.section.scrollIntoView({ behavior: "auto" });
       else {
-        // Fractional section starts must land inside, not just before, a scene.
-        scrollTo({ top: Math.ceil(s.start), behavior: "auto" });
+        const targetY = Math.ceil(s.start + s.animation + 20);
+        root.classList.add("intro-complete", "hero-media-ready");
+        root.dataset.heroState = "site";
+        lastScene = s;
+        lastLocal = clamp((targetY - s.start) / Math.max(1, s.end - s.start));
+        renderedY = targetY;
+        scrollTo({ top: targetY, behavior: "auto" });
+        draw();
       }
     },
     snapshot() {
@@ -588,7 +594,39 @@
   const shouldRestore =
     (crashed || navType === "back_forward" || navType === "reload") &&
     savedY > 0;
-  if (shouldRestore) {
+  const returnTarget =
+    window.__juReturnTarget ||
+    new URLSearchParams(location.search).get("return") ||
+    (location.hash ? location.hash.slice(1) : "");
+  if (returnTarget && byId.has(returnTarget)) {
+    const applyReturnTarget = () => {
+      const s = byId.get(returnTarget);
+      if (!s) return;
+      const targetY = Math.ceil(s.start + s.animation + 20);
+      root.classList.add("intro-complete", "hero-media-ready");
+      root.dataset.heroState = "site";
+      lastScene = s;
+      lastLocal = clamp((targetY - s.start) / Math.max(1, s.end - s.start));
+      renderedY = targetY;
+      scrollTo(0, targetY);
+      draw();
+    };
+    applyReturnTarget();
+    requestAnimationFrame(applyReturnTarget);
+    document.fonts?.ready.then(() => {
+      measure("offset");
+      applyReturnTarget();
+    });
+    addEventListener(
+      "load",
+      () => {
+        measure("offset");
+        applyReturnTarget();
+        history.replaceState(history.state, "", location.pathname);
+      },
+      { once: true },
+    );
+  } else if (shouldRestore) {
     root.classList.add("intro-complete");
     scrollTo(0, savedY);
     draw();

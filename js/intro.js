@@ -442,6 +442,11 @@
       startHeroLoop();
     }
 
+    const returnTarget =
+      window.__juReturnTarget ||
+      new URLSearchParams(location.search).get("return") ||
+      (location.hash ? location.hash.slice(1) : "");
+    if (returnTarget) window.__juReturnTarget = returnTarget;
     if (location.hash) {
       history.replaceState(history.state, "", location.pathname + location.search);
     }
@@ -458,11 +463,23 @@
     const isBackForward = navigation?.type === "back_forward";
     const isReload = navigation?.type === "reload";
     const savedY = parseFloat(sessionStorage.getItem("jugend_last_y")) || 0;
-    const shouldRestore = (crashed || isBackForward || isReload) && savedY > 0;
+    const shouldRestore =
+      ((crashed || isBackForward || isReload) && savedY > 0) ||
+      Boolean(window.__juReturnTarget);
     if (!shouldRestore) scrollTo(0, 0);
 
-    render(0);
-    syncFromScroll();
+    if (window.__juReturnTarget) {
+      introReady = true;
+      firstFrameReady = true;
+      root.classList.add("intro-complete", "hero-media-ready");
+      root.dataset.heroState = "site";
+      heroQ = 1;
+      heroQt = 1;
+      render(1);
+    } else {
+      render(0);
+      syncFromScroll();
+    }
     sendDiag("init");
   }
 

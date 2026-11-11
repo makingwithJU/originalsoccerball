@@ -5,13 +5,15 @@
     <script>
       (() => {
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        const ret = new URLSearchParams(location.search).get('return') || (location.hash ? location.hash.slice(1) : '');
+        if (ret) window.__juReturnTarget = ret;
         try {
           sessionStorage.removeItem('jugend_alive');
           sessionStorage.removeItem('jugend_crashed');
           sessionStorage.removeItem('jugend_last_y');
           sessionStorage.removeItem('jugend_last_scene');
         } catch (_) {}
-        scrollTo(0, 0);
+        if (!ret) scrollTo(0, 0);
         document.documentElement.classList.add('intro-active');
       })();
     </script>
@@ -71,7 +73,7 @@
     <link rel="preload" as="image" href="./assets/media/hero/hero_poster.webp?v=135" media="(min-width: 1000px)" fetchpriority="high">
     <link rel="preload" as="image" href="./assets/media/hero/hero_poster_mobile.webp?v=135" media="(max-width: 999px)" fetchpriority="high">
     <!-- ==================== 1. STYLESHEETS ==================== -->
-    <link rel="stylesheet" href="./css/site.css?v=2.2.9">
+    <link rel="stylesheet" href="./css/site.css?v=2.3.6">
     <link rel="stylesheet" href="./css/spatial-gallery.css?v=2.2.0">
     <link rel="stylesheet" href="./css/scene-transition.css?v=2.2.6">
     <link rel="stylesheet" href="./css/specs-slider.css?v=2.2.0">
@@ -89,13 +91,13 @@
     <!-- 3D Wireframe Cursor (Three.js + STLLoader) -->
     <script src="./js/cursor-3d.js?v=2.2.0" defer></script>
     <!-- Hero frame-sequence scrubber -->
-    <script src="./js/intro.js?v=2.4.8" defer></script>
+    <script src="./js/intro.js?v=2.4.9" defer></script>
     <!-- Hero Typography Morphing -->
     <script src="./js/hero-title.js?v=2.4.1" defer></script>
     <!-- Experimental native-scroll scene compositor -->
     <script src="./js/scene-progress.js?v=2.2.0" defer></script>
     <script src="./js/spiral-background.js?v=2.2.0" defer></script>
-    <script src="./js/scene-transition.js?v=2.4.5" defer></script>
+    <script src="./js/scene-transition.js?v=2.4.6" defer></script>
     <script src="./js/simulator-interaction.js?v=2.2.0" defer></script>
     <script src="./js/specs-slider.js?v=2.2.0" defer></script>
     <script src="./js/unroll-images.js?v=2.4.1" defer></script>
@@ -109,7 +111,7 @@
     <!-- Media & Lazy Video Loader -->
     <script src="./js/media.js?v=2.4.2" defer></script>
     <!-- General UI Interactions (Modals, Forms, Badges) -->
-    <script src="./js/interactions.js?v=2.2.0" defer></script>
+    <script src="./js/interactions.js?v=2.3.6" defer></script>
 
     <link rel="stylesheet" href="./css/drafting.css?v=2.2.0">
   </head>
@@ -835,7 +837,11 @@
 
   <div class="gs-container">
     <div class="simu-ctrl-bar">
-      <button type="button" id="simu-toggle-btn" class="simu-toggle" aria-pressed="true" aria-controls="simu-collapse-target" aria-label="シミュレーター切替"></button>
+      <div class="simu-toggle-wrap">
+        <span class="simu-mode-label is-free is-active" id="simu-label-free">FREE</span>
+        <button type="button" id="simu-toggle-btn" class="simu-toggle" aria-pressed="true" aria-controls="simu-collapse-target" aria-label="FREE / PRO 切替"></button>
+        <span class="simu-mode-label is-pro" id="simu-label-pro">PRO</span>
+      </div>
     </div>
     <div class="simu-wrapper" id="simu-collapse-target">
       <div class="simu-card device-shell">
@@ -844,7 +850,9 @@
         </div>
       </div>
     </div>
-    <p id="simu-empty" class="simu-empty" role="status" hidden>simulator非表示</p>
+    <div id="simu-empty" class="simu-empty" role="status" hidden>
+      <a href="./pro/サービスガイド_fullcolorballs_simulator_PRO.html" class="simu-pro-cta">PRO EDITION →</a>
+    </div>
   </div>
 </section>
 
@@ -1327,5 +1335,22 @@
   </ul>
 </div></dialog>
 
+<!-- Minimal Bottom-Right Pull-Tab & Centered Large YouTube Player -->
+<button type="button" id="ju-yt-tab" class="ju-yt-tab" aria-label="YouTube動画を再生">
+  <img src="./assets/media/starson_thumb.jpg" alt="" class="ju-yt-tab__thumb" width="320" height="180" loading="lazy">
+  <span class="ju-yt-tab__mark" aria-hidden="true">
+    <svg viewBox="0 0 68 48" width="20" height="14">
+      <path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#FF0000"></path>
+      <path d="M 45,24 27,14 27,34" fill="#ffffff"></path>
+    </svg>
+  </span>
+</button>
+
+<div id="ju-yt-modal" class="ju-yt-modal" role="dialog" aria-modal="true" aria-label="YouTube Video Player" hidden>
+  <div class="ju-yt-modal__frame">
+    <button type="button" id="ju-yt-modal-close" class="ju-yt-modal__close" aria-label="閉じる">×</button>
+    <div id="ju-yt-modal-stage" class="ju-yt-modal__stage"></div>
+  </div>
+</div>
 
 </body></html>

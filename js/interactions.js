@@ -28,12 +28,99 @@ document.querySelectorAll("dialog").forEach((dialog) => {
 const simuToggleBtn = document.querySelector("#simu-toggle-btn");
 const simuWrapper = document.querySelector("#simu-collapse-target");
 const simuEmpty = document.querySelector("#simu-empty");
+const simuLabelFree = document.querySelector("#simu-label-free");
+const simuLabelPro = document.querySelector("#simu-label-pro");
 if (simuToggleBtn && simuWrapper) {
+  const setSimuMode = (isProMode) => {
+    simuWrapper.classList.toggle("is-hidden", isProMode);
+    simuToggleBtn.classList.toggle("is-off", isProMode);
+    simuToggleBtn.setAttribute("aria-pressed", String(!isProMode));
+    if (simuEmpty) simuEmpty.hidden = !isProMode;
+    if (simuLabelFree) simuLabelFree.classList.toggle("is-active", !isProMode);
+    if (simuLabelPro) simuLabelPro.classList.toggle("is-active", isProMode);
+  };
   simuToggleBtn.addEventListener("click", () => {
-    const isHidden = simuWrapper.classList.toggle("is-hidden");
-    simuToggleBtn.classList.toggle("is-off", isHidden);
-    simuToggleBtn.setAttribute("aria-pressed", String(!isHidden));
-    if (simuEmpty) simuEmpty.hidden = !isHidden;
+    const nextPro = !simuWrapper.classList.contains("is-hidden");
+    setSimuMode(nextPro);
+  });
+  if (simuLabelFree) {
+    simuLabelFree.addEventListener("click", () => setSimuMode(false));
+  }
+  if (simuLabelPro) {
+    simuLabelPro.addEventListener("click", () => setSimuMode(true));
+  }
+}
+
+const ytTab = document.querySelector("#ju-yt-tab");
+const ytModal = document.querySelector("#ju-yt-modal");
+const ytModalStage = document.querySelector("#ju-yt-modal-stage");
+const ytModalClose = document.querySelector("#ju-yt-modal-close");
+
+if (ytTab && ytModal && ytModalStage && ytModalClose) {
+  let lockedScrollY = 0;
+  const blockBgScroll = (e) => {
+    if (!ytModal.hidden) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+  const blockBgScrollKeys = (e) => {
+    if (
+      !ytModal.hidden &&
+      [" ", "PageUp", "PageDown", "End", "Home", "ArrowUp", "ArrowDown"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  };
+  const enforceLockedScroll = () => {
+    if (!ytModal.hidden && Math.abs(window.scrollY - lockedScrollY) > 1) {
+      window.scrollTo(0, lockedScrollY);
+    }
+  };
+
+  const openYtModal = () => {
+    lockedScrollY = window.scrollY;
+    ytTab.classList.remove("is-hover");
+    ytTab.hidden = true;
+    document.documentElement.classList.add("yt-modal-open");
+    ytModal.hidden = false;
+    ytTab.blur();
+    window.addEventListener("wheel", blockBgScroll, { passive: false, capture: true });
+    window.addEventListener("touchmove", blockBgScroll, { passive: false, capture: true });
+    window.addEventListener("keydown", blockBgScrollKeys, { passive: false, capture: true });
+    window.addEventListener("scroll", enforceLockedScroll, { passive: true });
+    if (!ytModalStage.querySelector("iframe")) {
+      const iframe = document.createElement("iframe");
+      iframe.className = "ju-yt-modal__iframe";
+      iframe.src = "https://www.youtube.com/embed/jDQskNZH074?autoplay=1&rel=0&playsinline=1";
+      iframe.title = "YouTube video player";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      ytModalStage.appendChild(iframe);
+    }
+  };
+  const closeYtModal = () => {
+    ytModalStage.innerHTML = "";
+    ytModal.hidden = true;
+    document.documentElement.classList.remove("yt-modal-open");
+    ytTab.classList.remove("is-hover");
+    ytTab.hidden = false;
+    window.removeEventListener("wheel", blockBgScroll, { capture: true });
+    window.removeEventListener("touchmove", blockBgScroll, { capture: true });
+    window.removeEventListener("keydown", blockBgScrollKeys, { capture: true });
+    window.removeEventListener("scroll", enforceLockedScroll);
+  };
+  ytTab.addEventListener("mouseenter", () => ytTab.classList.add("is-hover"));
+  ytTab.addEventListener("mouseleave", () => ytTab.classList.remove("is-hover"));
+  ytTab.addEventListener("click", openYtModal);
+  ytModalClose.addEventListener("click", closeYtModal);
+  ytModal.addEventListener("click", (e) => {
+    if (e.target === ytModal) closeYtModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !ytModal.hidden) {
+      closeYtModal();
+    }
   });
 }
 

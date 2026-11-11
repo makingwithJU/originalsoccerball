@@ -28,15 +28,13 @@ document.querySelectorAll("dialog").forEach((dialog) => {
 const simuToggleBtn = document.querySelector("#simu-toggle-btn");
 const simuLabelPro = document.querySelector("#simu-label-pro");
 if (simuToggleBtn) {
-  simuToggleBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "./PRO.html";
+  simuToggleBtn.addEventListener("click", () => {
+    window.location.href = "/PRO.html";
   });
 }
 if (simuLabelPro) {
-  simuLabelPro.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "./PRO.html";
+  simuLabelPro.addEventListener("click", () => {
+    window.location.href = "/PRO.html";
   });
 }
 

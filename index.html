@@ -73,7 +73,7 @@
     <link rel="preload" as="image" href="./assets/media/hero/hero_poster.webp?v=135" media="(min-width: 1000px)" fetchpriority="high">
     <link rel="preload" as="image" href="./assets/media/hero/hero_poster_mobile.webp?v=135" media="(max-width: 999px)" fetchpriority="high">
     <!-- ==================== 1. STYLESHEETS ==================== -->
-    <link rel="stylesheet" href="./css/site.css?v=2.3.7">
+    <link rel="stylesheet" href="./css/site.css?v=2.3.6">
     <link rel="stylesheet" href="./css/spatial-gallery.css?v=2.2.0">
     <link rel="stylesheet" href="./css/scene-transition.css?v=2.2.6">
     <link rel="stylesheet" href="./css/specs-slider.css?v=2.2.0">
@@ -111,7 +111,7 @@
     <!-- Media & Lazy Video Loader -->
     <script src="./js/media.js?v=2.4.2" defer></script>
     <!-- General UI Interactions (Modals, Forms, Badges) -->
-    <script src="./js/interactions.js?v=2.3.7" defer></script>
+    <script src="./js/interactions.js?v=2.3.6" defer></script>
 
     <link rel="stylesheet" href="./css/drafting.css?v=2.2.0">
   </head>
@@ -839,8 +839,8 @@
     <div class="simu-ctrl-bar">
       <div class="simu-toggle-wrap">
         <span class="simu-mode-label is-free is-active" id="simu-label-free">FREE</span>
-        <a href="./PRO.html" id="simu-toggle-btn" class="simu-toggle" role="button" aria-label="PRO EDITION サービスガイドへ"></a>
-        <a href="./PRO.html" class="simu-mode-label is-pro" id="simu-label-pro">PRO</a>
+        <button type="button" id="simu-toggle-btn" class="simu-toggle" aria-pressed="true" aria-controls="simu-collapse-target" aria-label="FREE / PRO 切替"></button>
+        <span class="simu-mode-label is-pro" id="simu-label-pro">PRO</span>
       </div>
     </div>
     <div class="simu-wrapper" id="simu-collapse-target">

@@ -26,18 +26,29 @@ document.querySelectorAll("dialog").forEach((dialog) => {
 });
 
 const simuToggleBtn = document.querySelector("#simu-toggle-btn");
+const simuWrapper = document.querySelector("#simu-collapse-target");
+const simuEmpty = document.querySelector("#simu-empty");
+const simuLabelFree = document.querySelector("#simu-label-free");
 const simuLabelPro = document.querySelector("#simu-label-pro");
-if (simuToggleBtn) {
-  simuToggleBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "./PRO.html";
+if (simuToggleBtn && simuWrapper) {
+  const setSimuMode = (isProMode) => {
+    simuWrapper.classList.toggle("is-hidden", isProMode);
+    simuToggleBtn.classList.toggle("is-off", isProMode);
+    simuToggleBtn.setAttribute("aria-pressed", String(!isProMode));
+    if (simuEmpty) simuEmpty.hidden = !isProMode;
+    if (simuLabelFree) simuLabelFree.classList.toggle("is-active", !isProMode);
+    if (simuLabelPro) simuLabelPro.classList.toggle("is-active", isProMode);
+  };
+  simuToggleBtn.addEventListener("click", () => {
+    const nextPro = !simuWrapper.classList.contains("is-hidden");
+    setSimuMode(nextPro);
   });
-}
-if (simuLabelPro) {
-  simuLabelPro.addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "./PRO.html";
-  });
+  if (simuLabelFree) {
+    simuLabelFree.addEventListener("click", () => setSimuMode(false));
+  }
+  if (simuLabelPro) {
+    simuLabelPro.addEventListener("click", () => setSimuMode(true));
+  }
 }
 
 const ytTab = document.querySelector("#ju-yt-tab");

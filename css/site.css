@@ -767,7 +767,12 @@ details[open] summary .sign::after {
   letter-spacing: 0.08em;
   opacity: 0.42;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
   transition: opacity 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+}
+.simu-mode-label:hover {
+  opacity: 0.85;
 }
 .simu-mode-label.is-free.is-active {
   opacity: 0.95;
